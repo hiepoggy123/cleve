@@ -361,7 +361,8 @@ class Pointers(
 
                 // CRITICAL FIX: Allow leaving the key bounds for non-Char keys (like Backspace)
                 // This allows "Short Swipe over Backspace" (which often leaves the key) to trigger delete_last_word
-                val allowLeftKey = !isCharKey
+                // Also allow leaving key bounds if swipe typing is disabled (uncapped directional swipe)
+                val allowLeftKey = !isCharKey || !_config.swipe_typing_enabled
 
                 // Use tracked last position instead of relying on swipePath (which might be filtered/smoothed)
                 val dx = ptr.lastX - ptr.downX
@@ -396,7 +397,12 @@ class Pointers(
                     // The hasLeftStartingKey flag alone creates a gap where medium swipes (e.g., 140px)
                     // that don't exceed max_distance still trigger short gestures instead of neural swipe.
                     // By checking max explicitly here, swipes exceeding max fall through to neural prediction.
-                    val maxDistance = keyHypotenuse * (_config.short_gesture_max_distance / 100.0f)
+                    // If swipe typing is disabled, allow infinite max distance (user can swipe off the key entirely)
+                    val maxDistance = if (_config.swipe_typing_enabled) {
+                        keyHypotenuse * (_config.short_gesture_max_distance / 100.0f)
+                    } else {
+                        Float.MAX_VALUE
+                    }
 
                     Log.d(
                         "Pointers", "Short gesture check: distance=$distance " +
