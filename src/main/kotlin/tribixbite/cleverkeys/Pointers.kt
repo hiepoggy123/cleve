@@ -678,9 +678,9 @@ class Pointers(
         // This prevents horizontal swipes from accidentally triggering diagonal subkeys
         // when the exact direction doesn't have a key defined.
         // With ±2, direction 4 (E) - 2 = direction 2 (NE), causing 'we' swipe to trigger '2'
-        // [i] is [0, -1, +1], scanning ~19% of the circle's area (3 directions = 67.5°)
+        // [i] is [0, -1, +1, -2, +2], scanning ~31% of the circle's area (5 directions = 112.5°)
         var i = 0
-        while (i > -2) {  // Changed from -3 to -2 (±1 range)
+        while (i > -3) {  // Changed back to -3 (±2 range) to make uncapped directional flicks much more forgiving
             val d = (direction + i + 16) % 16
             // Don't make the difference between a key that doesn't exist and a key
             // that is removed by [_handler]. Triggers side effects.
@@ -825,7 +825,9 @@ class Pointers(
             _handler.onSwipeMove(x, y, _swipeRecognizer)
 
             // Check if this has become a confirmed multi-key swipe typing gesture
-            if (_swipeRecognizer.isSwipeTyping()) {
+            // CRITICAL FIX: Only set FLAG_P_SWIPE_TYPING if swipe typing is actually enabled!
+            // Otherwise it incorrectly cancels short gestures for long directional flicks.
+            if (_config.swipe_typing_enabled && _swipeRecognizer.isSwipeTyping()) {
                 ptr.flags = ptr.flags or FLAG_P_SWIPE_TYPING
                 stopLongPress(ptr)
             }
