@@ -57,10 +57,11 @@ object VietnameseTelexProcessor {
         // 1. Try applying tone
         val lowerNewChar = newChar.lowercaseChar()
         if (TONE_CHARS.containsKey(lowerNewChar)) {
-            val toneAppliedWord = applyTone(word, TONE_CHARS[lowerNewChar]!!)
-            if (toneAppliedWord != word) {
-                // If it's a z, we might need to restore 'z' if it wasn't a tone removal
-                return TelexResult(toneAppliedWord, word.length)
+            val (toneAppliedWord, canceled) = applyTone(word, TONE_CHARS[lowerNewChar]!!)
+            if (toneAppliedWord != word || canceled) {
+                // If it was canceled (e.g. typing 's' when word already has 's'), we append the new character!
+                val finalWord = if (canceled) toneAppliedWord + newChar else toneAppliedWord
+                return TelexResult(finalWord, word.length)
             }
         }
 
@@ -116,7 +117,7 @@ object VietnameseTelexProcessor {
 
     private fun isBaseVowel(c: Char): Boolean = CHAR_TO_BASE_TONE.containsKey(c)
 
-    private fun applyTone(word: String, newTone: Int): String {
+    private fun applyTone(word: String, newTone: Int): Pair<String, Boolean> {
         // Find the main vowel to apply tone
         // Heuristic: right-most vowel, but if it's "qu" + vowel, apply to vowel.
         // If there's a vowel cluster (e.g. "oa"), apply to the second one if it ends the word, else the first.
@@ -142,7 +143,8 @@ object VietnameseTelexProcessor {
             val currentTone = info.second
             
             // If the word already has this tone, "z" removes it, other tones override
-            val targetTone = if (newTone == 0) 0 else if (currentTone == newTone) 0 else newTone
+            val canceled = (newTone != 0 && currentTone == newTone)
+            val targetTone = if (newTone == 0) 0 else if (canceled) 0 else newTone
             
             val newVowel = if (baseVowel.isUpperCase()) {
                 VOWEL_TONES[baseVowel.lowercaseChar()]!![targetTone].uppercaseChar()
@@ -151,9 +153,9 @@ object VietnameseTelexProcessor {
             }
             
             val newWord = word.substring(0, vowelIndex) + newVowel + word.substring(vowelIndex + 1)
-            return newWord
+            return Pair(newWord, canceled)
         }
         
-        return word
+        return Pair(word, false)
     }
 }

@@ -122,7 +122,6 @@ class ExtraKeysPreference(context: Context, attrs: AttributeSet?) : PreferenceCa
             "f12_placeholder",
             "menu",
             "scroll_lock",
-            "bypass_censor",
             "combining_dot_above",
             "combining_double_aigu",
             "combining_slash",
@@ -314,7 +313,6 @@ class ExtraKeysPreference(context: Context, attrs: AttributeSet?) : PreferenceCa
                 "switch_backward" -> "Previous Layout"
                 "menu" -> "Menu"
                 "scroll_lock" -> "Scroll Lock"
-                "bypass_censor" -> "Bypass Censor (Anti-filter)"
                 "zwj" -> "ZWJ (Joiner)"
                 "zwnj" -> "ZWNJ (Non-Joiner)"
                 "nbsp" -> "NBSP (Space)"
@@ -404,7 +402,6 @@ class ExtraKeysPreference(context: Context, attrs: AttributeSet?) : PreferenceCa
                 "menu" -> mkPreferredPos("shift", 2, 0, true)              
                 "delete_word" -> mkPreferredPos("backspace", -1, -1, false)
                 "forward_delete_word" -> mkPreferredPos("backspace", -1, -1, true)
-                "bypass_censor" -> mkPreferredPos("space", -1, -1, true)
                 // Layout switching keys - place near space bar on bottom row
                 "switch_forward" -> mkPreferredPos("space", 3, 3, true)
                 "switch_backward" -> mkPreferredPos("space", 3, 2, false)
