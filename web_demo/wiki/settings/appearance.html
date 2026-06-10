@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appearance - CleverKeys User Guide</title>
+    <meta name="description" content="Height, opacity, key borders">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Settings" class="hover:text-ck-green">Settings</a>
+            <span>/</span>
+            <span class="text-gray-300">Appearance</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #6b728020; color: #6b7280">Settings</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Appearance</h1>
+        <p class="text-xl text-gray-400">Height, opacity, key borders</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Appearance Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Customize keyboard size, shape, and visual options</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: beginner</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Appearance Settings</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Configure how the keyboard looks on screen, including size, margins, and visual options.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Customize keyboard appearance</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Appearance</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Options</strong></td><td class="px-4 py-2 border-t border-gray-700">Height, margins, borders, opacity</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Keyboard Height</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Adjust the overall keyboard height:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Portrait Height</strong></td><td class="px-4 py-2 border-t border-gray-700">Height percentage for vertical orientation</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Landscape Height</strong></td><td class="px-4 py-2 border-t border-gray-700">Height percentage for horizontal orientation</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">How to Change</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open <strong class="text-white">Settings</strong></li>
+<li class="ml-4 text-gray-300">2. Scroll to <strong class="text-white">Appearance</strong> section</li>
+<li class="ml-4 text-gray-300">3. Adjust <strong class="text-white">Keyboard Height Portrait</strong> or <strong class="text-white">Landscape</strong> slider</li>
+<li class="ml-4 text-gray-300">4. Changes apply immediately</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Margins</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Bottom Margin</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Add space between keyboard and screen edge:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Effect</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">0</strong></td><td class="px-4 py-2 border-t border-gray-700">Keyboard touches screen edge</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Higher values</strong></td><td class="px-4 py-2 border-t border-gray-700">More gap (useful for gesture navigation)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Horizontal Margin</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Add space on left and right sides:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Use Case</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">0</strong></td><td class="px-4 py-2 border-t border-gray-700">Full-width keyboard</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Higher values</strong></td><td class="px-4 py-2 border-t border-gray-700">Narrower keyboard (one-handed use)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Key Borders</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Customize key outline appearance:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Key Borders</strong></td><td class="px-4 py-2 border-t border-gray-700">Enable/disable visible key outlines</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Border Radius</strong></td><td class="px-4 py-2 border-t border-gray-700">Corner roundness (0 = square, higher = rounder)</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Border Width</strong></td><td class="px-4 py-2 border-t border-gray-700">Thickness of key outlines</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Opacity Settings</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Control transparency levels:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Range</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Keyboard Opacity</strong></td><td class="px-4 py-2 border-t border-gray-700">0-100%</td><td class="px-4 py-2 border-t border-gray-700">Overall keyboard transparency</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Key Opacity</strong></td><td class="px-4 py-2 border-t border-gray-700">0-100%</td><td class="px-4 py-2 border-t border-gray-700">Transparency of key backgrounds</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Other Appearance Settings</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Character Size</strong></td><td class="px-4 py-2 border-t border-gray-700">Font size of key labels</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Label Brightness</strong></td><td class="px-4 py-2 border-t border-gray-700">Visibility of key text</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Vertical Key Spacing</strong></td><td class="px-4 py-2 border-t border-gray-700">Gap between keyboard rows</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Number Row</strong></td><td class="px-4 py-2 border-t border-gray-700">Show dedicated number row above letters</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Show Numpad</strong></td><td class="px-4 py-2 border-t border-gray-700">Show numeric keypad option</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Numpad Layout</strong></td><td class="px-4 py-2 border-t border-gray-700">Order of numpad keys (123 or 789 first)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips and Tricks</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Large screens</strong>: Increase height percentage</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Small screens</strong>: Reduce margins</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">One-handed</strong>: Add horizontal margin on one side</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Gesture nav phones</strong>: Add bottom margin</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: How do I make the keyboard smaller?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Reduce keyboard height percentage and add horizontal margins for a narrower, shorter keyboard.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I have different sizes for portrait and landscape?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Yes, there are separate height sliders for portrait and landscape orientation.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: The keyboard background is transparent!</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Increase <strong class="text-white">Keyboard Opacity</strong> in the Appearance section.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="../customization/themes.html" class="text-green-400 hover:underline">Themes</a> - Colors and styling</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="accessibility.html" class="text-green-400 hover:underline">Accessibility</a> - Haptic feedback settings</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="layouts/profiles.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Profiles</span>
+            </a>
+            <a href="settings/input-behavior.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Input Behavior</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

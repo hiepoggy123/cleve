@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Emoji pane -->
+  <style name="emojiGridButton">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">fill_parent</item>
+    <item name="android:gravity">center</item>
+    <item name="android:textSize">@dimen/emoji_text_size</item>
+    <item name="android:textColor">?attr/emoji_color</item>
+  </style>
+  <!-- Clipboard pane -->
+  <style name="clipboardEntry">
+    <item name="android:layout_weight">1</item>
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_marginHorizontal">14dp</item>
+    <item name="android:layout_marginVertical">14dp</item>
+    <item name="android:textSize">16dp</item>
+    <item name="android:textColor">?attr/colorLabel</item>
+  </style>
+  <style name="clipboardHeading">
+    <item name="android:layout_marginHorizontal">6dp</item>
+    <item name="android:layout_marginTop">14dp</item>
+    <item name="android:layout_marginBottom">0dp</item>
+    <item name="android:textSize">14dp</item>
+    <item name="android:fontWeight">700</item>
+    <item name="android:textColor">?attr/colorSubLabel</item>
+  </style>
+  <style name="clipboardEntryButtons">
+    <item name="android:orientation">horizontal</item>
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_gravity">center_vertical</item>
+    <item name="android:layout_marginRight">12dp</item>
+  </style>
+  <style name="clipboardEntryButton">
+    <item name="android:layout_width">24dp</item>
+    <item name="android:layout_height">24dp</item>
+    <item name="android:layout_marginHorizontal">2dp</item>
+    <item name="android:backgroundTint">?attr/colorLabel</item>
+    <item name="android:backgroundTintMode">src_in</item>
+  </style>
+  <!-- Launcher activity -->
+  <style name="paragraph">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_marginVertical">8dp</item>
+    <item name="android:layout_marginHorizontal">16dp</item>
+    <item name="android:layout_gravity">center</item>
+  </style>
+  <style name="anim">
+    <item name="android:adjustViewBounds">true</item>
+    <item name="android:layout_height">120dp</item>
+    <item name="android:layout_weight">1</item>
+    <item name="android:layout_width">wrap_content</item>
+  </style>
+  <style name="anim_text">
+    <item name="android:layout_gravity">center</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_marginHorizontal">20dp</item>
+    <item name="android:layout_weight">1</item>
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:textAlignment">center</item>
+    <item name="android:textSize">18dp</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+  <style name="anim_box">
+    <item name="android:layout_gravity">center</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_marginVertical">16dp</item>
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:orientation">horizontal</item>
+  </style>
+  <style name="appTheme" parent="Theme.AppCompat.DayNight.DarkActionBar"/>
+  <!-- Launcher activity theme with edge-to-edge support -->
+  <!-- Using Material3 Dark theme for proper edge-to-edge compatibility with Compose -->
+  <style name="launcherTheme" parent="Theme.Material3.Dark.NoActionBar">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:windowTranslucentStatus">false</item>
+    <item name="android:windowTranslucentNavigation">false</item>
+  </style>
+  <style name="settingsTheme" parent="appTheme">
+    <!-- Setting this in the activity theme so it propagate to nested
+         preference screens. -->
+    <item name="android:fitsSystemWindows">true</item>
+  </style>
+
+  <!-- Transparent IME Theme to prevent white bar during animation -->
+  <style name="CleverKeysIMETheme" parent="android:Theme.DeviceDefault.InputMethod">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackground">@android:color/transparent</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:backgroundDimEnabled">false</item>
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+  </style>
+</resources>

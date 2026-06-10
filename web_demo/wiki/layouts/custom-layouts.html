@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Layouts - CleverKeys User Guide</title>
+    <meta name="description" content="Create your own layout XML">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Layouts" class="hover:text-ck-green">Layouts</a>
+            <span>/</span>
+            <span class="text-gray-300">Custom Layouts</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #ec489920; color: #ec4899">Layouts</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Custom Layouts</h1>
+        <p class="text-xl text-gray-400">Create your own layout XML</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Custom Layouts</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Create keyboard layouts using XML format</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Layouts</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: advanced</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Custom Layouts</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Create custom keyboard layouts using XML syntax.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Define custom keyboard layouts</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Layouts preference</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Format</strong></td><td class="px-4 py-2 border-t border-gray-700">XML-based layout definition</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">How Custom Layouts Work</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">CleverKeys supports custom layout definitions in XML format. This is an advanced feature requiring knowledge of the layout XML syntax.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Layout XML Syntax</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Custom layouts use the same XML format as the bundled layouts. A layout is defined by rows of keys, each key having:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Primary character</strong> (<code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">c="a"</code>)</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Subkeys</strong> by direction (<code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">ne="1"</code> for northeast)</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Width</strong> (<code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">width="2.0"</code> for wider keys)</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Shift variants</strong> (<code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">shift="0.5"</code> for indent)</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Example Layout Row</h3>
+
+<pre class="bg-ck-dark p-4 rounded-lg overflow-x-auto mb-4"><code class="language-xml">&lt;row&gt;
+<p class="mb-4 text-gray-300 leading-relaxed">  &lt;key c="q" ne="1"/&gt;</p>
+<p class="mb-4 text-gray-300 leading-relaxed">  &lt;key c="w" ne="2"/&gt;</p>
+<p class="mb-4 text-gray-300 leading-relaxed">  &lt;key c="e" ne="3"/&gt;</p>
+<p class="mb-4 text-gray-300 leading-relaxed">  &lt;key c="r" ne="4"/&gt;</p>
+<p class="mb-4 text-gray-300 leading-relaxed">  &lt;key c="t" ne="5"/&gt;</p>
+<p class="mb-4 text-gray-300 leading-relaxed">&lt;/row&gt;</code></pre></p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Accessing Custom Layouts</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open Settings</li>
+<li class="ml-4 text-gray-300">2. Find the <strong class="text-white">Layouts</strong> preference</li>
+<li class="ml-4 text-gray-300">3. Use the text entry dialog to specify layout XML</li>
+</ul>
+<p class="mb-4 text-gray-300 leading-relaxed">The dialog includes:</p>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Multi-line text entry with line numbers</li>
+<li class="ml-4 text-gray-300">&#8226; Real-time validation for syntax errors</li>
+<li class="ml-4 text-gray-300">&#8226; Option to remove custom layout</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Layout Structure</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A complete layout consists of:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Element</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Rows</strong></td><td class="px-4 py-2 border-t border-gray-700">Horizontal groups of keys</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Keys</strong></td><td class="px-4 py-2 border-t border-gray-700">Individual key definitions</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Modkeys</strong></td><td class="px-4 py-2 border-t border-gray-700">Modified key layers</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Key Properties</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Property</td><td class="px-4 py-2 border-t border-gray-700">Example</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">c</code></td><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">c="a"</code></td><td class="px-4 py-2 border-t border-gray-700">Primary character</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">ne</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">nw</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">se</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">sw</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">n</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">s</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">e</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">w</code></td><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">ne="1"</code></td><td class="px-4 py-2 border-t border-gray-700">Subkey directions</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">width</code></td><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">width="1.5"</code></td><td class="px-4 py-2 border-t border-gray-700">Key width multiplier</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">shift</code></td><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">shift="0.5"</code></td><td class="px-4 py-2 border-t border-gray-700">Left margin/indent</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">For Developers</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Custom layouts use the same XML format as <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">src/main/layouts/*.xml</code> in the source code. Review existing layouts for syntax examples.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Limitations</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Feature</td><td class="px-4 py-2 border-t border-gray-700">Status</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Visual editor</strong></td><td class="px-4 py-2 border-t border-gray-700">Not available</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Layout import</strong></td><td class="px-4 py-2 border-t border-gray-700">Via text entry only</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Sharing</strong></td><td class="px-4 py-2 border-t border-gray-700">Copy/paste XML text</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I create layouts with a visual editor?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: No, layouts are defined using XML text entry. Review existing layout files for examples.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Where can I find layout examples?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Check the <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">src/main/layouts/</code> directory in the source code for XML layout examples.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: How do I share a custom layout?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Copy the XML text and share it. Recipients paste it into their custom layout dialog.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="adding-layouts.html" class="text-green-400 hover:underline">Adding Layouts</a> - Built-in layout options</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../customization/per-key-actions.html" class="text-green-400 hover:underline">Per-Key Actions</a> - Customize subkeys</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="language-packs.html" class="text-green-400 hover:underline">Language Packs</a> - Download language support</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="layouts/language-packs.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Language Packs</span>
+            </a>
+            <a href="layouts/profiles.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Profiles</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

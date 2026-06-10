@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding Layouts - CleverKeys User Guide</title>
+    <meta name="description" content="Install AZERTY, Dvorak, Colemak, etc.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Layouts" class="hover:text-ck-green">Layouts</a>
+            <span>/</span>
+            <span class="text-gray-300">Adding Layouts</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #ec489920; color: #ec4899">Layouts</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Adding Layouts</h1>
+        <p class="text-xl text-gray-400">Install AZERTY, Dvorak, Colemak, etc.</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Adding Layouts</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Install and manage keyboard layouts</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Layouts</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: beginner</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Adding Layouts</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Install new keyboard layouts to support different languages and keyboard styles.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Add new keyboard layouts</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Layouts are bundled or added via language packs</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Options</strong></td><td class="px-4 py-2 border-t border-gray-700">QWERTY variants, language-specific layouts</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Built-in Layouts</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">CleverKeys includes several pre-installed layouts:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Layout</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">QWERTY</strong></td><td class="px-4 py-2 border-t border-gray-700">Standard US English layout</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">AZERTY</strong></td><td class="px-4 py-2 border-t border-gray-700">French keyboard layout</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">QWERTZ</strong></td><td class="px-4 py-2 border-t border-gray-700">German keyboard layout</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Dvorak</strong></td><td class="px-4 py-2 border-t border-gray-700">Alternative English layout</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Colemak</strong></td><td class="px-4 py-2 border-t border-gray-700">Ergonomic alternative layout</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Adding Language Layouts</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Via Language Pack Import</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">To add layouts for other languages:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Build or obtain a language pack (see <a href="language-packs.html" class="text-green-400 hover:underline">Language Packs</a>)</li>
+<li class="ml-4 text-gray-300">2. Go to <strong class="text-white">Settings > Activities > Backup & Restore</strong></li>
+<li class="ml-4 text-gray-300">3. Tap <strong class="text-white">Import</strong> and select the language pack file</li>
+<li class="ml-4 text-gray-300">4. The layout and dictionary are installed together</li>
+</ul>
+<p class="mb-4 text-gray-300 leading-relaxed">See <a href="language-packs.html" class="text-green-400 hover:underline">Language Packs</a> for details.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Bundled Languages</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Some languages come pre-bundled:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Language</td><td class="px-4 py-2 border-t border-gray-700">Layout</td><td class="px-4 py-2 border-t border-gray-700">Dictionary</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">English</td><td class="px-4 py-2 border-t border-gray-700">QWERTY</td><td class="px-4 py-2 border-t border-gray-700">Included</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">Spanish</td><td class="px-4 py-2 border-t border-gray-700">QWERTY (ES)</td><td class="px-4 py-2 border-t border-gray-700">Included</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">French</td><td class="px-4 py-2 border-t border-gray-700">AZERTY, QWERTY (FR)</td><td class="px-4 py-2 border-t border-gray-700">Included</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">German</td><td class="px-4 py-2 border-t border-gray-700">QWERTZ</td><td class="px-4 py-2 border-t border-gray-700">Included</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Portuguese</td><td class="px-4 py-2 border-t border-gray-700">QWERTY (PT)</td><td class="px-4 py-2 border-t border-gray-700">Included</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Italian</td><td class="px-4 py-2 border-t border-gray-700">QWERTY (IT)</td><td class="px-4 py-2 border-t border-gray-700">Included</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Managing Layouts</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">View Available Layouts</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">The keyboard uses the layout associated with your configured language:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Go to <strong class="text-white">Settings</strong> and scroll to <strong class="text-white">Multi-Language</strong> section</li>
+<li class="ml-4 text-gray-300">2. Your primary language determines the default layout</li>
+<li class="ml-4 text-gray-300">3. Secondary language can use the same or different layout</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Enabling Multiple Layouts</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">To switch between layouts:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Configure languages in <strong class="text-white">Multi-Language</strong> section</li>
+<li class="ml-4 text-gray-300">2. Use <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">switch_forward</code> / <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">switch_backward</code> commands to cycle</li>
+<li class="ml-4 text-gray-300">3. See <a href="switching-layouts.html" class="text-green-400 hover:underline">Switching Layouts</a> for details</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Layout Types</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Language Layouts</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Optimized for specific languages:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Type</td><td class="px-4 py-2 border-t border-gray-700">Examples</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Latin</strong></td><td class="px-4 py-2 border-t border-gray-700">QWERTY, AZERTY, QWERTZ</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Extended</strong></td><td class="px-4 py-2 border-t border-gray-700">Nordic, Spanish, Portuguese accents</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Alternative</strong></td><td class="px-4 py-2 border-t border-gray-700">Dvorak, Colemak</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Specialized Layouts</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">For specific use cases:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Layout</td><td class="px-4 py-2 border-t border-gray-700">Use Case</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Number Pad</strong></td><td class="px-4 py-2 border-t border-gray-700">Numeric input</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Emoji</strong></td><td class="px-4 py-2 border-t border-gray-700">Emoji keyboard</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips and Tricks</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Start simple</strong>: Enable 1-2 layouts maximum for easy switching</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Match language</strong>: Use layouts designed for your language's characters</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Learn subkeys</strong>: Each layout has character subkeys for accents and symbols</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Multi-Language</strong>: For bilingual typing, consider Multi-Language mode instead of switching</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">You don't need separate layouts for bilingual typing. Enable Multi-Language mode to get predictions from both languages on one layout.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Limitations</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Feature</td><td class="px-4 py-2 border-t border-gray-700">Status</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Custom layout creation</strong></td><td class="px-4 py-2 border-t border-gray-700">Not currently available</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Layout import</strong></td><td class="px-4 py-2 border-t border-gray-700">Via language packs only</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Per-app layouts</strong></td><td class="px-4 py-2 border-t border-gray-700">Not supported</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: How do I get layouts for my language?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Build a language pack using the provided Python scripts, then import via Settings > Activities > Backup & Restore. It includes both the layout and dictionary.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I create custom layouts?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Custom layout creation is not currently available in the app. Layouts are provided via language packs.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Why can't I find my language's layout?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Check if a language pack is available. If not, request it via GitHub issues or create one using the build scripts (see <a href="language-packs.html" class="text-green-400 hover:underline">Language Packs</a>).</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Do I need different layouts for different languages?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Not always. Many Latin-alphabet languages work on QWERTY with subkeys for accented characters. Multi-Language mode provides predictions for multiple languages on one layout.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="switching-layouts.html" class="text-green-400 hover:underline">Switching Layouts</a> - Change between layouts</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="language-packs.html" class="text-green-400 hover:underline">Language Packs</a> - Download language support</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="multi-language.html" class="text-green-400 hover:underline">Multi-Language</a> - Type in multiple languages</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../troubleshooting/backup-restore.html" class="text-green-400 hover:underline">Backup & Restore</a> - Save your configuration</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="customization/timestamp-keys.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Timestamp Keys</span>
+            </a>
+            <a href="layouts/switching-layouts.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Switching Layouts</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

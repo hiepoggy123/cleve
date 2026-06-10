@@ -1,0 +1,133 @@
+# Development Build Workflow
+# Purpose: Generate debug APKs and create dev releases
+# - Handles keystore management
+# - Generates app icons
+# - Creates dev releases on main branch pushes
+# - Renames APKs with commit SHA
+# For CI testing only, see build.yml
+
+name: Build CleverKeys APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+    tags-ignore:
+      - 'v*'
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  Build-APK:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Restore debug keystore from GitHub Secrets
+      run: |
+        # DEBUG_KEYSTORE should contain base64-encoded content of debug.keystore.asc
+        # Create it with: cat debug.keystore.asc | base64 -w0
+        # Or use GPG: gpg -c --passphrase "debug0" --batch debug.keystore && base64 -w0 debug.keystore.gpg
+        if [[ ! "${{ secrets.DEBUG_KEYSTORE }}" = "" ]]; then
+            echo "Restoring debug keystore from GitHub secrets"
+            echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 -d > "debug.keystore.asc"
+            if [[ -s "debug.keystore.asc" ]]; then
+                gpg -d --passphrase "debug0" --batch "debug.keystore.asc" > "debug.keystore"
+                echo "Debug keystore restored ($(wc -c < debug.keystore) bytes)"
+            else
+                echo "Warning: decoded keystore.asc is empty"
+            fi
+        else
+            echo "No DEBUG_KEYSTORE secret found, will auto-generate keystore"
+        fi
+
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Install ImageMagick
+      run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+    - name: Generate App Icons
+      run: |
+        chmod +x scripts/generate_icons.sh
+        ./scripts/generate_icons.sh
+
+    - name: Clean Gradle
+      run: ./gradlew clean
+
+    - name: Build debug APK
+      run: ./gradlew assembleDebug
+      env:
+        DEBUG_KEYSTORE: "debug.keystore"
+        DEBUG_KEYSTORE_PASSWORD: debug0
+        DEBUG_KEY_ALIAS: debug
+        DEBUG_KEY_PASSWORD: debug0
+
+    - name: Get short SHA
+      id: sha
+      run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Rename APKs with version
+      run: |
+        cd build/outputs/apk/debug
+        for apk in *.apk; do
+          if [[ "$apk" == *"universal"* ]]; then
+            mv "$apk" "CleverKeys-${{ steps.sha.outputs.short }}-universal.apk"
+          elif [[ "$apk" == *"arm64-v8a"* ]]; then
+            mv "$apk" "CleverKeys-${{ steps.sha.outputs.short }}-arm64.apk"
+          elif [[ "$apk" == *"armeabi-v7a"* ]]; then
+            mv "$apk" "CleverKeys-${{ steps.sha.outputs.short }}-armv7.apk"
+          elif [[ "$apk" == *"x86_64"* ]]; then
+            mv "$apk" "CleverKeys-${{ steps.sha.outputs.short }}-x86_64.apk"
+          else
+            mv "$apk" "CleverKeys-${{ steps.sha.outputs.short }}.apk"
+          fi
+        done
+        ls -la *.apk
+
+    - name: Upload debug APKs
+      uses: actions/upload-artifact@v4
+      with:
+        name: "cleverkeys-debug-${{ steps.sha.outputs.short }}"
+        path: build/outputs/apk/debug/*.apk
+
+    - name: Upload to releases (on every push to main)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/outputs/apk/debug/*.apk
+        tag_name: "dev-${{ steps.sha.outputs.short }}"
+        name: "CleverKeys Dev Build (${{ steps.sha.outputs.short }})"
+        prerelease: true  # Mark as prerelease so Obtainium ignores dev builds
+        body: |
+          CleverKeys Android APK - Development Build
+
+          **Commit:** ${{ github.sha }}
+          **Branch:** ${{ github.ref_name }}
+          **Date:** ${{ github.event.head_commit.timestamp }}
+
+          ## Downloads (per-ABI)
+          | APK | Device |
+          |-----|--------|
+          | **arm64** | Most modern phones (2017+) |
+          | **armv7** | Older 32-bit phones |
+          | **x86_64** | Emulators, Chromebooks |
+          | **universal** | All devices |
+
+          ## Installation
+          1. Download the APK matching your device
+          2. Enable "Unknown sources" in Android settings
+          3. Install and activate in Language & Input settings
+
+    # Tag releases are handled by release.yml workflow (not this one)
+    # This workflow only creates dev releases for main branch pushes

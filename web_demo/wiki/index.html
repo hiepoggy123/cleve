@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Guide - CleverKeys</title>
+    <meta name="description" content="Comprehensive user documentation for CleverKeys keyboard">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <span class="text-green-400 font-medium">User Guide</span>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-12 text-center">
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-4">CleverKeys User Guide</h1>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto">User documentation and how-to guides</p>
+        
+        <!-- Search placeholder -->
+        <div class="mt-8 max-w-md mx-auto">
+            <input type="text" id="wiki-search" placeholder="Search documentation..." 
+                   class="w-full px-4 py-3 bg-ck-surface border border-gray-700 rounded-xl focus:outline-none focus:border-ck-green text-gray-100">
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-20 max-w-4xl">
+        
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #10b981"></span>
+                Getting Started
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="getting-started/installation.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Installation</h3>
+                <p class="text-sm text-gray-400">Download and install CleverKeys</p>
+            </a>
+        
+            <a href="getting-started/first-time-setup.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">First-Time Setup</h3>
+                <p class="text-sm text-gray-400">Enable keyboard and basic configuration</p>
+            </a>
+        
+            <a href="getting-started/basic-typing.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Basic Typing</h3>
+                <p class="text-sm text-gray-400">Tap and swipe typing fundamentals</p>
+            </a>
+        
+            <a href="getting-started/enabling-keyboard.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Enabling the Keyboard</h3>
+                <p class="text-sm text-gray-400">Android keyboard activation steps</p>
+            </a>
+        
+            <a href="getting-started/quick-settings.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Quick Settings Tile</h3>
+                <p class="text-sm text-gray-400">Fast keyboard switching from notification shade</p>
+            </a>
+        
+            <a href="FAQ.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">FAQ</h3>
+                <p class="text-sm text-gray-400">Frequently asked questions</p>
+            </a>
+        
+            </div>
+        </section>
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #3b82f6"></span>
+                Typing
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="typing/swipe-typing.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Swipe Typing</h3>
+                <p class="text-sm text-gray-400">How neural swipe prediction works</p>
+            </a>
+        
+            <a href="typing/autocorrect.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Autocorrect & Predictions</h3>
+                <p class="text-sm text-gray-400">Smart text correction settings</p>
+            </a>
+        
+            <a href="typing/special-characters.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Special Characters</h3>
+                <p class="text-sm text-gray-400">Symbols, accents, and compose key</p>
+            </a>
+        
+            <a href="typing/emoji.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Emoji & Symbols</h3>
+                <p class="text-sm text-gray-400">Emoji picker and symbol input</p>
+            </a>
+        
+            <a href="typing/smart-punctuation.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Smart Punctuation</h3>
+                <p class="text-sm text-gray-400">Automatic punctuation attachment and spacing</p>
+            </a>
+        
+            <a href="typing/user-dictionary.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">User Dictionary</h3>
+                <p class="text-sm text-gray-400">Add custom words and preserve capitalization</p>
+            </a>
+        
+            </div>
+        </section>
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #8b5cf6"></span>
+                Gestures
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="gestures/short-swipes.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Short Swipes</h3>
+                <p class="text-sm text-gray-400">Quick swipe actions on any key</p>
+            </a>
+        
+            <a href="gestures/cursor-navigation.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Cursor Navigation</h3>
+                <p class="text-sm text-gray-400">Spacebar slider and arrow keys</p>
+            </a>
+        
+            <a href="gestures/selection-delete.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Selection-Delete Mode</h3>
+                <p class="text-sm text-gray-400">Select text by holding backspace</p>
+            </a>
+        
+            <a href="gestures/trackpoint-mode.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">TrackPoint Mode</h3>
+                <p class="text-sm text-gray-400">Joystick-style cursor on nav keys</p>
+            </a>
+        
+            <a href="gestures/circle-gestures.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Circle Gestures</h3>
+                <p class="text-sm text-gray-400">Loop for double letters</p>
+            </a>
+        
+            </div>
+        </section>
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #f59e0b"></span>
+                Customization
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="customization/per-key-actions.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Per-Key Actions</h3>
+                <p class="text-sm text-gray-400">Customize swipe actions per key</p>
+            </a>
+        
+            <a href="customization/extra-keys.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Extra Keys</h3>
+                <p class="text-sm text-gray-400">Add function keys, arrows, Tab, Ctrl</p>
+            </a>
+        
+            <a href="customization/themes.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Themes</h3>
+                <p class="text-sm text-gray-400">Color schemes and appearance</p>
+            </a>
+        
+            <a href="customization/command-palette.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Command Palette</h3>
+                <p class="text-sm text-gray-400">Quick access to keyboard commands</p>
+            </a>
+        
+            <a href="customization/timestamp-keys.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Timestamp Keys</h3>
+                <p class="text-sm text-gray-400">Insert formatted date and time</p>
+            </a>
+        
+            </div>
+        </section>
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #ec4899"></span>
+                Layouts
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="layouts/adding-layouts.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Adding Layouts</h3>
+                <p class="text-sm text-gray-400">Install AZERTY, Dvorak, Colemak, etc.</p>
+            </a>
+        
+            <a href="layouts/switching-layouts.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Switching Layouts</h3>
+                <p class="text-sm text-gray-400">Quick layout switching methods</p>
+            </a>
+        
+            <a href="layouts/multi-language.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Multi-Language Typing</h3>
+                <p class="text-sm text-gray-400">Bilingual swipe typing</p>
+            </a>
+        
+            <a href="layouts/language-packs.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Language Packs</h3>
+                <p class="text-sm text-gray-400">Download additional dictionaries</p>
+            </a>
+        
+            <a href="layouts/custom-layouts.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Custom Layouts</h3>
+                <p class="text-sm text-gray-400">Create your own layout XML</p>
+            </a>
+        
+            <a href="layouts/profiles.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Profiles</h3>
+                <p class="text-sm text-gray-400">Save and restore configurations</p>
+            </a>
+        
+            </div>
+        </section>
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #6b7280"></span>
+                Settings
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="settings/appearance.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Appearance</h3>
+                <p class="text-sm text-gray-400">Height, opacity, key borders</p>
+            </a>
+        
+            <a href="settings/input-behavior.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Input Behavior</h3>
+                <p class="text-sm text-gray-400">Autocorrect, autocaps, double-space</p>
+            </a>
+        
+            <a href="settings/haptics.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Haptics & Sound</h3>
+                <p class="text-sm text-gray-400">Vibration and key press sounds</p>
+            </a>
+        
+            <a href="settings/neural-settings.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Neural Settings</h3>
+                <p class="text-sm text-gray-400">Beam width, prediction profiles</p>
+            </a>
+        
+            <a href="settings/privacy.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Privacy</h3>
+                <p class="text-sm text-gray-400">Data collection and clipboard settings</p>
+            </a>
+        
+            <a href="settings/accessibility.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Accessibility</h3>
+                <p class="text-sm text-gray-400">Switch Access, TalkBack, large keys</p>
+            </a>
+        
+            <a href="settings/password-fields.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Password Field Mode</h3>
+                <p class="text-sm text-gray-400">Enhanced security in password fields</p>
+            </a>
+        
+            </div>
+        </section>
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #14b8a6"></span>
+                Clipboard
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="clipboard/clipboard-history.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Clipboard History</h3>
+                <p class="text-sm text-gray-400">Recent clips, pins, search</p>
+            </a>
+        
+            <a href="clipboard/text-selection.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Text Selection</h3>
+                <p class="text-sm text-gray-400">Select, cut, copy, paste text</p>
+            </a>
+        
+            <a href="clipboard/shortcuts.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Clipboard Shortcuts</h3>
+                <p class="text-sm text-gray-400">Quick clipboard actions</p>
+            </a>
+        
+            </div>
+        </section>
+        <section class="mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background: #ef4444"></span>
+                Troubleshooting
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+            <a href="troubleshooting/common-issues.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Common Issues</h3>
+                <p class="text-sm text-gray-400">FAQ and quick fixes</p>
+            </a>
+        
+            <a href="troubleshooting/performance.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Performance</h3>
+                <p class="text-sm text-gray-400">Speed and battery optimization</p>
+            </a>
+        
+            <a href="troubleshooting/reset-defaults.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Reset to Defaults</h3>
+                <p class="text-sm text-gray-400">Restore default settings</p>
+            </a>
+        
+            <a href="troubleshooting/backup-restore.html" class="block bg-ck-card p-4 rounded-xl hover:bg-ck-surface transition-colors border border-transparent hover:border-ck-green/30">
+                <h3 class="font-semibold mb-1 text-white">Backup & Restore</h3>
+                <p class="text-sm text-gray-400">Export and import settings</p>
+            </a>
+        
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys - Open Source Neural Keyboard</p>
+    </footer>
+
+    <script>
+        // Simple client-side search
+        document.getElementById('wiki-search').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('section a').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

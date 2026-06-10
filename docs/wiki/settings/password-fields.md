@@ -1,0 +1,66 @@
+# Password Field Mode
+
+CleverKeys automatically provides enhanced security when you're typing in password or PIN fields.
+
+## How It Works
+
+When you tap on a password field, CleverKeys automatically:
+
+- **Disables predictions** - No word suggestions appear to protect your password
+- **Disables autocorrect** - Your password won't be "corrected" accidentally
+- **Disables swipe typing** - Tap-only input for security
+- **Shows the password bar** - Special interface replaces the suggestion bar
+
+## Password Visibility Toggle
+
+A special password bar appears with an eye icon on the right side:
+
+| Icon | State | Display |
+|------|-------|---------|
+| Eye with slash | Hidden (default) | Bullet dots: `••••••••` |
+| Open eye | Visible | Actual password text |
+
+**Tap the eye icon** to toggle between hidden and visible states.
+
+## Scrolling Long Passwords
+
+If your password is longer than the visible area:
+- **Swipe left/right** on the password text to scroll
+- The eye icon stays fixed on the right side
+
+## Supported Field Types
+
+Password mode activates automatically for:
+
+- Text password fields
+- Web password fields (browser forms)
+- Visible password fields
+- PIN/numeric password fields
+
+## Privacy & Security
+
+- Password text is **only stored in memory** (never saved to disk)
+- Text is **cleared immediately** when you switch fields or close the keyboard
+- The keyboard only **reads** the password field - it never modifies content
+- Password is **hidden by default** - you must tap to reveal
+
+## Tips
+
+1. **Check for the eye icon** - If you see it, password mode is active
+2. **Tap to toggle visibility** - Useful to verify complex passwords
+3. **Scroll for long passwords** - Drag left/right on the dots to see more
+4. **Predictions are intentionally disabled** - This is a security feature
+
+## Autofill Suggestions
+
+When an autofill provider (password manager, credential manager) offers inline suggestions on a password field, CleverKeys adjusts the suggestion bar to display them properly:
+
+- The suggestion bar padding is removed to give autofill chips the full 40dp bar height
+- Autofill chip dimensions are matched to the actual container size
+- The bar is forced visible even if it was hidden
+
+This prevents autofill suggestion chips from being clipped or hidden behind padding.
+
+## Related Settings
+
+Password mode is automatic. Swipe typing is disabled in password fields by default but can be enabled via **Settings > Neural Prediction > Swipe on Password Fields**.

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Palette - CleverKeys User Guide</title>
+    <meta name="description" content="Quick access to keyboard commands">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Customization" class="hover:text-ck-green">Customization</a>
+            <span>/</span>
+            <span class="text-gray-300">Command Palette</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #f59e0b20; color: #f59e0b">Customization</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Command Palette</h1>
+        <p class="text-xl text-gray-400">Quick access to keyboard commands</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Command Palette</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Searchable list of keyboard actions for customization</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Customization</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: intermediate</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Command Palette</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">The command palette is a searchable dialog that appears when customizing key actions, showing all available keyboard commands you can assign.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Browse and search all assignable key actions</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Opens automatically in Per-Key Customization</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Features</strong></td><td class="px-4 py-2 border-t border-gray-700">Search, categories, 100+ commands</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Where It Appears</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">The command palette is <strong class="text-white">not</strong> a standalone feature. It appears when you:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Go to <strong class="text-white">Per-Key Customization</strong> (Settings > Activities section)</li>
+<li class="ml-4 text-gray-300">2. Select a key</li>
+<li class="ml-4 text-gray-300">3. Tap a swipe direction to assign an action</li>
+<li class="ml-4 text-gray-300">4. The command palette opens to let you choose an action</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Using the Command Palette</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Search</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. When the palette opens, a search bar appears at top</li>
+<li class="ml-4 text-gray-300">2. Type to filter commands in real-time</li>
+<li class="ml-4 text-gray-300">3. Matches title, description, and keywords</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Browse Categories</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Commands are organized into categories:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Category</td><td class="px-4 py-2 border-t border-gray-700">Contents</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Text</strong></td><td class="px-4 py-2 border-t border-gray-700">Copy, paste, select all, undo, redo</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Cursor</strong></td><td class="px-4 py-2 border-t border-gray-700">Move cursor, select text, home, end</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Modifiers</strong></td><td class="px-4 py-2 border-t border-gray-700">Shift, Ctrl, Alt, Meta</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Delete</strong></td><td class="px-4 py-2 border-t border-gray-700">Backspace, delete word, delete line</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Events</strong></td><td class="px-4 py-2 border-t border-gray-700">Switch layout, open settings, clipboard</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Characters</strong></td><td class="px-4 py-2 border-t border-gray-700">Special characters and symbols</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Select an Action</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Tap any command to select it</li>
+<li class="ml-4 text-gray-300">2. The command is assigned to the selected swipe direction</li>
+<li class="ml-4 text-gray-300">3. Palette closes automatically</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Available Commands</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Text Actions</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Command</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">copy</code></td><td class="px-4 py-2 border-t border-gray-700">Copy selected text</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">cut</code></td><td class="px-4 py-2 border-t border-gray-700">Cut selected text</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">paste</code></td><td class="px-4 py-2 border-t border-gray-700">Paste from clipboard</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">select_all</code></td><td class="px-4 py-2 border-t border-gray-700">Select all text</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">undo</code></td><td class="px-4 py-2 border-t border-gray-700">Undo last action</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">redo</code></td><td class="px-4 py-2 border-t border-gray-700">Redo undone action</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Cursor Navigation</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Command</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">cursor_left</code></td><td class="px-4 py-2 border-t border-gray-700">Move cursor left</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">cursor_right</code></td><td class="px-4 py-2 border-t border-gray-700">Move cursor right</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">cursor_up</code></td><td class="px-4 py-2 border-t border-gray-700">Move cursor up</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">cursor_down</code></td><td class="px-4 py-2 border-t border-gray-700">Move cursor down</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">home</code></td><td class="px-4 py-2 border-t border-gray-700">Jump to line start</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">end</code></td><td class="px-4 py-2 border-t border-gray-700">Jump to line end</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">page_up</code></td><td class="px-4 py-2 border-t border-gray-700">Page up</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">page_down</code></td><td class="px-4 py-2 border-t border-gray-700">Page down</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Selection Actions</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Command</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_left</code></td><td class="px-4 py-2 border-t border-gray-700">Select left</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_right</code></td><td class="px-4 py-2 border-t border-gray-700">Select right</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_up</code></td><td class="px-4 py-2 border-t border-gray-700">Select up</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_down</code></td><td class="px-4 py-2 border-t border-gray-700">Select down</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_word_left</code></td><td class="px-4 py-2 border-t border-gray-700">Select word left</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_word_right</code></td><td class="px-4 py-2 border-t border-gray-700">Select word right</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Delete Actions</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Command</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">backspace</code></td><td class="px-4 py-2 border-t border-gray-700">Delete character before cursor</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">delete</code></td><td class="px-4 py-2 border-t border-gray-700">Delete character after cursor</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">delete_word</code></td><td class="px-4 py-2 border-t border-gray-700">Delete word before cursor</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">delete_word_forward</code></td><td class="px-4 py-2 border-t border-gray-700">Delete word after cursor</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Layout/Mode Actions</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Command</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">switch_forward</code></td><td class="px-4 py-2 border-t border-gray-700">Next keyboard layout</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">switch_backward</code></td><td class="px-4 py-2 border-t border-gray-700">Previous keyboard layout</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">switch_clipboard</code></td><td class="px-4 py-2 border-t border-gray-700">Open clipboard history</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">switch_emoji</code></td><td class="px-4 py-2 border-t border-gray-700">Open emoji keyboard</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">switch_numeric</code></td><td class="px-4 py-2 border-t border-gray-700">Switch to number pad</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Special Actions</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Command</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">trackpoint_mode</code></td><td class="px-4 py-2 border-t border-gray-700">Enter TrackPoint navigation mode</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_delete_mode</code></td><td class="px-4 py-2 border-t border-gray-700">Enter selection-delete mode</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">voice_typing_key</code></td><td class="px-4 py-2 border-t border-gray-700">Start voice input</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">config</code></td><td class="px-4 py-2 border-t border-gray-700">Open settings</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips for Customization</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Search keywords</strong>: Try "select", "delete", "cursor" to find related commands</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Preview</strong>: Command descriptions explain what each action does</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Popular choices</strong>: <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">copy</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">paste</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">home</code>, <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">end</code> are commonly assigned</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Power user</strong>: <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">trackpoint_mode</code> and <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">selection_delete_mode</code> enable advanced navigation</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">The command palette shows 100+ commands. Use search to quickly find what you need.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I access the command palette directly?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: No, the command palette only appears when assigning actions in Per-Key Customization. It's a selection tool, not a standalone command runner.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I run commands without assigning them?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Most commands can be run via their assigned keys or default key combinations. For example, Ctrl+C for copy, Ctrl+V for paste.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: How do I know what commands are available?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Open Per-Key Customization, select any key, and browse the full list in the command palette.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="per-key-actions.html" class="text-green-400 hover:underline">Per-Key Actions</a> - Customize key swipe actions</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../clipboard/shortcuts.html" class="text-green-400 hover:underline">Shortcuts</a> - Keyboard shortcuts</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="extra-keys.html" class="text-green-400 hover:underline">Extra Keys</a> - Add function key row</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="customization/themes.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Themes</span>
+            </a>
+            <a href="customization/timestamp-keys.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Timestamp Keys</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

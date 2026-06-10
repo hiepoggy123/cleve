@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Per-Key Actions - CleverKeys User Guide</title>
+    <meta name="description" content="Customize swipe actions per key">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Customization" class="hover:text-ck-green">Customization</a>
+            <span>/</span>
+            <span class="text-gray-300">Per-Key Actions</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #f59e0b20; color: #f59e0b">Customization</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Per-Key Actions</h1>
+        <p class="text-xl text-gray-400">Customize swipe actions per key</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Per-Key Actions</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Customize what each swipe direction does</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Customization</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: advanced</p>
+<p class="mb-4 text-gray-300 leading-relaxed">related_spec: ../specs/customization/per-key-actions-spec.md</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Per-Key Actions</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Customize what happens when you swipe in each of the 8 directions from any key. Assign characters, actions, or macros to each swipe direction.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Customize subkey actions per direction</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Activities > Per-Key Customization</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Directions</strong></td><td class="px-4 py-2 border-t border-gray-700">8 directions (N, NE, E, SE, S, SW, W, NW)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Understanding Subkeys</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Each key has up to 8 subkey positions:</p>
+
+<pre class="bg-ck-dark p-4 rounded-lg overflow-x-auto mb-4"><code class="language-text">NW   N   NE
+<p class="mb-4 text-gray-300 leading-relaxed">      \  |  /</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   W -- KEY -- E</p>
+<p class="mb-4 text-gray-300 leading-relaxed">      /  |  \</p>
+<p class="mb-4 text-gray-300 leading-relaxed">    SW   S   SE</code></pre></p>
+
+<p class="mb-4 text-gray-300 leading-relaxed">When you short swipe in a direction, the corresponding subkey is activated.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">How to Customize</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 1: Open Customization</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open CleverKeys Settings (gear icon)</li>
+<li class="ml-4 text-gray-300">2. Navigate to <strong class="text-white">Activities</strong> section</li>
+<li class="ml-4 text-gray-300">3. Tap <strong class="text-white">Per-Key Customization</strong></li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 2: Select a Key</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. The keyboard layout is displayed</li>
+<li class="ml-4 text-gray-300">2. <strong class="text-white">Tap the key</strong> you want to customize</li>
+<li class="ml-4 text-gray-300">3. A detail panel opens showing all 8 directions</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 3: Edit a Direction</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Tap the direction you want to change</li>
+<li class="ml-4 text-gray-300">2. Choose from:</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - <strong class="text-white">Character</strong>: Type a letter, symbol, or emoji</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - <strong class="text-white">Action</strong>: Select from built-in actions</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - <strong class="text-white">Remove</strong>: Clear the subkey</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 4: Save Changes</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Changes are saved automatically. Tap <strong class="text-white">Done</strong> to return.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Available Actions</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Action</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Characters</strong></td><td class="px-4 py-2 border-t border-gray-700">Any Unicode character</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Delete Word</strong></td><td class="px-4 py-2 border-t border-gray-700">Delete previous word</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Cursor Left/Right</strong></td><td class="px-4 py-2 border-t border-gray-700">Move cursor</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Home/End</strong></td><td class="px-4 py-2 border-t border-gray-700">Jump to line start/end</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Tab</strong></td><td class="px-4 py-2 border-t border-gray-700">Insert tab character</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Escape</strong></td><td class="px-4 py-2 border-t border-gray-700">Send escape key</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Undo/Redo</strong></td><td class="px-4 py-2 border-t border-gray-700">Undo or redo action</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Copy/Cut/Paste</strong></td><td class="px-4 py-2 border-t border-gray-700">Clipboard operations</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Select All</strong></td><td class="px-4 py-2 border-t border-gray-700">Select all text</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Customizations</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Adding Frequently Used Symbols</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Place symbols you use often in easy-to-reach positions:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Key</td><td class="px-4 py-2 border-t border-gray-700">Direction</td><td class="px-4 py-2 border-t border-gray-700">Suggestion</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">e</strong></td><td class="px-4 py-2 border-t border-gray-700">South</td><td class="px-4 py-2 border-t border-gray-700">@ (email)</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">s</strong></td><td class="px-4 py-2 border-t border-gray-700">East</td><td class="px-4 py-2 border-t border-gray-700">$ (currency)</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">p</strong></td><td class="px-4 py-2 border-t border-gray-700">North</td><td class="px-4 py-2 border-t border-gray-700">% (percent)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Programming Shortcuts</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">For developers:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Key</td><td class="px-4 py-2 border-t border-gray-700">Direction</td><td class="px-4 py-2 border-t border-gray-700">Action</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Shift</strong></td><td class="px-4 py-2 border-t border-gray-700">NW</td><td class="px-4 py-2 border-t border-gray-700">Escape</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Shift</strong></td><td class="px-4 py-2 border-t border-gray-700">SE</td><td class="px-4 py-2 border-t border-gray-700">Tab</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">a</strong></td><td class="px-4 py-2 border-t border-gray-700">NW</td><td class="px-4 py-2 border-t border-gray-700">Home</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">a</strong></td><td class="px-4 py-2 border-t border-gray-700">SW</td><td class="px-4 py-2 border-t border-gray-700">End</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Navigation Optimization</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Put navigation actions where you can reach them:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Key</td><td class="px-4 py-2 border-t border-gray-700">Direction</td><td class="px-4 py-2 border-t border-gray-700">Action</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Backspace</strong></td><td class="px-4 py-2 border-t border-gray-700">West</td><td class="px-4 py-2 border-t border-gray-700">Delete Word</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Space</strong></td><td class="px-4 py-2 border-t border-gray-700">Subkeys</td><td class="px-4 py-2 border-t border-gray-700">Cursor movement</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips and Tricks</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Start small</strong>: Customize a few keys first, learn them, then add more</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Muscle memory</strong>: Keep frequently used actions in consistent positions</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Backup</strong>: Export your customizations before making major changes</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Per-layout</strong>: Customizations can be layout-specific</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">Consider your typing patterns. If you frequently type certain symbols, put them in easy-to-swipe positions.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Resetting Customizations</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">To restore defaults:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Go to <strong class="text-white">Settings > Activities > Backup & Restore</strong></li>
+<li class="ml-4 text-gray-300">2. Use the restore function to reset to default configuration</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Settings</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Location</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Per-Key Customization</strong></td><td class="px-4 py-2 border-t border-gray-700">Activities section</td><td class="px-4 py-2 border-t border-gray-700">Visual subkey editor</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Backup & Restore</strong></td><td class="px-4 py-2 border-t border-gray-700">Activities section</td><td class="px-4 py-2 border-t border-gray-700">Save/restore customizations</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="../gestures/short-swipes.html" class="text-green-400 hover:underline">Short Swipes</a> - How to trigger subkeys</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../troubleshooting/backup-restore.html" class="text-green-400 hover:underline">Backup & Restore</a> - Save customizations</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="extra-keys.html" class="text-green-400 hover:underline">Extra Keys</a> - Add custom keys to bottom row</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Technical Details</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">See <a href="../specs/customization/per-key-actions-spec.html" class="text-green-400 hover:underline">Per-Key Actions Technical Specification</a>.</p>
+
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="gestures/circle-gestures.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Circle Gestures</span>
+            </a>
+            <a href="customization/extra-keys.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Extra Keys</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

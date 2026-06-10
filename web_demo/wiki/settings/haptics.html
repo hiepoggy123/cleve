@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haptics & Sound - CleverKeys User Guide</title>
+    <meta name="description" content="Vibration and key press sounds">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Settings" class="hover:text-ck-green">Settings</a>
+            <span>/</span>
+            <span class="text-gray-300">Haptics & Sound</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #6b728020; color: #6b7280">Settings</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Haptics & Sound</h1>
+        <p class="text-xl text-gray-400">Vibration and key press sounds</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Haptics Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Configure vibration feedback for keyboard actions</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: beginner</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Haptics Settings</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Configure vibration feedback for key presses, gestures, and special events.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Control vibration feedback</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Scroll to <strong class="text-white">Accessibility</strong> section in Settings</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Events</strong></td><td class="px-4 py-2 border-t border-gray-700">5 configurable haptic events</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Settings Location</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">In <strong class="text-white">Settings</strong>, scroll to the <strong class="text-white">Accessibility</strong> section (collapsible). All haptic/vibration settings are here.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Master Settings</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Vibration Toggle</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Effect</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">On</strong></td><td class="px-4 py-2 border-t border-gray-700">Haptics enabled for selected events</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Off</strong></td><td class="px-4 py-2 border-t border-gray-700">All haptics disabled</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Vibration Duration</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Control vibration intensity via duration:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Duration</td><td class="px-4 py-2 border-t border-gray-700">Feel</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Short</strong></td><td class="px-4 py-2 border-t border-gray-700">Subtle, brief feedback</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Medium</strong></td><td class="px-4 py-2 border-t border-gray-700">Noticeable tactile response</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Long</strong></td><td class="px-4 py-2 border-t border-gray-700">Pronounced, strong vibration</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Per-Event Haptics</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">CleverKeys supports 5 specific haptic events:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Event</td><td class="px-4 py-2 border-t border-gray-700">Default</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Key Press</strong></td><td class="px-4 py-2 border-t border-gray-700">On</td><td class="px-4 py-2 border-t border-gray-700">Vibrate on every key tap</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Suggestion Tap</strong></td><td class="px-4 py-2 border-t border-gray-700">On</td><td class="px-4 py-2 border-t border-gray-700">Vibrate when tapping a suggestion</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">TrackPoint Activate</strong></td><td class="px-4 py-2 border-t border-gray-700">On</td><td class="px-4 py-2 border-t border-gray-700">Vibrate when entering navigation mode</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Long Press</strong></td><td class="px-4 py-2 border-t border-gray-700">On</td><td class="px-4 py-2 border-t border-gray-700">Vibrate when long-press detected</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Swipe Complete</strong></td><td class="px-4 py-2 border-t border-gray-700">Off</td><td class="px-4 py-2 border-t border-gray-700">Vibrate when swipe word completes</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!NOTE]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">Swipe Complete is disabled by default as it can be distracting during rapid typing.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Configuring Haptics</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Enable/Disable Individual Events</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Each of the 5 events can be toggled independently:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open <strong class="text-white">Settings</strong></li>
+<li class="ml-4 text-gray-300">2. Scroll to <strong class="text-white">Accessibility</strong> section</li>
+<li class="ml-4 text-gray-300">3. Toggle individual event switches</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Adjust Intensity</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. In <strong class="text-white">Accessibility</strong> section</li>
+<li class="ml-4 text-gray-300">2. Find <strong class="text-white">Vibration Duration</strong> slider</li>
+<li class="ml-4 text-gray-300">3. Adjust for desired intensity</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Recommended Settings</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">For Learning Gestures</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Event</td><td class="px-4 py-2 border-t border-gray-700">Setting</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Key Press</td><td class="px-4 py-2 border-t border-gray-700">On</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">Long Press</td><td class="px-4 py-2 border-t border-gray-700">On</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">TrackPoint Activate</td><td class="px-4 py-2 border-t border-gray-700">On</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Swipe Complete</td><td class="px-4 py-2 border-t border-gray-700">On</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed">Strong feedback helps confirm when gestures are recognized.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">For Silent/Battery Saving</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Event</td><td class="px-4 py-2 border-t border-gray-700">Setting</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">All events</td><td class="px-4 py-2 border-t border-gray-700">Off</td></tr></p>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed">Or reduce duration to minimum.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">For Swipe Typing Focus</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Event</td><td class="px-4 py-2 border-t border-gray-700">Setting</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Key Press</td><td class="px-4 py-2 border-t border-gray-700">Off</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">Suggestion Tap</td><td class="px-4 py-2 border-t border-gray-700">On</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Swipe Complete</td><td class="px-4 py-2 border-t border-gray-700">On</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed">Feedback on completions, not every key.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips and Tricks</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">TrackPoint feedback</strong>: Keep enabled to feel when navigation mode activates</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Battery</strong>: Haptics use minimal power; intensity makes little difference</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Silent mode</strong>: System silent mode doesn't affect keyboard haptics</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">No vibration?</strong>: Check Android system settings for vibration permissions</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">Enable TrackPoint Activate haptic to clearly feel when you enter navigation mode.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Why don't I feel any haptics?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Check these in order:</p>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Master Vibration toggle is On</li>
+<li class="ml-4 text-gray-300">2. Specific event toggle is On</li>
+<li class="ml-4 text-gray-300">3. Duration is not at minimum</li>
+<li class="ml-4 text-gray-300">4. Android system haptics/vibration is enabled</li>
+<li class="ml-4 text-gray-300">5. Device vibration motor is working (test in another app)</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Do haptics drain battery?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Minimally. The vibration motor uses very little power compared to the screen.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I have different haptics per key?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: No, haptic settings apply to event types (all key presses, all predictions, etc.), not individual keys.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Why is Swipe Complete off by default?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: It vibrates after every swipe word, which many users find distracting during continuous typing. Enable it if you want confirmation that swipes are recognized.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="appearance.html" class="text-green-400 hover:underline">Appearance</a> - Visual settings</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../gestures/trackpoint-mode.html" class="text-green-400 hover:underline">TrackPoint Mode</a> - Navigation mode</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../typing/swipe-typing.html" class="text-green-400 hover:underline">Swipe Typing</a> - Gesture typing</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="settings/input-behavior.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Input Behavior</span>
+            </a>
+            <a href="settings/neural-settings.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Neural Settings</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

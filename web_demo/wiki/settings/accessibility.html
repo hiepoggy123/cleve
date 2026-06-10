@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility - CleverKeys User Guide</title>
+    <meta name="description" content="Switch Access, TalkBack, large keys">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Settings" class="hover:text-ck-green">Settings</a>
+            <span>/</span>
+            <span class="text-gray-300">Accessibility</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #6b728020; color: #6b7280">Settings</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Accessibility</h1>
+        <p class="text-xl text-gray-400">Switch Access, TalkBack, large keys</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Accessibility Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Haptic feedback and audio settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: beginner</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Accessibility Settings</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">CleverKeys includes haptic feedback and audio settings in the Accessibility section.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Haptic feedback and sound settings</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Accessibility</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Features</strong></td><td class="px-4 py-2 border-t border-gray-700">Vibration, haptic triggers, keypress sound</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Vibration Settings</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Master Vibration Toggle</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Enable/disable all haptic feedback:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Effect</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Enabled</strong></td><td class="px-4 py-2 border-t border-gray-700">Vibration feedback active</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Disabled</strong></td><td class="px-4 py-2 border-t border-gray-700">No vibration feedback</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Vibration Duration</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Custom vibration length in milliseconds:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Range</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">1-100ms</strong></td><td class="px-4 py-2 border-t border-gray-700">Adjust duration of haptic feedback</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Default: 20ms</strong></td><td class="px-4 py-2 border-t border-gray-700">Brief, subtle feedback</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Haptic Feedback Triggers</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Configure which actions trigger haptic feedback:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Trigger</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Key Press</strong></td><td class="px-4 py-2 border-t border-gray-700">Vibrate on each key tap</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Suggestion Tap</strong></td><td class="px-4 py-2 border-t border-gray-700">Vibrate when selecting a prediction</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">TrackPoint</strong></td><td class="px-4 py-2 border-t border-gray-700">Vibrate when entering trackpoint mode</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Long Press</strong></td><td class="px-4 py-2 border-t border-gray-700">Vibrate on long press actions</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Swipe Complete</strong></td><td class="px-4 py-2 border-t border-gray-700">Vibrate when swipe word is inserted</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed">Each trigger can be independently enabled/disabled.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Sound Settings</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Sound on Keypress</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Play audio feedback on key taps:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Effect</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Enabled</strong></td><td class="px-4 py-2 border-t border-gray-700">Click sound on each key</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Disabled</strong></td><td class="px-4 py-2 border-t border-gray-700">Silent typing</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Battery conscious</strong>: Disable vibration to save battery</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Silent typing</strong>: Disable both vibration and sound</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Subtle feedback</strong>: Use short vibration duration (10-15ms)</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Strong feedback</strong>: Use longer vibration duration (40-50ms)</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">System Integration</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">CleverKeys respects Android's system-wide accessibility settings where applicable. For additional accessibility features like TalkBack screen reader support, configure them in Android's system accessibility settings.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="appearance.html" class="text-green-400 hover:underline">Appearance</a> - Keyboard height and visual settings</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="input-behavior.html" class="text-green-400 hover:underline">Input Behavior</a> - Touch and gesture settings</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="settings/privacy.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Privacy</span>
+            </a>
+            <a href="settings/password-fields.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Password Field Mode</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

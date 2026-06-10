@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extra Keys - CleverKeys User Guide</title>
+    <meta name="description" content="Add function keys, arrows, Tab, Ctrl">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Customization" class="hover:text-ck-green">Customization</a>
+            <span>/</span>
+            <span class="text-gray-300">Extra Keys</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #f59e0b20; color: #f59e0b">Customization</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Extra Keys</h1>
+        <p class="text-xl text-gray-400">Add function keys, arrows, Tab, Ctrl</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Extra Keys</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Add custom keys to the bottom row</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Customization</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: intermediate</p>
+<p class="mb-4 text-gray-300 leading-relaxed">related_spec: ../specs/customization/extra-keys-spec.md</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Extra Keys</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Add custom keys to the bottom row of your keyboard for quick access to frequently used actions, characters, or modifiers.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Add custom keys to bottom row</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Activities > Extra Keys</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Position</strong></td><td class="px-4 py-2 border-t border-gray-700">Left or right of spacebar</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">What Are Extra Keys?</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Extra keys appear on the bottom row alongside the spacebar. They provide quick access to:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Modifier keys (Ctrl, Alt, Meta)</li>
+<li class="ml-4 text-gray-300">&#8226; Action keys (Tab, Escape)</li>
+<li class="ml-4 text-gray-300">&#8226; Custom characters</li>
+<li class="ml-4 text-gray-300">&#8226; Navigation keys</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">How to Add Extra Keys</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 1: Open Settings</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open CleverKeys Settings (gear icon)</li>
+<li class="ml-4 text-gray-300">2. Navigate to <strong class="text-white">Activities</strong> section</li>
+<li class="ml-4 text-gray-300">3. Tap <strong class="text-white">Extra Keys</strong></li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 2: Select Position</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Choose where to add keys:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Left of spacebar</strong>: Keys appear on the left</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Right of spacebar</strong>: Keys appear on the right</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 3: Choose Keys</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Available extra keys:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Key</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Ctrl</strong></td><td class="px-4 py-2 border-t border-gray-700">Control modifier</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Alt</strong></td><td class="px-4 py-2 border-t border-gray-700">Alt modifier</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Meta</strong></td><td class="px-4 py-2 border-t border-gray-700">Meta/Windows key</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Tab</strong></td><td class="px-4 py-2 border-t border-gray-700">Tab key</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Escape</strong></td><td class="px-4 py-2 border-t border-gray-700">Escape key</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Arrows</strong></td><td class="px-4 py-2 border-t border-gray-700">Navigation arrows</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Fn</strong></td><td class="px-4 py-2 border-t border-gray-700">Function key</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 4: Review Selection</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Enabled keys appear on the bottom row. The order follows a built-in layout.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Use Cases</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Terminal/SSH Users</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Add Ctrl, Alt, Tab, and Escape for terminal commands:</p>
+
+<pre class="bg-ck-dark p-4 rounded-lg overflow-x-auto mb-4"><code class="language-text">[Ctrl] [Alt] [Tab] [Space] [Esc] [Arrows]</code></pre>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Developers</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Add keys for code editing shortcuts:</p>
+
+<pre class="bg-ck-dark p-4 rounded-lg overflow-x-auto mb-4"><code class="language-text">[Tab] [Ctrl] [Space] [Fn]</code></pre>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Power Users</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Full modifier access:</p>
+
+<pre class="bg-ck-dark p-4 rounded-lg overflow-x-auto mb-4"><code class="language-text">[Esc] [Ctrl] [Alt] [Meta] [Space] [Tab]</code></pre>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips and Tricks</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Fewer is better</strong>: Too many extra keys shrink the spacebar</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Modifiers first</strong>: Put modifiers you hold (Ctrl, Alt) on edges</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Action keys center</strong>: Put tap keys (Tab, Esc) near spacebar</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Test reach</strong>: Ensure you can reach keys comfortably</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">Start with just Ctrl and Tab. Add more only if you need them.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Extra Keys vs Subkeys</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Feature</td><td class="px-4 py-2 border-t border-gray-700">Extra Keys</td><td class="px-4 py-2 border-t border-gray-700">Subkeys</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Direct tap</td><td class="px-4 py-2 border-t border-gray-700">Swipe gesture</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Position</strong></td><td class="px-4 py-2 border-t border-gray-700">Bottom row</td><td class="px-4 py-2 border-t border-gray-700">On any key</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Visibility</strong></td><td class="px-4 py-2 border-t border-gray-700">Always visible</td><td class="px-4 py-2 border-t border-gray-700">Hidden until swipe</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Best for</strong></td><td class="px-4 py-2 border-t border-gray-700">Modifiers</td><td class="px-4 py-2 border-t border-gray-700">Characters</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Keyboard Layout Impact</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Extra keys affect bottom row layout:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Extra Keys</td><td class="px-4 py-2 border-t border-gray-700">Spacebar Width</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">0</strong></td><td class="px-4 py-2 border-t border-gray-700">Maximum</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">1-2</strong></td><td class="px-4 py-2 border-t border-gray-700">Slightly reduced</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">3-4</strong></td><td class="px-4 py-2 border-t border-gray-700">Moderately reduced</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">5+</strong></td><td class="px-4 py-2 border-t border-gray-700">Significantly reduced</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Settings</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Location</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Extra Keys</strong></td><td class="px-4 py-2 border-t border-gray-700">Activities section</td><td class="px-4 py-2 border-t border-gray-700">Toggle keys on/off</td></tr></p>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I add custom characters as extra keys?</h3>
+<p class="mb-4 text-gray-300 leading-relaxed">A: Currently, extra keys are limited to predefined actions. For custom characters, use subkey customization.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Why is my spacebar so small?</h3>
+<p class="mb-4 text-gray-300 leading-relaxed">A: Too many extra keys. Remove some to restore spacebar size.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Do extra keys have subkeys?</h3>
+<p class="mb-4 text-gray-300 leading-relaxed">A: Most extra keys have subkeys. Short swipe in a direction to access them.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="per-key-actions.html" class="text-green-400 hover:underline">Per-Key Actions</a> - Customize subkeys</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../gestures/short-swipes.html" class="text-green-400 hover:underline">Short Swipes</a> - Access extra key subkeys</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../troubleshooting/backup-restore.html" class="text-green-400 hover:underline">Profiles</a> - Save extra key configuration</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Technical Details</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">See <a href="../specs/customization/extra-keys-spec.html" class="text-green-400 hover:underline">Extra Keys Technical Specification</a>.</p>
+
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="customization/per-key-actions.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Per-Key Actions</span>
+            </a>
+            <a href="customization/themes.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Themes</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

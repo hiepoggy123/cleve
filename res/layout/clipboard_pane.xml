@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="?attr/colorKeyboard"
+    android:hardwareAccelerated="false"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <!-- Combined row: Tabs + Search + Close -->
+  <LinearLayout
+      android:id="@+id/clipboard_search_bar"
+      android:layout_width="match_parent"
+      android:layout_height="40dp"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:paddingStart="4dp"
+      android:paddingEnd="4dp"
+      android:background="?attr/colorKey">
+
+    <!-- History tab (default, highlighted) — vector icon replaces emoji -->
+    <ImageView
+        android:id="@+id/tab_history"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_tab_history"
+        android:tint="?attr/colorLabel"
+        android:scaleType="centerInside"
+        android:padding="6dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Recent clipboard history"/>
+
+    <!-- Pinned tab -->
+    <ImageView
+        android:id="@+id/tab_pinned"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_tab_pinned"
+        android:tint="?attr/colorLabel"
+        android:scaleType="centerInside"
+        android:padding="6dp"
+        android:alpha="0.5"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Pinned items"/>
+
+    <!-- Todos tab -->
+    <ImageView
+        android:id="@+id/tab_todos"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_tab_todos"
+        android:tint="?attr/colorLabel"
+        android:scaleType="centerInside"
+        android:padding="6dp"
+        android:alpha="0.5"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="To-do items"/>
+
+    <!-- Search field (fills remaining space) -->
+    <TextView
+        android:id="@+id/clipboard_search"
+        android:hint="Search..."
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_weight="1"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center_vertical"
+        android:textSize="14sp"
+        android:textColor="?attr/colorLabel"
+        android:textColorHint="?attr/colorSubLabel"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <!-- Search clear button (hidden until user types) -->
+    <ImageButton
+        android:id="@+id/clipboard_search_clear"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:tint="?attr/colorLabel"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Clear search"
+        android:scaleType="centerInside"
+        android:padding="4dp"
+        android:visibility="gone"/>
+
+    <!-- Regex toggle button (VSCode-style .* toggle, shown when search is active) -->
+    <TextView
+        android:id="@+id/clipboard_regex_toggle"
+        android:text=".*"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:typeface="monospace"
+        android:textColor="?attr/colorLabel"
+        android:alpha="0.4"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Toggle regex search"
+        android:visibility="gone"/>
+
+    <!-- Date filter icon -->
+    <ImageButton
+        android:id="@+id/clipboard_date_filter"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@android:drawable/ic_menu_sort_by_size"
+        android:tint="?attr/colorLabel"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Date filter"
+        android:scaleType="centerInside"
+        android:padding="4dp"/>
+
+    <!-- Close/dismiss clipboard pane button -->
+    <ImageButton
+        android:id="@+id/clipboard_close_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@android:drawable/arrow_down_float"
+        android:tint="?attr/colorLabel"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Close clipboard"
+        android:scaleType="centerInside"
+        android:padding="4dp"/>
+
+  </LinearLayout>
+
+  <!-- Divider below header -->
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="?attr/clipboard_divider_color"/>
+
+  <!-- Content area: entry list (hidden when tag panel is active) -->
+  <ScrollView
+      android:id="@+id/clipboard_content_scroll"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1">
+
+    <tribixbite.cleverkeys.ClipboardHistoryView
+        android:id="@+id/clipboard_history_view"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="?attr/clipboard_divider_color"
+        android:dividerHeight="?attr/clipboard_divider_height"/>
+
+  </ScrollView>
+
+  <!-- Inline tag panel: replaces entry list when managing tags for an entry.
+       Mutually exclusive with clipboard_content_scroll — only one VISIBLE at a time.
+       Populated programmatically by ClipboardTagPanel. -->
+  <ScrollView
+      android:id="@+id/clipboard_tag_panel"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:visibility="gone"
+      android:background="?attr/colorKeyboard">
+
+    <LinearLayout
+        android:id="@+id/clipboard_tag_panel_content"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"/>
+
+  </ScrollView>
+
+  <!-- Pagination bar (hidden when ≤100 items) -->
+  <LinearLayout
+      android:id="@+id/clipboard_pagination_bar"
+      android:layout_width="match_parent"
+      android:layout_height="32dp"
+      android:orientation="horizontal"
+      android:gravity="center"
+      android:background="?attr/colorKey"
+      android:visibility="gone">
+
+    <TextView
+        android:id="@+id/clipboard_page_prev"
+        android:text="◀"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="?attr/colorLabel"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"/>
+
+    <TextView
+        android:id="@+id/clipboard_page_info"
+        android:text="1 / 1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="12sp"
+        android:textColor="?attr/colorSubLabel"/>
+
+    <TextView
+        android:id="@+id/clipboard_page_next"
+        android:text="▶"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="?attr/colorLabel"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?android:attr/selectableItemBackground"/>
+
+  </LinearLayout>
+
+</LinearLayout>

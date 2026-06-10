@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Behavior - CleverKeys User Guide</title>
+    <meta name="description" content="Autocorrect, autocaps, double-space">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Settings" class="hover:text-ck-green">Settings</a>
+            <span>/</span>
+            <span class="text-gray-300">Input Behavior</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #6b728020; color: #6b7280">Settings</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P1</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Input Behavior</h1>
+        <p class="text-xl text-gray-400">Autocorrect, autocaps, double-space</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Input Behavior Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Configure typing behavior and text processing</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: intermediate</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Input Behavior Settings</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Configure how CleverKeys processes your input, including capitalization, punctuation, and gesture behavior.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Control typing behavior</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Input (and related sections)</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Options</strong></td><td class="px-4 py-2 border-t border-gray-700">Auto-cap, double-space, smart punct, gestures</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Word Prediction Section</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Auto-Space After Suggestion</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Automatically add a space after tapping a suggestion:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Result</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Enabled</strong></td><td class="px-4 py-2 border-t border-gray-700">"hello" → "hello " (space added)</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Disabled</strong></td><td class="px-4 py-2 border-t border-gray-700">"hello" → "hello" (no space)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Capitalize I Words</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Automatically capitalize "I" and its contractions:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Words Affected</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">I, I'm, I'll, I'd, I've</td></tr></p>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Input Section</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Autocapitalization</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Automatically capitalize letters after sentence-ending punctuation:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Behavior</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Enabled</strong></td><td class="px-4 py-2 border-t border-gray-700">Capitalize after . ! ?</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Disabled</strong></td><td class="px-4 py-2 border-t border-gray-700">Never auto-capitalize</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Smart Punctuation</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Automatic punctuation formatting:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Feature</td><td class="px-4 py-2 border-t border-gray-700">Example</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Auto-space after punct</strong></td><td class="px-4 py-2 border-t border-gray-700">"hello," → "hello, "</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Remove space before punct</strong></td><td class="px-4 py-2 border-t border-gray-700">"hello ," → "hello,"</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Long Press Timeout</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Time before long press activates:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Duration</td><td class="px-4 py-2 border-t border-gray-700">Use Case</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Shorter</strong></td><td class="px-4 py-2 border-t border-gray-700">Fast access to long-press actions</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Longer</strong></td><td class="px-4 py-2 border-t border-gray-700">Avoid accidental activation</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Long Press Interval</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Repeat rate when holding a key:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Effect</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Shorter</strong></td><td class="px-4 py-2 border-t border-gray-700">Faster key repeating</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Longer</strong></td><td class="px-4 py-2 border-t border-gray-700">Slower key repeating</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Double Tap Shift for Caps Lock</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Double-tap shift key to enable caps lock mode.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Gesture Tuning Section</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Double-Space to Period</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Insert period and space when tapping space twice:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Result</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Enabled</strong></td><td class="px-4 py-2 border-t border-gray-700">"hello  " → "hello. "</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Disabled</strong></td><td class="px-4 py-2 border-t border-gray-700">"hello  " → "hello  "</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Double-Space Timing</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Adjust the timing window for double-space detection.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Swipe Distance Threshold</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">How far to swipe before recognizing a short swipe gesture:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Level</td><td class="px-4 py-2 border-t border-gray-700">Use Case</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Lower</strong></td><td class="px-4 py-2 border-t border-gray-700">More sensitive, easier activation</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Higher</strong></td><td class="px-4 py-2 border-t border-gray-700">Requires more intentional swipes</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips and Tricks</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Fast typing</strong>: Lower thresholds and shorter timeouts</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Precision</strong>: Higher thresholds, longer timeouts</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Error-prone</strong>: Raise swipe distance threshold</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">If you're getting accidental short swipes, increase the swipe distance threshold.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Why isn't autocapitalization working?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Check if it's enabled in Settings > Input section. Some apps may override keyboard behavior.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: How do I disable double-space period?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Settings > Gesture Tuning > Double-Space to Period > Off.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="../gestures/short-swipes.html" class="text-green-400 hover:underline">Short Swipes</a> - Gesture configuration</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="accessibility.html" class="text-green-400 hover:underline">Accessibility</a> - Haptic feedback settings</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="settings/appearance.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Appearance</span>
+            </a>
+            <a href="settings/haptics.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Haptics & Sound</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

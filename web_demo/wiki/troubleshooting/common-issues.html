@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Common Issues - CleverKeys User Guide</title>
+    <meta name="description" content="FAQ and quick fixes">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Troubleshooting" class="hover:text-ck-green">Troubleshooting</a>
+            <span>/</span>
+            <span class="text-gray-300">Common Issues</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #ef444420; color: #ef4444">Troubleshooting</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P2</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Common Issues</h1>
+        <p class="text-xl text-gray-400">FAQ and quick fixes</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Common Issues</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Solutions for frequently encountered problems</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Troubleshooting</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: beginner</p>
+<p class="mb-4 text-gray-300 leading-relaxed">related_spec: ../specs/troubleshooting/common-issues-spec.md</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Common Issues</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Solutions for the most frequently encountered problems with CleverKeys.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">Issue Type</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Common Causes</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Keyboard not showing</strong></td><td class="px-4 py-2 border-t border-gray-700">Not enabled in system settings</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Typing issues</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings misconfiguration</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Gesture problems</strong></td><td class="px-4 py-2 border-t border-gray-700">Threshold settings</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">App compatibility</strong></td><td class="px-4 py-2 border-t border-gray-700">App-specific behavior</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Keyboard Not Appearing</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard doesn't show when tapping text field</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Check if enabled</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Go to Android Settings > System > Languages & input</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Tap "On-screen keyboard" or "Virtual keyboard"</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Ensure CleverKeys is enabled</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Set as default</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > System > Languages & input</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Tap "Default keyboard"</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Select CleverKeys</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Force stop and restart</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Apps > CleverKeys</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Tap "Force Stop"</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Try again</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard shows briefly then disappears</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Clear app cache:</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Apps > CleverKeys > Storage</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Tap "Clear Cache"</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. Check for conflicts:</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Temporarily disable other keyboards</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Disable accessibility services one by one</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Typing Issues</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Wrong characters appear</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Possible causes:</strong></p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Cause</td><td class="px-4 py-2 border-t border-gray-700">Solution</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Wrong layout</td><td class="px-4 py-2 border-t border-gray-700">Check active layout in Layout Manager</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">Autocorrect</td><td class="px-4 py-2 border-t border-gray-700">Adjust autocorrect in Word Prediction section</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Language mismatch</td><td class="px-4 py-2 border-t border-gray-700">Check language configuration</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Autocorrect making wrong corrections</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Adjust autocorrect settings</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Word Prediction section (expand it)</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Toggle Autocorrect on/off or adjust Min Word Length</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Add words to dictionary</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - When corrected wrongly, tap suggestion bar</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Select the word you intended</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - It will be learned</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Disable for certain apps</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Some apps (code editors) should have autocorrect off</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: No predictions showing</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Check if predictions enabled:</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Word Prediction section</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Ensure <strong class="text-white">Word Predictions</strong> is enabled</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. Check language support:</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Predictions require a dictionary for your language</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - English is bundled by default</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Gesture Issues</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Short swipes not working</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Adjust swipe distance</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Gesture Tuning section</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Adjust <strong class="text-white">Short Gesture Min Distance</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Check if enabled</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Gesture Tuning > Short Gestures toggle</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Practice technique</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Swipe must be from key center, not edge</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Movement should be quick, not slow drag</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: TrackPoint mode won't activate</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Check gesture</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Long-press the nav key (between spacebar and enter)</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Wait for haptic feedback</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Adjust threshold</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Input section > Long Press Timeout</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Wait for feedback</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Haptic vibration indicates activation</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Enable haptics in Accessibility section</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Circle gestures not recognized</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Circle must be complete</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Draw full circle, not arc</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - End near start point</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Adjust sensitivity</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Gesture Tuning > Circle Sensitivity</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Practice size</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Circle should span 2-3 keys</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Too small or too large won't register</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">App Compatibility</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard behaves differently in certain apps</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Explanation:</strong></p>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Some apps override keyboard behavior:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">App Type</td><td class="px-4 py-2 border-t border-gray-700">Common Issues</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Terminal</strong></td><td class="px-4 py-2 border-t border-gray-700">May need special key settings</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Games</strong></td><td class="px-4 py-2 border-t border-gray-700">May block keyboard</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Password managers</strong></td><td class="px-4 py-2 border-t border-gray-700">May show own keyboard</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Some social apps</strong></td><td class="px-4 py-2 border-t border-gray-700">Custom input handling</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Add extra keys for terminals</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Activities > Extra Keys</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Add Ctrl, Tab, Escape</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Check app permissions</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Some apps require explicit keyboard permission</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard keeps getting deselected</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Check Android battery optimization:</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Apps > CleverKeys > Battery</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Select "Don't optimize" or "Unrestricted"</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. Check app cleaner:</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - If using RAM cleaner, whitelist CleverKeys</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Performance on Older Devices</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard crashes when swipe typing</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Affected:</strong> Older devices (pre-2018), devices with limited RAM, or slow processors</p>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Symptoms:</strong></p>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Keyboard crashes immediately when trying to swipe type</li>
+<li class="ml-4 text-gray-300">&#8226; App force closes during gesture input</li>
+<li class="ml-4 text-gray-300">&#8226; Works fine with tap typing, crashes with swipe</li>
+</ul>
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solution:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Disable neural swipe typing</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Open CleverKeys Settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Go to <strong class="text-white">Neural Prediction</strong> section</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Disable <strong class="text-white">Swipe Typing</strong></p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Use tap typing instead</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Why this happens</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Neural swipe prediction uses an ONNX machine learning model</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Older devices may lack sufficient memory or CPU power</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - The model requires real-time inference during gestures</p>
+
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!NOTE]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">CleverKeys' neural prediction is optimized for modern devices. If your device is from 2017 or earlier, disabling swipe typing provides a stable experience while retaining all other features.</blockquote>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard is slow or laggy</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Reduce prediction beam width</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Neural Prediction > Beam Width</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Try 3-4 instead of 6+</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Disable haptic feedback</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Accessibility section</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Disable Vibration</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Haptics can cause lag on some devices</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Clear app cache</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Android Settings > Apps > CleverKeys > Storage</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Tap "Clear Cache"</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Android Version-Specific Issues</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Navigation bar covers keyboard (Android 15)</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Status:</strong> Fixed in v1.2.8</p>
+
+<p class="mb-4 text-gray-300 leading-relaxed">If you see this issue, update to v1.2.8 or later. The keyboard now properly handles Android 15's edge-to-edge display mode.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: White navigation buttons (Android 8-9)</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Status:</strong> Fixed in v1.2.8</p>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Update to v1.2.8 or later. Navigation button colors now properly adapt to theme.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Monet theme crash on tablets</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Status:</strong> Fixed in v1.2.8</p>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Tablets running Android 12+ with limited color extraction now fall back gracefully to default themes.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Visual Issues</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard background is transparent</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Common on:</strong> Devices with blur disabled in accessibility settings</p>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solution:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Go to <strong class="text-white">Settings > Appearance > Keyboard Opacity</strong></li>
+<li class="ml-4 text-gray-300">2. Increase to 100% for solid background</li>
+<li class="ml-4 text-gray-300">3. Also check <strong class="text-white">Key Opacity</strong> if keys appear transparent</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">If using a custom theme, ensure both key and background opacity are set to your preference in the theme creator.</blockquote>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard too small/large</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solution:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Settings > Appearance section > Key Height</li>
+<li class="ml-4 text-gray-300">&#8226; Adjust to preference</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keys hard to see</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Try different theme</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Activities > Theme Manager</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Choose high contrast theme</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Increase label visibility</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Appearance > Label Brightness</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Enable key borders</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Appearance > Key Borders</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Theme not applying</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Force stop and restart keyboard</li>
+<li class="ml-4 text-gray-300">2. Check if custom colors override theme</li>
+<li class="ml-4 text-gray-300">3. Reset to default theme first</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Sound/Haptic Issues</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: No haptic feedback</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Check CleverKeys setting</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Accessibility section > Vibration</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Check system setting</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Android Settings > Sound > Vibration</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Check device capability</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Some tablets lack haptic motor</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Haptics too weak/strong</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solution:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Settings > Accessibility section > Vibration Duration</li>
+<li class="ml-4 text-gray-300">&#8226; Adjust to preference</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Testing Your Keyboard</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Use the built-in test field to troubleshoot without switching apps:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open CleverKeys Settings</li>
+<li class="ml-4 text-gray-300">2. Look for the test keyboard area at the top</li>
+<li class="ml-4 text-gray-300">3. Test gestures, layouts, and features</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Still Having Issues?</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">If problems persist:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Check for updates</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - App store may have newer version</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Try reset</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - See <a href="reset-defaults.html" class="text-green-400 hover:underline">Reset Defaults</a></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Collect logs</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Use <code class="bg-ck-dark px-1.5 py-0.5 rounded text-green-300">adb logcat -s CleverKeys</code> to capture debug output</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Include with bug report</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">4. <strong class="text-white">Report issue</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Include device model, Android version</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Describe exact steps to reproduce</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Topics</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="reset-defaults.html" class="text-green-400 hover:underline">Reset Defaults</a> - Start fresh</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="backup-restore.html" class="text-green-400 hover:underline">Backup & Restore</a> - Preserve settings</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="performance.html" class="text-green-400 hover:underline">Performance</a> - Speed issues</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Technical Details</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">See <a href="../specs/troubleshooting/common-issues-spec.html" class="text-green-400 hover:underline">Common Issues Technical Specification</a>.</p>
+
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="clipboard/shortcuts.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Clipboard Shortcuts</span>
+            </a>
+            <a href="troubleshooting/performance.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Performance</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

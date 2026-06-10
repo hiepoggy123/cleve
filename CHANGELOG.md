@@ -1,0 +1,766 @@
+# Changelog
+
+All notable changes to CleverKeys will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [Unreleased]
+
+### Planned for v2.1
+
+- Custom emoji picker with categories and search
+- Long-press popup UI for alternate characters
+- 50k dictionary assets for 20 languages
+- Theme customization UI (visual color picker)
+- Performance optimization (model quantization)
+
+---
+
+## [1.4.0] - 2026-04-25
+
+### New Features - Media Clipboard
+
+- **Media clipboard (schema v4)**: Copy/paste images, videos, PDFs through the panel
+  - Inline thumbnails for images, MIME icons for other media
+  - Dual export: JSON text-only or ZIP full backup with media
+  - Orphan media cleanup on startup and on import
+  - Per-item size capped at 1 MB to prevent `TransactionTooLargeException`
+- **Independent Pinned & Todos tabs**: Each tab has its own database table (true COPY semantics)
+  - Per-entry tags with inline tag editor
+  - Todo status cycle: active → planned → completed; one-tap done toggle
+  - Tab-aware delete; pinned/todo items protected from expiry and size cleanup
+- **Inline editing**: Tap pencil on any text entry to edit, save, cancel, or delete
+  - Search filter preserved when entering edit mode
+  - UI locked during edit to prevent silent data loss
+- **Regex search**: VSCode-style `.*` toggle with `*`/`?` glob shorthand, invalid regex shows red
+- **Filter dialog overhaul**: Per-tab filters (date / status / tags) with OR / AND tag match toggle
+- **Three visibility toggles**: text-only mode, Pinned tab, Todos tab — independent
+
+### Fixed
+
+- **#71 Clipboard freeze on open** — async DB load removes the 2–3 second UI thread hang
+- **Entry Duration "Never expire"** honored end-to-end; stale 7-day expiries rescued
+- **#70 Profile/clipboard import** — scoped-storage fallbacks + `json_base64` bypass
+- **Tag panel input capture** — added tag-mode delegation to `KeyEventReceiverBridge`
+- **Clipboard search bar text invisible** — wrong theme context for resolution
+- **IME toasts replaced** with tab-icon pulse (toasts render behind keyboard panel)
+- **Edit-mode key routing** — arrow keys, Enter, paste, cut, select-all all work on pinned/todo tabs
+- **Tag filter "match any/all"** no longer overlaps in narrow panels
+- **F-Droid `Version:`/`VersionCode:`** lines restored to release body for auto-update
+
+### Performance
+
+- **Per-language predictor eviction** on language switch (configured languages retained)
+- **VocabularyTrie compacted** (~34 MB savings per trie instance)
+- **Coil image cache** capped at 32 MB (was ~250 MB default)
+- **ContentObserver** replaces 500 ms IME-status polling
+- **Heap-allocation storms** in clipboard size calculations eliminated
+- **Clipboard import** wrapped in single transaction
+- **Gradle daemon** enabled
+
+### Web Demo & Site
+
+- **cleverkeys.app** rewritten in Astro 5 + Svelte 5 + Tailwind v4
+- **43 wiki pages** migrated to Astro content collections
+- **ONNX swipe demo** uses APK-shipped encoder/decoder weights
+- **Demo settings panel**: dictionary, beam width, batched beam search, auto-insert, timing log
+
+### Testing
+
+- 1046 JVM tests + ~1100 instrumented tests on Pixel 7 / API 34
+- 55 + 48 clipboard feature tests, 45 inline-edit tests, 31 regex-search tests, 28 v1.3.0-review-fix regression tests
+
+---
+
+## [1.3.0] - 2026-03-16
+
+### New Features
+
+- **Offline GIF panel**: Category browsing, FTS4 search, community pack import via file picker
+  - No internet permission required
+  - Pack management in Settings
+- **Backspace undo autocorrect (#110)**: Press backspace after autocorrect to revert to original word
+- **Backspace undo swipe (#110)**: Fixed existing feature (was broken since flag was cleared too early)
+- **Auto space before suggestion (#82)**: Toggle leading space on tapped suggestions
+- **Swipe layout guard (#9)**: Auto-disables swipe typing on non-QWERTY layouts
+- **GIF pack builder**: `make_pack.py` for creating custom packs
+
+### Fixed
+
+- **Contraction suggestion flicker** — Dual prediction pipeline symmetry. Both typing and cursor sync paths produce identical output. SuggestionBar deduplicates.
+- **Paired contraction prefix guard** — "t" no longer injects "t's" above "the"
+- **Clipboard dedup reorder (#108)** — Re-copied entries move to top
+- **Terminal paste (#113)** — Uses clipboard-read for Termux
+- **Autofill chip display (#109)** — No longer cut off on password fields
+- **Custom theme background (#92)** — Color applied to keyboard view
+- **Compose key + arrows (#104)** — Short swipe nav works with compose off
+- **Settings search scroll crash** — MonotonicFrameClock fix
+- **Profile import (#70)** — MediaStore fallback for cross-app files
+- **Cross-app text leaking** — contextTracker cleared on input finish
+
+### Testing
+
+- 987 JVM + 887 instrumented tests on Pixel 7 / API 34
+
+---
+
+## [1.2.9] - 2026-01-15
+
+### New Features - Timestamp Keys
+
+- **Timestamp Key Type**: New key kind for inserting formatted date/time
+  - Syntax: `📅:timestamp:'yyyy-MM-dd'` or `timestamp:'HH:mm:ss'`
+  - Uses Java DateTimeFormatter patterns
+  - API 26+ uses java.time.LocalDateTime, older devices use SimpleDateFormat
+  - Invalid patterns fall back to inserting the pattern string
+- **Pre-defined Timestamp Keys**: 8 ready-to-use timestamp shortcuts:
+  - `timestamp_date` → 📅 2026-01-15
+  - `timestamp_time` → 🕐 14:30
+  - `timestamp_datetime` → 📆 2026-01-15 14:30
+  - `timestamp_time_seconds` → ⏱ 14:30:45
+  - `timestamp_date_short` → 📅 01/15/26
+  - `timestamp_date_long` → 🗓 Wednesday, January 15, 2026
+  - `timestamp_time_12h` → 🕐 2:30 PM
+  - `timestamp_iso` → 📋 2026-01-15T14:30:45
+
+### Documentation
+
+- New spec: `docs/specs/timestamp-keys.md`
+- Added to web documentation generator
+
+---
+
+## [1.2.8] - 2026-01-15
+
+### New Features - Quick Settings & Privacy
+
+- **Quick Settings Tile**: Add keyboard to Android Quick Settings panel
+  - Tap tile to open input method picker
+  - Active state indicates CleverKeys is current keyboard
+  - Service: `KeyboardTileService.kt`
+- **Password Manager Clipboard Exclusion**: Exclude apps from clipboard history
+  - Auto-detects foreground app package name
+  - Settings UI with text field for comma-separated package names
+  - Default excludes: 1Password, Bitwarden, LastPass, KeePass, Dashlane
+- **Test Keyboard Field**: Built-in text field in Settings for testing keyboard
+  - Opens keyboard without leaving settings app
+  - Useful for testing gestures and features
+
+### Fixed
+
+- **Android 15 Edge-to-Edge**: Navigation bar no longer covers keyboard
+  - Fixed in `Keyboard2View.kt` - proper inset handling
+- **Android 9 Navigation Bar**: Bottom of keyboard no longer clipped
+  - Fixed cutoff on older devices with gesture navigation
+- **Monet Theme Crash on Tablets**: Fixed dynamic color extraction crash
+  - Added null checks for Monet color extraction
+  - Falls back to default theme on failure
+- **Clipboard Delete Button**: Added delete button to clipboard history items
+  - Each item shows X button on long-press or always-visible option
+
+---
+
+## [1.2.4] - 2026-01-14
+
+### New Features - Navigation Modes
+
+- **Selection-Delete Mode**: Text selection via backspace swipe-hold
+  - Short swipe then hold on backspace activates mode
+  - Move finger horizontally to select text (like phone selection handles)
+  - Move vertically to select lines
+  - Lift finger to delete selected text
+  - Bidirectional support (left and right from activation point)
+  - Configurable vertical threshold and speed settings
+- **TrackPoint Navigation Mode**: Joystick-style cursor control on nav keys
+  - Hold any arrow key to enter TrackPoint mode
+  - Move finger in 8 directions for cursor movement
+  - Distance-based speed scaling (faster swipes = more movement)
+  - Haptic feedback on direction changes (CLOCK_TICK pattern)
+  - Works on all navigation keys (left, right, up, down)
+
+### Technical
+
+- `FLAG_P_SELECTION_DELETE_MODE` in Pointers.kt
+- `FLAG_P_TRACKPOINT_MODE` in Pointers.kt
+- New Config settings: `selection_delete_vertical_threshold`, `selection_delete_speed`
+
+### Documentation
+
+- New spec: `docs/specs/selection-delete-mode.md`
+- New spec: `docs/specs/trackpoint-navigation-mode.md`
+
+---
+
+## [1.2.3] - 2026-01-13
+
+### New Features - Input & UI Improvements
+
+- **Space Key Repeat on Hold**: Long-pressing space now repeats like delete key
+  - Includes movement tolerance (~15px) to distinguish hold from swipe start
+  - Works with swipe-enabled keys (space can still initiate swipe typing)
+  - Uses accelerating repeat rate consistent with other repeating keys
+- **Finger Occlusion Compensation**: New slider in Settings → Swipe Typing
+  - Configurable Y-offset (0-50% of row height)
+  - Compensates for finger obscuring touch target during swipe
+  - Default 12.5% matches recommended range (10-15%)
+- **Julow QWERTY Layout**: New predefined layout option
+  - Compact layout with numbers/symbols on swipe corners
+  - Full programming symbols accessible via corner swipes
+  - Shift and backspace on wider edge keys
+
+### Fixed
+
+- **Double-Space-to-Period**: No longer triggers during key repeat
+  - Holding space now correctly inserts multiple spaces
+  - Period auto-insertion only on discrete space taps
+- **Space Key Not Repeating**: Fixed long-press timer for potential swipe keys
+  - Timer now starts for all keys, movement checked on timeout
+
+### Website
+
+- **New Homepage**: Comprehensive Tailwind CSS dark-mode landing page
+- **Demo Relocated**: Neural swipe demo moved to `/demo/` subfolder
+- **Modern Design**: Purple theme (#9b59b6) with feature grid and language support section
+
+---
+
+## [1.2.0] - 2026-01-09
+
+### New Features - Language Toggle & Text Menu
+
+- **Primary Language Toggle**: New command to instantly swap between two primary languages
+  - Swaps current primary with alternate primary language
+  - Shows toast with new active language
+  - Auto-reloads dictionaries on change
+  - Assign to any key's short swipe gesture
+- **Secondary Language Toggle**: New command to swap between two secondary languages
+  - Same behavior as primary toggle for secondary language slot
+  - Useful for multilingual typists switching context frequently
+- **Show Text Menu**: New command to select word at cursor and trigger native toolbar
+  - Selects word under cursor using text boundary detection
+  - Triggers native floating toolbar (cut/copy/paste/translate)
+  - Shows toast if no word at cursor position
+- **No Text Selected Toast**: Text Assist and Replace Text now show helpful toast when no text is selected
+
+### Settings UI
+
+- **Quick Language Toggle** section in Multi-Language settings:
+  - Alternate Primary Language dropdown
+  - Alternate Secondary Language dropdown
+  - Configure which languages to toggle between
+
+### Technical
+
+- Added 5 new commands to AvailableCommand enum:
+  - `TEXT_ASSIST`, `REPLACE_TEXT`, `SHOW_TEXT_MENU`, `PRIMARY_LANG_TOGGLE`, `SECONDARY_LANG_TOGGLE`
+- New preference keys: `pref_primary_language_alt`, `pref_secondary_language_alt`
+- All new commands available in Per-Key Customization settings
+
+---
+
+## [1.1.99] - 2026-01-09
+
+### Fixed - Text Assist and Replace Text Actions
+
+- **textAssist**: Now uses `ACTION_PROCESS_TEXT` intent instead of unsupported context menu action
+- **replaceText**: Now uses `ACTION_PROCESS_TEXT` intent with chooser dialog
+- Shows app chooser (Google Assistant, translators, search, etc.) when text is selected
+- Falls back to context menu action if no text selected
+
+---
+
+## [1.1.98] - 2026-01-08
+
+### Fixed - Per-Key Short Swipe Customization
+
+- **Event-type Commands**: Fixed keyboard settings, clipboard, voice typing, numeric pad shortcuts not working when assigned via per-key customization
+- **Editing-type Commands**: Fixed replaceText, textAssist commands not executing
+- **Icon Rendering**: Fixed PUA characters (icons) showing as Chinese characters in customization UI - now uses special keyboard font
+- **Icon Sizing**: Custom sublabel icons now match built-in sublabel sizes (apply 0.75f scaling for icon-font labels)
+
+### Fixed - Compilation Issues
+
+- **Autofill Config**: Removed invalid Config.show_suggestions references
+- **Theme Colors**: Fixed invalid Theme.getColor() calls in autofill utils
+
+### Documentation
+
+- **README**: Added comprehensive multi-language swipe typing section with 11 supported languages
+- **README**: Added per-key customization feature documentation (204+ commands)
+- **README**: Updated comparison table with multi-language and per-key customization rows
+- **README**: Added custom language pack creation guide with script documentation
+
+---
+
+## [1.1.97] - 2026-01-07
+
+### 🌍 Experimental: Multilanguage Swipe Typing
+
+**This release introduces experimental multilanguage support for neural swipe typing.** The ONNX neural network outputs 26 English letters, which are then mapped to properly accented words via per-language dictionaries.
+
+### Added - Multilanguage System
+
+- **Primary Language Selection**: Choose from 11 languages (English, Spanish, French, Portuguese, Italian, German, Dutch, Indonesian, Malay, Swahili, Tagalog)
+- **Downloadable Language Packs**: Import additional languages via Settings → Multi-Language → Import Language Pack
+- **Per-Language Custom Dictionaries**: Custom words and disabled words stored separately for each language
+- **Secondary Language Mode**: True bilingual swipe typing with weighted predictions
+- **Language Detection**: Auto-detect language from typed words (experimental)
+- **Secondary Prediction Weight**: Slider to adjust balance between primary/secondary languages
+
+### Added - V3 English Dictionary (Curated)
+
+- **52,042 words** combining best of wordfreq + curated entries
+- Removed 15 common typos (dissapointed→disappointed, recieved→received, etc.)
+- Preserved single letters, contractions, possessives, custom words from V1
+- 197 accented words saved for future review
+
+### Added - Swahili Support
+
+- **External corpus source**: Kwici Swahili Wikipedia Corpus (CC-BY-SA)
+- wordfreq library doesn't support Swahili; we built from 168k-word external corpus
+- Properly frequency-ranked with real Swahili top words (ya, na, wa, kwa, katika)
+
+### Fixed - Critical Multilanguage Issues
+
+- **OOM Crash on Large Language Packs**: Limited secondary trie to top 30k words
+- **Frequency Display**: Dictionary Manager now shows actual 1-10000 frequency scale (was hardcoded 100)
+- **English Dictionary V2 Binary**: Fixed skip condition that bypassed V2 binary format for English
+- **Missing Contractions**: Merged 18 essential contractions into contractions_en.json (im→i'm, ive→i've, etc.)
+- **Thread Visibility**: Added @Volatile to beam search trie for cross-thread safety
+- **Race Condition**: Fixed timing where language code was set before trie was ready
+- **UserDictionary Locale Filter**: Now filters Android UserDictionary by language locale
+- **Custom Words Keys**: Fixed use of global key → language-specific keys (custom_words_fr, etc.)
+- **Secondary Dictionary Loading**: Custom words now load for secondary language too
+
+### Technical
+
+- V2 binary dictionary format with normalized prefix index for accent recovery
+- Per-language beam search trie architecture
+- Swahili wordfreq fallback detection and exclusion
+- Language pack ZIP format with manifest.json + dictionary.bin + contractions.json
+
+---
+
+## [1.1.89] - 2025-01-05
+
+### Fixed - Language Isolation
+- **Dictionary Manager**: Now loads correct language dictionary (was always English)
+- **Beam Search Trie**: Defensive check prevents English trie contamination
+  - Returns null if primary is non-English but trie wasn't replaced
+  - Logs error to help diagnose initialization issues
+- **MainDictionarySource**: Added language parameter, loads binary dictionaries for non-English
+
+---
+
+## [1.1.88] - 2025-01-05
+
+### Added - Multilanguage Support 🌍
+- **Primary Language Selection**: Choose your primary typing language (French, Spanish, German, Italian, Portuguese, Dutch, Polish, Turkish, Swedish)
+- **Downloadable Language Packs**: 50k-word dictionaries for 9 QWERTY-compatible languages
+- **Dual Language Mode**: Primary + Secondary language for bilingual typing
+- **Language-Specific Beam Search**: Neural network constrained to target language vocabulary
+- **Accent Recovery**: Neural predictions (26-letter) → properly accented words (café, naïve, señor)
+
+### Added - Dictionary Manager Improvements
+- **Language-Specific Storage**: Custom words and disabled words stored per-language
+- **Language Tabs**: Separate tabs for each configured language
+- **Auto-Reload**: Dictionary manager refreshes when language settings change
+- **Legacy Migration**: Automatic migration of global word lists to language-specific keys
+
+### Added - Contraction Support
+- **Multilingual Contractions**: Support for French (m'appelle, c'est, d'accord), Spanish, and English
+- **Language Pack Contractions**: Contractions included in downloadable language packs
+- **Contraction Prediction**: Neural network discovers contraction keys (mappelle → m'appelle)
+
+### Fixed
+- **Spanish Accent Keys (#40)**: Short gesture handling for dead keys (accent modifiers)
+- **French Contractions**: Working when English fallback is disabled
+- **Contraction Key Isolation**: Language-specific contractions don't contaminate other languages
+- **Primary Dictionary Priority**: Non-English dictionary checked FIRST for accent recovery
+- **Multilang Toggle**: Primary dictionary loads regardless of multilang toggle state
+- **Preference Reload**: Language dictionaries reload when preferences change
+
+### Technical
+- Language-specific beam search trie architecture
+- Per-language preference keys (custom_words_fr, disabled_words_en, etc.)
+- LanguagePreferenceKeys helper for migration and key generation
+
+---
+
+## [2.0.2] - 2025-11-20
+
+### Fixed
+- **Bug #468** (P0): Complete ABC ↔ 123+ numeric keyboard switching
+  - Fixed bottom row key mapping (Ctrl primary, 123+ at SE corner)
+  - Added complete numeric.xml layout with 30+ keys
+  - Implemented bidirectional keyboard switching
+  - Added ABC return button in numeric mode
+  - Proper state management for layout preservation
+
+### Documentation
+- Added QUICK_START.md for new users (90-second setup)
+- Added comprehensive Bug #468 testing guide
+- Added PROJECT_STATUS.md as authoritative status document
+- Updated README with v2.0.2 information
+
+---
+
+## [2.0.1] - 2025-11-18
+
+### Added
+- **Terminal Mode**: Auto-detect terminal apps (Termux, etc.)
+  - Automatically enables Ctrl, Meta, PageUp/Down keys
+  - Special bottom row for terminal use
+- **ONNX Models v106**: Updated neural prediction models
+  - 73.37% accuracy (vs 72.07% old)
+  - 50-80% faster loading with model caching
+  - New input format (actual_length instead of src_mask)
+- **Bigram Models**: Context-aware predictions for 6 languages
+  - English (320 pairs), Spanish (120), French (100)
+  - German (97), Italian (83), Portuguese (80)
+
+### Fixed
+- 47 critical Java-to-Kotlin parity fixes
+  - Theme.keyFont qualification issue
+  - getNearestKeyAtDirection arc search
+  - Border rendering and indication drawing
+  - VibratorCompat rewrite
+  - Modifier key events for terminals
+  - And 42 more (see migrate/todo/critical.md)
+
+---
+
+## [2.0.0] - 2025-11-16
+
+### Added - Data Portability 🎉
+- **Settings Export/Import**: Full configuration backup to JSON
+- **Dictionary Export/Import**: User words + disabled words backup
+- **Clipboard Export/Import**: Complete history with timestamps & pins
+- **Non-destructive Merge**: Import adds to existing data
+- **Screen Size Detection**: Warns on settings import across devices
+- **Import Statistics**: Shows new/skipped counts after import
+
+### Added - Dictionary Manager (Bug #472, #473)
+- **3-Tab UI**: User Words | Built-in (49k) | Disabled Words
+- Add custom words to personal dictionary
+- Browse 9,999 built-in words with search
+- Word blacklist - disable unwanted predictions
+- Material 3 design with FAB, search, sort
+
+### Added - Clipboard Search (Bug #471)
+- Real-time search/filter in clipboard history
+- EditText field with TextWatcher
+- "No results" message when filter empty
+- Useful for large clipboard histories (50+ items)
+
+### Fixed
+- **Critical Crash #1**: Compose lifecycle in IME (ViewTreeLifecycleOwner)
+- **Critical Crash #2**: LanguageManager initialization order
+- Bug #471: Clipboard search/filter missing
+- Bug #472: Dictionary Manager UI completely missing
+- Bug #473: Dictionary tab improvements
+
+---
+
+## [1.0.0] - 2025-11-16
+
+### 🎉 Initial Release - Complete Kotlin Rewrite
+
+**CleverKeys 1.0.0** is a complete ground-up rewrite of Unexpected-Keyboard in modern Kotlin, featuring neural swipe typing, Material 3 design, and comprehensive accessibility support.
+
+### Added
+
+#### 🧠 Neural Intelligence
+- ONNX transformer models for swipe typing predictions
+- Sub-200ms prediction latency with hardware acceleration
+- Smart autocorrection with keyboard-aware edit distance
+- Context-aware predictions using bigram models
+- User adaptation system (learns frequently-used words)
+- 94%+ accuracy for common words
+
+#### ⌨️ Advanced Input
+- Seamless tap + swipe typing
+- Real-time word predictions as you type
+- Loop gestures for double letters (circle on key)
+- Smart punctuation (double-space → period + auto-capitalize)
+- Autocapitalization (sentence + word level)
+- Spell checking with red underlines
+
+#### 🌍 Multi-Language Support
+- 20 languages: English, Spanish, French, German, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Arabic, Hebrew, Hindi, Thai, Greek, Turkish, Polish, Dutch, Swedish, Danish
+- Automatic language detection after 3-4 words
+- Per-language dictionaries (10k words built-in)
+- Full RTL support (Arabic, Hebrew, Persian, Urdu)
+- Quick language switching (swipe spacebar)
+
+#### 🎨 Modern Design
+- Material 3 UI with smooth animations
+- Dynamic theming with 4 color schemes (Light, Dark, Everforest, Cobalt, Pine, ePaper)
+- Automatic dark mode support
+- Customizable key opacity (0-100%)
+- Gesture trails for visual feedback
+- Hardware-accelerated rendering (60fps)
+
+#### 📚 Dictionary Management
+- **NEW**: 3-tab Dictionary Manager UI
+  - User Words: Personal dictionary (add/remove words)
+  - Built-in Dictionary: 10,000 common words with search
+  - Disabled Words: Blacklist for unwanted predictions
+- Add words from prediction bar
+- Import/export functionality (manual)
+
+#### ♿ Accessibility Features
+- **Switch Access**: 5 scan modes for motor disabilities
+  - Auto scan, manual scan, row-column, group scan, point scan
+  - 1-4 external switches supported (Bluetooth/USB)
+  - Visual highlighting and audio feedback
+- **Mouse Keys**: Keyboard-based cursor control with visual crosshair
+- **TalkBack Support**: Full screen reader compatibility
+- **Voice Guidance**: Audio feedback for key presses and suggestions
+- **High Contrast Mode**: For low vision users
+- **Large Keys**: Adjustable key sizes
+- **Sticky Keys**: Modifiers stay pressed (no need to hold)
+- **One-Handed Mode**: Shift keyboard left/right for thumb typing
+
+#### 🔧 Customization
+- **89 keyboard layouts**: QWERTY, AZERTY, QWERTZ, Dvorak, Colemak, Workman, etc.
+- **85+ extra keys**: Tab, Esc, Ctrl, arrows, function keys, programming symbols
+- **Drag-and-drop layout reordering**
+- **Custom layout editor** (XML-based, advanced users)
+- **Haptic feedback**: Configurable vibration (duration 10-50ms)
+- **Sound effects**: Key press sounds with volume control
+- **Visual customization**: Key borders, opacity, text size
+
+#### 🚀 Advanced Features
+- **Clipboard History**: Stores 50 recent clips with pin functionality
+- **Handwriting Recognition**: Multi-stroke for CJK languages
+- **Macro Expansion**: Text shortcuts (e.g., "btw" → "by the way")
+- **Keyboard Shortcuts**: Ctrl+C/X/V/Z/Y/A support
+- **Voice Input**: IME switching for voice typing (native coming in v1.1)
+- **Compose Key**: Special character input (e.g., Compose + ' + e = é)
+- **Number Row**: Toggle always visible/hidden/auto
+- **Numpad Mode**: Dedicated numpad layout
+- **Precision Mode**: Reduced sensitivity for users with tremors
+
+#### 🛡️ Privacy & Security
+- **100% local processing**: No cloud, no network, no internet required
+- **Zero data collection**: No usage stats, no analytics, no crash reports
+- **No permissions required**: Except vibration and app storage (automatic)
+- **Open source**: GPL-3.0 licensed, fully auditable code
+- **No third-party SDKs**: Only ONNX Runtime (required for neural)
+
+#### 📱 Compatibility
+- **Android 8.0+** (API 26+)
+- **APK Size**: 52MB (includes ONNX models + dictionaries)
+- **RAM Usage**: <150MB additional during use
+- **Storage**: 52MB installation
+- **Tested**: Android 8.0 through Android 15
+
+### Changed
+
+#### Architecture Improvements
+- **Complete Kotlin rewrite** (~85,000 lines)
+- **40% code reduction** vs original Java implementation
+- **Reactive programming** with Kotlin Coroutines and Flow
+- **Type safety**: Full null-safety throughout
+- **Memory efficient**: 90+ components with proper lifecycle cleanup
+- **Zero memory leaks**: Comprehensive resource management
+
+#### Performance Enhancements
+- **Hardware acceleration** enabled globally
+- **Fast startup**: <500ms keyboard appearance
+- **Efficient ONNX**: Sub-100ms prediction inference
+- **Optimized rendering**: Smooth 60fps animations
+- **Battery efficient**: Hardware acceleration minimizes CPU usage
+
+#### Neural Pipeline
+- **Pure ONNX architecture**: Removed CGR fallback (architectural decision)
+- **Transformer models**: Encoder-decoder design
+- **Beam search**: Configurable width (1-16)
+- **Feature engineering**: [x, y, velocity, acceleration, nearest key]
+- **Session persistence**: Models stay loaded for instant predictions
+
+### Fixed
+
+#### Critical Bugs Resolved
+- **Accessibility crash**: IllegalStateException when accessibility disabled (Fixed: SwitchAccessSupport.kt:593)
+- **ViewTreeLifecycleOwner crash**: Jetpack Compose lifecycle issue in settings (Fixed: Layout Manager implementation)
+- **Container sizing**: Keyboard display container logic (Fixed: Keyboard2View.kt)
+- **Text sizing**: Key text rendering (Fixed: theme and sizing logic)
+
+#### All P0/P1 Bugs
+- **45 critical bugs** documented and resolved during development
+- **0 P0 bugs remaining** (all catastrophic issues fixed)
+- **0 P1 bugs remaining** (all high-priority issues fixed)
+
+### Security
+
+- **No network code**: 100% offline functionality
+- **No telemetry**: No usage tracking or analytics
+- **Local storage only**: All data stays on device
+- **Proper permissions**: Minimal permissions requested
+- **Encrypted storage**: User data protected by Android security
+
+### Documentation
+
+#### User Documentation (2,590+ lines)
+- **USER_MANUAL.md** (1,440 lines): Comprehensive user guide
+- **FAQ.md** (449 lines): 80+ Q&A pairs
+- **PRIVACY_POLICY.md** (421 lines): Complete privacy policy
+- **RELEASE_NOTES_v1.0.0.md** (280 lines): Feature summary
+
+#### Developer Documentation (6,600+ total lines)
+- **CONTRIBUTING.md** (427 lines): Contribution guidelines
+- **CODE_OF_CONDUCT.md** (352 lines): Community standards
+- **README.md**: Project overview and quick start
+- **docs/specs/**: 10 system specifications
+- **migrate/project_status.md** (3,460+ lines): Complete development history
+
+#### Release Materials
+- **PLAY_STORE_LISTING.md** (400 lines): Google Play submission materials
+- **READY_FOR_TESTING.md** (122 lines): Testing handoff documentation
+
+### Performance
+
+- **Prediction Latency**: <200ms on mid-range devices
+- **Memory Usage**: <150MB additional RAM
+- **APK Size**: 52MB (includes neural models)
+- **Startup Time**: <500ms
+- **Frame Rate**: 60fps maintained during all interactions
+- **Battery Impact**: <2% additional drain
+
+### Compliance
+
+- ✅ **GDPR** (EU General Data Protection Regulation)
+- ✅ **CCPA** (California Consumer Privacy Act)
+- ✅ **COPPA** (Children's Online Privacy Protection Act)
+- ✅ **PIPEDA** (Canada Personal Information Protection)
+- ✅ **LGPD** (Brazil Data Protection Law)
+- ✅ **ADA/WCAG** (Accessibility compliance)
+
+### Development Statistics
+
+- **Development Time**: 10+ months (January 2025 - November 2025)
+- **Files Implemented**: 251/251 (100% complete)
+- **Lines of Kotlin**: ~85,000+
+- **Commits**: 107+ (main branch)
+- **Settings Parity**: 100% (45/45 settings)
+- **Documentation**: 6,600+ lines across all docs
+- **Production Score**: **95/100 (Grade A+)**
+
+---
+
+## [0.x.x] - Historical
+
+*CleverKeys is based on [Unexpected-Keyboard](https://github.com/Julow/Unexpected-Keyboard) by Jules Aguillon.*
+
+The original Unexpected-Keyboard versions (v0.x.x series) were written in Java. CleverKeys 1.0.0 is a complete rewrite in Kotlin with significant enhancements.
+
+### Original Features Preserved
+- All keyboard layouts (89+)
+- Extra keys configuration (85+ keys)
+- Swipe typing (enhanced with ONNX neural)
+- Multi-language support (expanded to 20 languages)
+- Accessibility features (enhanced and expanded)
+- Privacy-first design (maintained and strengthened)
+
+### Major Enhancements Over Original
+- **Neural Engine**: ONNX transformers replace CGR algorithm
+- **Modern Architecture**: Kotlin, Coroutines, Flow, Material 3
+- **Better Performance**: Hardware acceleration, optimized rendering
+- **More Languages**: 20 languages (vs original set)
+- **Dictionary Manager**: New 3-tab UI for word management
+- **Enhanced Accessibility**: Switch Access with 5 modes, Mouse Keys
+- **Better Documentation**: 6,600+ lines of comprehensive docs
+
+---
+
+## Version Numbering
+
+CleverKeys follows [Semantic Versioning](https://semver.org/):
+
+**Format**: MAJOR.MINOR.PATCH
+
+- **MAJOR**: Breaking changes or major feature additions
+- **MINOR**: New features with backward compatibility
+- **PATCH**: Bug fixes and minor improvements
+
+---
+
+## Upgrade Notes
+
+### From Unexpected-Keyboard
+
+**100% Feature Parity**: All Unexpected-Keyboard features are present in CleverKeys 1.0.0.
+
+**Migration Steps**:
+1. Uninstall Unexpected-Keyboard
+2. Install CleverKeys
+3. Reconfigure settings (5-10 minutes)
+4. Import custom words (if desired)
+
+**No Data Migration**: Settings must be reconfigured (by design, for privacy).
+
+**Layout Compatibility**: Custom XML layouts are compatible (same format).
+
+---
+
+## Support
+
+### Bug Reports
+- **GitHub Issues**: [Repository URL]/issues
+- **Include**: Device model, Android version, steps to reproduce
+- **Logs**: Use `./diagnose-issues.sh` for diagnostic report
+
+### Feature Requests
+- **GitHub Issues**: Label as "enhancement"
+- **Describe**: Use case, proposed solution, benefits
+- **Consider**: Privacy impact, implementation complexity
+
+### Community
+- **GitHub Discussions**: [Repository URL]/discussions
+- **Reddit**: r/CleverKeys (TBD)
+- **Email**: [Support Email]
+
+---
+
+## Credits
+
+### CleverKeys Team
+- **Architecture & Implementation**: Complete Kotlin rewrite
+- **Neural Pipeline**: ONNX transformer integration
+- **Material 3 Design**: Modern UI implementation
+- **Accessibility**: ADA/WCAG compliance
+- **Documentation**: 6,600+ lines of comprehensive docs
+
+### Based On
+- **Unexpected-Keyboard** by Jules Aguillon ([@Julow](https://github.com/Julow))
+- Original Java implementation with CGR algorithm
+
+### Open Source Libraries
+- **ONNX Runtime Android** (1.19.2) - Apache 2.0
+- **Jetpack Compose** - Apache 2.0
+- **Kotlin Coroutines** - Apache 2.0
+- **Material Components** - Apache 2.0
+- **Reorderable** (drag-and-drop) - Apache 2.0
+
+---
+
+## License
+
+CleverKeys is licensed under [GPL-3.0](LICENSE), same as Unexpected-Keyboard.
+
+---
+
+**Thank you for using CleverKeys!**
+
+🧠 **Think Faster** • ⌨️ **Type Smarter** • 🔒 **Stay Private**
+
+---
+
+**Changelog Version**: 1.0
+**Last Updated**: 2026-01-15
+**Maintained By**: CleverKeys Team

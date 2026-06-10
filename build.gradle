@@ -1,0 +1,674 @@
+plugins {
+  id 'com.android.application' version '8.8.2'
+  id 'org.jetbrains.kotlin.android' version '2.0.0'
+  id 'org.jetbrains.kotlin.plugin.compose' version '2.0.0'
+}
+
+dependencies {
+  implementation "androidx.window:window-java:1.3.0"
+  implementation "androidx.core:core:1.13.1"
+  implementation "androidx.appcompat:appcompat:1.6.1"
+  implementation "androidx.multidex:multidex:2.0.1"
+  implementation "com.google.android.material:material:1.11.0"
+  implementation "androidx.viewpager2:viewpager2:1.0.0"
+  implementation "androidx.recyclerview:recyclerview:1.3.2"
+  implementation "androidx.preference:preference-ktx:1.2.1"
+  implementation "androidx.autofill:autofill:1.1.0"
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.0"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+
+  // REPRODUCIBILITY: Use Compose BOM for deterministic version resolution
+  implementation platform("androidx.compose:compose-bom:2024.06.00")
+  implementation "androidx.activity:activity-compose:1.9.0"
+  implementation "androidx.compose.ui:ui"
+  debugImplementation "androidx.compose.ui:ui-tooling-preview"
+  debugImplementation "androidx.compose.ui:ui-tooling"
+  implementation "androidx.compose.material3:material3"
+  implementation "androidx.compose.foundation:foundation"
+
+  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
+  implementation "androidx.savedstate:savedstate-ktx:1.2.1"
+
+  implementation "org.burnoutcrew.composereorderable:reorderable:0.9.6"
+  implementation "com.microsoft.onnxruntime:onnxruntime-android:1.20.0"
+  implementation "com.google.code.gson:gson:2.10.1"
+
+  // Coil: Kotlin-native image loader with animated WebP support
+  implementation "io.coil-kt:coil:2.6.0"
+
+
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
+  testImplementation "org.robolectric:robolectric:4.11.1"
+  testImplementation "androidx.test:core:1.5.0"
+  testImplementation "io.mockk:mockk:1.13.8"
+  testImplementation "com.google.truth:truth:1.1.5"
+  // Real org.json JSONObject for mock tests — android.jar provides only stubs
+  // that throw RuntimeException("Stub!") on construction. Tests that build a
+  // real JSON payload (BackupRestoreFullBackupTest) need this to shadow the
+  // stub on the unit-test classpath.
+  testImplementation "org.json:json:20231013"
+  // ONNX Runtime for JVM unit tests (Android runtime doesn't work on host JVM)
+  testImplementation "com.microsoft.onnxruntime:onnxruntime:1.20.0"
+
+  androidTestImplementation "androidx.test:core:1.5.0"
+  androidTestImplementation "androidx.test.ext:junit:1.1.5"
+  androidTestImplementation "androidx.test:runner:1.5.2"
+  androidTestImplementation "androidx.test:rules:1.5.0"
+  androidTestImplementation "androidx.test.uiautomator:uiautomator:2.2.0"
+  androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+  androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
+  androidTestImplementation "org.mockito:mockito-android:5.5.0"
+  androidTestImplementation "org.mockito:mockito-core:5.5.0"
+  androidTestImplementation platform("androidx.compose:compose-bom:2024.06.00")
+  androidTestImplementation "androidx.compose.ui:ui-test-junit4"
+  debugImplementation "androidx.compose.ui:ui-test-manifest"
+}
+
+// =============================================================================
+// VERSIONING - F-Droid compatible (checkupdates does not parse ext values)
+// =============================================================================
+// UPDATE ONLY THESE THREE VALUES FOR A NEW RELEASE:
+ext.VERSION_MAJOR = 1
+ext.VERSION_MINOR = 4
+ext.VERSION_PATCH = 0
+// =============================================================================
+// DERIVED VALUES (auto-calculated, do not edit):
+// - versionCode = MAJOR*10000 + MINOR*100 + PATCH
+// - versionNameStr = "MAJOR.MINOR.PATCH"
+// - ABI versionCode = base*10 + abiCode (1=armv7, 2=arm64, 3=x86_64)
+//
+// WORKFLOW:
+// 1. Update VERSION_MAJOR/MINOR/PATCH above
+// 2. Commit, tag with "vX.Y.Z", push tag
+// 3. GitHub Actions verifies tag matches version, builds, releases
+// 4. F-Droid auto-detects tag and builds
+// =============================================================================
+ext.versionCode = ext.VERSION_MAJOR * 10000 + ext.VERSION_MINOR * 100 + ext.VERSION_PATCH
+ext.versionNameStr = "${ext.VERSION_MAJOR}.${ext.VERSION_MINOR}.${ext.VERSION_PATCH}"
+
+// Per-ABI versionCode mapping for split APKs
+ext.abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, 'x86_64': 3]
+
+// Force reproducibility by excluding profile-guided optimization tools
+configurations.all {
+    exclude group: 'androidx.profileinstaller', module: 'profileinstaller'
+}
+
+android {
+  namespace 'tribixbite.cleverkeys'
+  compileSdk 34
+  // REPRODUCIBILITY: Let AGP use its default build-tools (pinned per AGP version)
+  // Removed explicit buildToolsVersion - both GitHub and F-Droid use AGP 8.8.2 default
+
+  defaultConfig {
+    applicationId "tribixbite.cleverkeys"
+    minSdk 21
+    targetSdkVersion 34
+    
+    // References ext values - see VERSION_MAJOR/MINOR/PATCH at top of file
+    versionCode rootProject.ext.versionCode
+    versionName rootProject.ext.versionNameStr
+    
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    multiDexEnabled true
+  }
+
+  kotlinOptions {
+    // REPRODUCIBILITY: Use Java 11 target for deterministic bytecode
+    jvmTarget = "11"
+  }
+
+  aaptOptions {
+    noCompress 'onnx', 'tflite'
+    // REPRODUCIBILITY: Disable PNG crunching for deterministic output
+    cruncherEnabled = false
+    // REPRODUCIBILITY: Force consistent platformBuildVersionCode/Name across environments
+    // This ensures GitHub Actions and F-Droid produce identical AndroidManifest.xml
+    additionalParameters "--no-auto-version",
+      "--compile-sdk-version-code", "34",
+      "--compile-sdk-version-name", "14"
+  }
+
+  packaging {
+    resources {
+      // REPRODUCIBILITY: Exclude non-deterministic files
+      // Baseline profiles vary between build environments
+      excludes += "assets/dexopt/baseline.prof"
+      excludes += "assets/dexopt/baseline.profm"
+
+      // Build metadata that changes between environments (exact paths required)
+      excludes += "META-INF/version-control-info.textproto"
+      excludes += "META-INF/com/android/build/gradle/app-metadata.properties"
+
+      // Kotlin coroutines debug probes (non-deterministic)
+      excludes += "DebugProbesKt.bin"
+
+      // Kotlin coroutines service files (non-deterministic order)
+      excludes += "META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory"
+      excludes += "META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler"
+
+      // License files and kotlin modules (reduce APK noise)
+      excludes += "META-INF/DEPENDENCIES"
+      excludes += "META-INF/LICENSE*"
+      excludes += "META-INF/NOTICE*"
+      excludes += "META-INF/AL2.0"
+      excludes += "META-INF/LGPL2.1"
+      excludes += "META-INF/*.kotlin_module"
+      excludes += "META-INF/*.version"
+      excludes += "META-INF/com.android.tools/**"
+    }
+  }
+
+  // REPRODUCIBILITY: Exclude dependency info from APK
+  dependenciesInfo {
+    includeInApk = false
+    includeInBundle = false
+  }
+
+  splits {
+    abi {
+      enable true
+      reset()
+      include 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+      universalApk false
+    }
+  }
+
+  compileOptions {
+    // REPRODUCIBILITY: Use Java 11 target for deterministic bytecode
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  buildFeatures {
+    compose true
+    buildConfig true  // Enable BuildConfig generation for ENABLE_VERBOSE_LOGGING
+  }
+
+  // REPRODUCIBILITY: Compose compiler configuration via native Kotlin 2.0 plugin
+  // (replaces composeOptions.kotlinCompilerExtensionVersion)
+  composeCompiler {
+    enableIntrinsicRemember = true
+    includeSourceInformation = false
+    // REPRODUCIBILITY: Disable strong skipping mode to avoid non-deterministic lambda generation
+    enableStrongSkippingMode = false
+    // REPRODUCIBILITY: Disable non-skippable group optimization
+    enableNonSkippingGroupOptimization = false
+  }
+
+  sourceSets {
+    main {
+      manifest.srcFile 'AndroidManifest.xml'
+      kotlin.srcDirs = ['src/main/kotlin', 'build/generated/search/kotlin']
+      java.srcDirs = ['src/main/java']
+      res.srcDirs = ['res', 'build/generated/layouts/res', 'build/generated/version/res']
+      assets.srcDirs = ['assets', 'src/main/assets']
+    }
+    test {
+      kotlin.srcDirs = ['src/test/kotlin']
+      java.srcDirs = ['src/test/java']
+      // Expose bundled assets to JVM tests so EmbedEnrichRulesTest (and any
+      // future test that loads url_rules/*.json) can resolve them via
+      // Class.getResourceAsStream("/url_rules/<name>.json").
+      resources.srcDirs += 'src/main/assets'
+    }
+    androidTest {
+      kotlin.srcDirs = ['src/androidTest/kotlin']
+    }
+  }
+
+  signingConfigs {
+    debug {
+      storeFile(System.env.DEBUG_KEYSTORE ? file(System.env.DEBUG_KEYSTORE) : file("debug.keystore"))
+      storePassword(System.env.DEBUG_KEYSTORE_PASSWORD ? "$System.env.DEBUG_KEYSTORE_PASSWORD" : "debug0")
+      keyAlias(System.env.DEBUG_KEY_ALIAS ? "$System.env.DEBUG_KEY_ALIAS" : "debug")
+      keyPassword(System.env.DEBUG_KEY_PASSWORD ? "$System.env.DEBUG_KEY_PASSWORD" : "debug0")
+    }
+    release {
+      // REPRODUCIBILITY: Check for non-empty keystore path (empty string is truthy in Groovy)
+      def keystorePath = System.env.RELEASE_KEYSTORE
+      if (keystorePath != null && keystorePath.trim().length() > 0) {
+        storeFile file(keystorePath)
+        storePassword "$System.env.RELEASE_KEYSTORE_PASSWORD"
+        keyAlias "$System.env.RELEASE_KEY_ALIAS"
+        keyPassword "$System.env.RELEASE_KEY_PASSWORD"
+      } else {
+        // No release keystore - use debug for local builds, CI will sign separately
+        storeFile file("debug.keystore")
+        storePassword "debug0"
+        keyAlias "debug"
+        keyPassword "debug0"
+      }
+    }
+  }
+
+  buildTypes {
+    // LOCAL_BUILD env var enables verbose logging for local development
+    // Set by build-on-termux.sh, not set by GitHub Actions
+    def isLocalBuild = System.env.LOCAL_BUILD == "true"
+
+    release {
+      // REPRODUCIBILITY: Disable VCS info to prevent version-control-info.textproto (AGP 8.3+)
+      vcsInfo.include = false
+      // REPRODUCIBILITY TEST: Disable R8 to isolate if it causes non-deterministic DEX
+      minifyEnabled false
+      shrinkResources false
+      debuggable false
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+      resValue "string", "app_name", "CleverKeys"
+      // Verbose logging: enabled for local builds, disabled for CI/production
+      buildConfigField "boolean", "ENABLE_VERBOSE_LOGGING", isLocalBuild ? "true" : "false"
+      // REPRODUCIBILITY: Only sign during build if non-empty keystore provided
+      // When unset/empty, build unsigned APK for post-processing and manual signing
+      def keystorePath = System.env.RELEASE_KEYSTORE
+      if (keystorePath != null && keystorePath.trim().length() > 0) {
+        signingConfig signingConfigs.release
+      }
+      // Note: If no signingConfig, APK is unsigned (requires manual signing)
+    }
+    debug {
+      // Separate applicationId so debug builds coexist with the prod-signed app
+      // and never overwrite/wipe its data on install.
+      applicationIdSuffix '.debug'
+      minifyEnabled false
+      shrinkResources false
+      debuggable true
+      resValue "string", "app_name", "CleverKeys (Debug)"
+      resValue "bool", "debug_logs", "true"
+      buildConfigField "boolean", "ENABLE_VERBOSE_LOGGING", "true"
+      signingConfig signingConfigs.debug
+    }
+  }
+
+  // ABI split versionCodes - must match F-Droid metadata exactly
+  android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+      def abi = output.getFilter(com.android.build.OutputFile.ABI)
+      if (abi != null) {
+        def abiCode = rootProject.ext.abiCodes.get(abi, 0)
+        output.versionCodeOverride = variant.versionCode * 10 + abiCode
+        output.outputFileName = "CleverKeys-v${variant.versionName}-${abi}.apk"
+      } else {
+        output.outputFileName = "CleverKeys-v${variant.versionName}-universal.apk"
+      }
+    }
+  }
+
+  lint {
+    baseline = file("lint-baseline.xml")
+    abortOnError = false
+    checkReleaseBuilds = false
+  }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+      returnDefaultValues = true
+    }
+  }
+}
+
+// REPRODUCIBILITY: Apply deterministic compilation settings
+// Note: sourceInformation is now set via composeCompiler {} block for Kotlin 2.0+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    compilerOptions {
+        freeCompilerArgs.addAll([
+            "-Xbackend-threads=1",
+            "-Xno-call-assertions",
+            "-Xno-receiver-assertions",
+            "-Xno-param-assertions"
+        ])
+    }
+}
+
+// REPRODUCIBILITY: Disable baseline profile compilation for deterministic APKs
+// The ART profile varies between build environments and causes reproducibility issues
+tasks.configureEach { task ->
+    if (task.name.contains("ArtProfile") || task.name.contains("BaselineProfile")) {
+        task.enabled = false
+    }
+}
+
+def isArm64 = System.getProperty("os.arch") in ["aarch64", "arm64"]
+if (isArm64) {
+  tasks.withType(Test).configureEach {
+    enabled = false
+  }
+}
+
+// Pure JVM test runner — works on ARM64 where standard Test tasks are disabled.
+// Runs JUnitCore directly via JavaExec, no proot or shell script needed.
+// Usage: ./gradlew runPureTests [-PtestClass=BeamSearchEngineTest]
+tasks.register('runPureTests', JavaExec) {
+  dependsOn 'compileDebugUnitTestKotlin', 'processDebugUnitTestJavaRes'
+  group = 'verification'
+  description = 'Run pure JVM tests via JUnitCore (works on ARM64)'
+
+  def pureTestClasses = [
+    'tribixbite.cleverkeys.AccentNormalizerTest',
+    'tribixbite.cleverkeys.VocabularyTrieTest',
+    'tribixbite.cleverkeys.DictionaryWordTest',
+    'tribixbite.cleverkeys.SwipeResamplerTest',
+    'tribixbite.cleverkeys.onnx.MemoryPoolTest',
+    'tribixbite.cleverkeys.VocabularyUtilsTest',
+    'tribixbite.cleverkeys.BeamSearchModelsTest',
+    'tribixbite.cleverkeys.ConfigDefaultsTest',
+    'tribixbite.cleverkeys.ContractionFrequencyTest',
+    'tribixbite.cleverkeys.PipelineBenchmarkTest',
+    'tribixbite.cleverkeys.BeamSearchEngineTest',
+    'tribixbite.cleverkeys.PipelineIntegrationTest',
+    'tribixbite.cleverkeys.ShortSwipeIntentTest',
+    'tribixbite.cleverkeys.customization.ShortSwipeMappingTest',
+    'tribixbite.cleverkeys.GestureTest',
+    'tribixbite.cleverkeys.ModmapTest',
+    'tribixbite.cleverkeys.ComposeKeyPureTest',
+    'tribixbite.cleverkeys.KeyValueParserTest',
+    'tribixbite.cleverkeys.onnx.PrefixBoostTrieTest',
+    'tribixbite.cleverkeys.onnx.BroadcastSupportTest',
+    'tribixbite.cleverkeys.NeuralPredictionPureTest',
+    'tribixbite.cleverkeys.IntegrationPureTest',
+    'tribixbite.cleverkeys.CoordinateNormalizerTest',
+    'tribixbite.cleverkeys.TrajectoryFeatureCalculatorTest',
+    'tribixbite.cleverkeys.IssueRegressionTest',
+    'tribixbite.cleverkeys.AutoSpaceLogicTest',
+    'tribixbite.cleverkeys.gif.GifTest',
+    'tribixbite.cleverkeys.gif.GifCategoryTest',
+    'tribixbite.cleverkeys.SwipeLayoutSupportTest',
+    'tribixbite.cleverkeys.BackspaceUndoTest',
+    'tribixbite.cleverkeys.ClipboardPaginationTest',
+    'tribixbite.cleverkeys.ClipboardFixesJvmTest',
+    'tribixbite.cleverkeys.ClipboardEditJvmTest',
+    'tribixbite.cleverkeys.Issue78SuggestionReplaceTest',
+    'tribixbite.cleverkeys.Issue118EmojiOverflowTest',
+    'tribixbite.cleverkeys.Issue136MaxSeqLengthClampTest',
+    'tribixbite.cleverkeys.backup.SettingsImportPlanBuilderTest',
+    'tribixbite.cleverkeys.backup.SettingsDefaultsDriftTest',
+    'tribixbite.cleverkeys.SettingsSearchCoverageTest',
+    'tribixbite.cleverkeys.backup.DictImportPlanBuilderTest',
+    'tribixbite.cleverkeys.backup.SettingsExporterTest',
+    'tribixbite.cleverkeys.BackupRestoreResultMessagesTest',
+    'tribixbite.cleverkeys.BackupRestorePreviewRenderTest',
+    'tribixbite.cleverkeys.backup.ShortSwipeDiffTest',
+    'tribixbite.cleverkeys.autocorrect.KeyAdjacencyTest',
+    'tribixbite.cleverkeys.autocorrect.MorphologyTest',
+    'tribixbite.cleverkeys.LanguagePreferenceKeysReverseLookupTest',
+    'tribixbite.cleverkeys.BucketBSourceContractTest',
+    'tribixbite.cleverkeys.clipboard.sanitize.RulesetParserTest',
+    'tribixbite.cleverkeys.clipboard.sanitize.UrlSanitizerTest',
+    'tribixbite.cleverkeys.clipboard.sanitize.EmbedEnrichRulesTest',
+    // SwipePrunerTest excluded: requires android.util.Log (MockK + Robolectric)
+  ]
+
+  mainClass = 'org.junit.runner.JUnitCore'
+
+  // Build classpath from test + main compiled classes + all dependencies
+  // The java-res output dir holds processed test resources (incl. files exposed
+  // from src/main/assets via the test sourceSet's resources.srcDirs additions).
+  classpath = files(
+    "${buildDir}/intermediates/javac/debugUnitTest/classes",
+    "${buildDir}/tmp/kotlin-classes/debugUnitTest",
+    "${buildDir}/intermediates/javac/debug/classes",
+    "${buildDir}/tmp/kotlin-classes/debug",
+    "${buildDir}/intermediates/java_res/debugUnitTest/processDebugUnitTestJavaRes/out",
+  ) + configurations.debugUnitTestRuntimeClasspath + configurations.debugRuntimeClasspath
+
+  // Allow single test via -PtestClass=ClassName
+  if (project.hasProperty('testClass')) {
+    def cls = project.property('testClass')
+    args = ["tribixbite.cleverkeys.${cls}"]
+  } else {
+    args = pureTestClasses
+  }
+}
+
+// MockK test runner — like runPureTests but with android.jar on classpath.
+// Allows MockK to mock Android framework classes (Log, PointF, Context, etc.)
+// without Robolectric. The android.jar stubs provide class definitions; MockK
+// intercepts all calls before the stubs' "Stub!" exceptions are hit.
+// Usage: ./gradlew runMockTests [-PtestClass=SwipePrunerTest]
+tasks.register('runMockTests', JavaExec) {
+  dependsOn 'compileDebugUnitTestKotlin'
+  group = 'verification'
+  description = 'Run MockK-based tests with android.jar stubs (works on ARM64)'
+
+  def mockTestClasses = [
+    'tribixbite.cleverkeys.SwipePrunerTest',
+    'tribixbite.cleverkeys.PrivacyManagerTest',
+    'tribixbite.cleverkeys.DebugLoggingManagerTest',
+    'tribixbite.cleverkeys.AutocapitalisationTest',
+    'tribixbite.cleverkeys.DirectBootManagerTest',
+    'tribixbite.cleverkeys.DirectBootAwarePreferencesTest',
+    'tribixbite.cleverkeys.DictionaryManagerTest',
+    'tribixbite.cleverkeys.VibratorCompatTest',
+    'tribixbite.cleverkeys.TerminalUtilsTest',
+    'tribixbite.cleverkeys.KeyRepeatLogicTest',
+    'tribixbite.cleverkeys.backup.SettingsImportPlanApplyTest',
+    'tribixbite.cleverkeys.backup.DictImportPlanApplyTest',
+    'tribixbite.cleverkeys.backup.BackupRestoreManagerHeadlessTest',
+    'tribixbite.cleverkeys.BackupRestoreFullBackupTest',
+    'tribixbite.cleverkeys.clipboard.sanitize.SanitizationConfigBuildTest',
+    'tribixbite.cleverkeys.customization.CustomShortSwipeExecutorTest',
+  ]
+
+  mainClass = 'org.junit.runner.JUnitCore'
+
+  // android.jar MUST come AFTER MockK on classpath so MockK intercepts first
+  // Resolve SDK location: ANDROID_HOME (CI), ANDROID_SDK_ROOT, or ~/android-sdk (Termux)
+  def sdkDir = System.getenv('ANDROID_HOME') ?: System.getenv('ANDROID_SDK_ROOT') ?: "${System.getProperty('user.home')}/android-sdk"
+  def androidJar = file("${sdkDir}/platforms/android-34/android.jar")
+  classpath = files(
+    "${buildDir}/intermediates/javac/debugUnitTest/classes",
+    "${buildDir}/tmp/kotlin-classes/debugUnitTest",
+    "${buildDir}/intermediates/javac/debug/classes",
+    "${buildDir}/tmp/kotlin-classes/debug",
+  ) + configurations.debugUnitTestRuntimeClasspath + configurations.debugRuntimeClasspath + files(androidJar)
+
+  if (project.hasProperty('testClass')) {
+    def cls = project.property('testClass')
+    args = ["tribixbite.cleverkeys.${cls}"]
+  } else {
+    args = mockTestClasses
+  }
+}
+
+// Run all tests: pure + mock
+tasks.register('runAllTests') {
+  dependsOn 'runPureTests', 'runMockTests'
+  group = 'verification'
+  description = 'Run all tests (pure JVM + MockK-based)'
+}
+
+tasks.register('buildKeyboardFont') {
+  def fontFile = file("assets/special_font.ttf")
+  if (fontFile.exists()) return
+  exec {
+    workingDir "$projectDir/srcs/special_font"
+    def svgFiles = workingDir.listFiles().findAll { it.isFile() && it.name.endsWith(".svg") }
+    commandLine("fontforge", "-lang=ff", "-script", "build.pe", "$buildDir/special_font.ttf", *svgFiles)
+  }
+  copy { from "$buildDir/special_font.ttf" into "assets" }
+}
+
+tasks.register('genEmojis') {
+  def outFile = file("res/raw/emojis.txt")
+  if (outFile.exists() && outFile.length() > 1000) return
+  exec { workingDir = projectDir; commandLine "python3", "gen_emoji.py"; ignoreExitValue = true }
+}
+
+tasks.withType(Test).configureEach {
+  dependsOn 'genLayoutsList', 'checkKeyboardLayouts', 'generateComposeData'
+}
+
+tasks.register('genLayoutsList') {
+  def outFile = file("res/values/layouts.xml")
+  if (outFile.exists() && outFile.length() > 100) return
+  exec { workingDir = projectDir; commandLine "python3", "gen_layouts.py"; ignoreExitValue = true }
+}
+
+tasks.register('checkKeyboardLayouts') {
+  if (!file("res/values/layouts.xml").exists()) return
+  exec { workingDir = projectDir; commandLine "python3", "tools/check_layout.py"; ignoreExitValue = true }
+}
+
+tasks.register('generateBinaryDictionaries') {
+  doLast {
+    def dictDir = file("src/main/assets/dictionaries")
+    dictDir.listFiles().findAll { it.name.endsWith(".json") && !it.name.contains("contraction") }.each { jsonFile ->
+      def binFile = new File(dictDir, jsonFile.name.replace(".json", ".bin"))
+      if (!binFile.exists() || jsonFile.lastModified() > binFile.lastModified()) {
+        exec { workingDir = projectDir; commandLine "python3", "scripts/generate_binary_dict.py", jsonFile.absolutePath, binFile.absolutePath }
+      }
+    }
+  }
+}
+
+tasks.register('generateBinaryContractions') {
+  doLast {
+    def dictDir = file("src/main/assets/dictionaries")
+    def binFile = new File(dictDir, "contractions.bin")
+    if (!binFile.exists()) {
+      exec {
+        workingDir = projectDir
+        commandLine "python3", "scripts/generate_binary_contractions.py",
+                    new File(dictDir, "contractions_non_paired.json").absolutePath,
+                    new File(dictDir, "contraction_pairings.json").absolutePath,
+                    binFile.absolutePath
+      }
+    }
+  }
+}
+
+// REPRODUCIBILITY: Generate version info with deterministic values only
+// Removes commit_date as it changes with each commit and breaks reproducibility
+tasks.register('generateVersionInfo') {
+  def outDir = file("${buildDir}/generated/version/res/raw")
+  outputs.dir(outDir)
+
+  doLast {
+    // Use only the version string - no git info that could vary between builds
+    // Commit info is removed entirely to ensure byte-identical APKs
+    outDir.mkdirs()
+    def versionFile = new File(outDir, "version_info.txt")
+    versionFile.text = """\
+version=${project.ext.versionNameStr}
+"""
+    println "Generated version_info.txt in ${versionFile.absolutePath}: version=${project.ext.versionNameStr}"
+  }
+}
+
+tasks.named("preBuild") {
+  dependsOn "initDebugKeystore", "copyLayoutDefinitions", "generateBinaryDictionaries", "generateBinaryContractions", "generateComposeData", "generateVersionInfo", "generateSettingsSearchIndex"
+}
+
+// Auto-derive the settings search index from the SettingsActivity controls so it never
+// has to be hand-maintained (see scripts/generate_settings_search_index.py). Inputs/outputs
+// are declared so Gradle skips regeneration when nothing relevant changed.
+tasks.register('generateSettingsSearchIndex') {
+  def src = file("src/main/kotlin/tribixbite/cleverkeys/SettingsActivity.kt")
+  def strings = file("res/values/strings.xml")
+  def script = file("scripts/generate_settings_search_index.py")
+  def outKt = file("build/generated/search/kotlin/tribixbite/cleverkeys/SettingsSearchIndex.kt")
+  inputs.files(src, strings, script)
+  outputs.file(outKt)
+  doLast {
+    exec { workingDir = projectDir; commandLine "python3", script.absolutePath, outKt.absolutePath }
+  }
+}
+
+tasks.register('generateComposeData') {
+  doLast {
+    def composeDir = file("srcs/compose")
+    def outputBin = file("src/main/assets/compose_data.bin")
+    def outputKt = file("src/main/kotlin/tribixbite/cleverkeys/ComposeKeyData.kt")
+    if (outputBin.exists() && outputKt.exists()) return
+    def jsonFiles = fileTree("srcs/compose").matching { include "*.json" }.files.collect { it.absolutePath }
+    exec { workingDir = projectDir; commandLine(["python3", "scripts/generate_compose_bin.py"] + jsonFiles + [file("srcs/compose/compose").absolutePath]) }
+  }
+}
+
+tasks.register('initDebugKeystore') {
+  if (!file("debug.keystore").exists()) {
+    exec { commandLine "keytool", "-genkeypair", "-dname", "cn=d, ou=e, o=b, c=ug", "-alias", "debug", "-keypass", "debug0", "-keystore", "debug.keystore", "-keyalg", "rsa", "-storepass", "debug0", "-validity", "10000" }
+  }
+}
+
+// copyLayoutDefinitions copies ALL layout XMLs from src/main/layouts/ (including latn_qwerty_us.xml)
+// into build/generated/layouts/res/raw/ — no separate copyRawQwertyUS needed.
+tasks.register('copyLayoutDefinitions', Copy) { from "src/main/layouts"; include "*.xml"; into "build/generated/layouts/res/raw" }
+
+tasks.register("printR8Version") {
+    doLast {
+        try {
+            def r8Class = Class.forName("com.android.tools.r8.Version")
+            println "R8 Version: ${r8Class.getVersionString()}"
+        } catch (Exception e) {
+            println "R8 Version not found in classpath"
+        }
+    }
+}
+
+// REPRODUCIBILITY: Normalize APK resource paths by removing -v4 suffixes
+// This fixes AAPT2 adding non-deterministic version qualifiers to resource paths
+tasks.register("normalizeApkPaths") {
+    description = "Normalize APK resource paths for reproducibility"
+    group = "build"
+
+    // Only run after release builds
+    mustRunAfter tasks.matching { it.name.startsWith("assemble") && it.name.contains("Release") }
+
+    doLast {
+        def apkDir = file("${buildDir}/outputs/apk/release")
+        if (!apkDir.exists()) {
+            println "No release APKs found to normalize"
+            return
+        }
+
+        def scriptPath = file("${projectDir}/scripts/normalize_apk.py")
+        if (!scriptPath.exists()) {
+            println "Warning: normalize_apk.py not found at ${scriptPath}"
+            return
+        }
+
+        // Get signing config
+        def keystorePath = System.env.RELEASE_KEYSTORE ?: file("debug.keystore").absolutePath
+        def keyAlias = System.env.RELEASE_KEY_ALIAS ?: "debug"
+        def storePass = System.env.RELEASE_KEYSTORE_PASSWORD ?: "debug0"
+        def keyPass = System.env.RELEASE_KEY_PASSWORD ?: "debug0"
+
+        apkDir.listFiles()?.findAll { it.name.endsWith(".apk") }?.each { apkFile ->
+            println "Normalizing: ${apkFile.name}"
+            def normalizedApk = new File(apkFile.parentFile, apkFile.name.replace(".apk", "_normalized.apk"))
+
+            try {
+                exec {
+                    commandLine "python3", scriptPath.absolutePath,
+                        apkFile.absolutePath,
+                        normalizedApk.absolutePath,
+                        "--sign",
+                        "--keystore", keystorePath,
+                        "--key-alias", keyAlias,
+                        "--store-pass", storePass,
+                        "--key-pass", keyPass
+                }
+
+                // Replace original with normalized
+                if (normalizedApk.exists()) {
+                    apkFile.delete()
+                    normalizedApk.renameTo(apkFile)
+                    println "Normalized: ${apkFile.name}"
+                }
+            } catch (Exception e) {
+                println "Warning: Failed to normalize ${apkFile.name}: ${e.message}"
+            }
+        }
+    }
+}
+
+// Hook normalization into release builds
+tasks.configureEach { task ->
+    if (task.name == "assembleRelease") {
+        task.finalizedBy("normalizeApkPaths")
+    }
+}

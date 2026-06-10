@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup & Restore - CleverKeys User Guide</title>
+    <meta name="description" content="Export and import settings">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Troubleshooting" class="hover:text-ck-green">Troubleshooting</a>
+            <span>/</span>
+            <span class="text-gray-300">Backup & Restore</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #ef444420; color: #ef4444">Troubleshooting</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P2</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Backup & Restore</h1>
+        <p class="text-xl text-gray-400">Export and import settings</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Backup & Restore</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Export and import your keyboard configuration</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Troubleshooting</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: beginner</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Backup & Restore</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Export and import your keyboard settings, dictionary, and clipboard history.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">How</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Settings</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Activities > Backup & Restore > Export/Import Config</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Dictionary</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Activities > Backup & Restore > Export/Import Dictionary</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Clipboard</strong></td><td class="px-4 py-2 border-t border-gray-700">Settings > Activities > Backup & Restore > Export/Import Clipboard</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Format</strong></td><td class="px-4 py-2 border-t border-gray-700">JSON files</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Available Exports</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Configuration Export</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Exports all keyboard settings to a JSON file:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Included</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">All Settings</strong></td><td class="px-4 py-2 border-t border-gray-700">Appearance, behavior, neural settings</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Theme Selection</strong></td><td class="px-4 py-2 border-t border-gray-700">Current theme choice</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Custom Subkeys</strong></td><td class="px-4 py-2 border-t border-gray-700">Per-key customizations</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">How to export:</strong></p>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open <strong class="text-white">Settings</strong></li>
+<li class="ml-4 text-gray-300">2. Tap <strong class="text-white">Backup & Restore</strong> in the Activities section</li>
+<li class="ml-4 text-gray-300">3. Tap <strong class="text-white">Export Config</strong></li>
+<li class="ml-4 text-gray-300">4. Choose save location</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Dictionary Export</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Exports your personal dictionary:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Included</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">User Words</strong></td><td class="px-4 py-2 border-t border-gray-700">Words you've added</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Learned Words</strong></td><td class="px-4 py-2 border-t border-gray-700">Words the keyboard learned</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Clipboard Export</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Exports clipboard history:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Included</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">History</strong></td><td class="px-4 py-2 border-t border-gray-700">Recent clipboard items</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Pinned</strong></td><td class="px-4 py-2 border-t border-gray-700">Pinned items</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Todos</strong></td><td class="px-4 py-2 border-t border-gray-700">Todo items</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Importing</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Import Config</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open <strong class="text-white">Settings > Activities > Backup & Restore</strong></li>
+<li class="ml-4 text-gray-300">2. Tap <strong class="text-white">Import Config</strong></li>
+<li class="ml-4 text-gray-300">3. Browse to your backup JSON file</li>
+<li class="ml-4 text-gray-300">4. Settings will be applied immediately</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Import Dictionary</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Tap <strong class="text-white">Import Dictionary</strong></li>
+<li class="ml-4 text-gray-300">2. Select dictionary JSON file</li>
+<li class="ml-4 text-gray-300">3. Words are merged with existing dictionary</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Import Clipboard</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Tap <strong class="text-white">Import Clipboard</strong></li>
+<li class="ml-4 text-gray-300">2. Select clipboard JSON file</li>
+<li class="ml-4 text-gray-300">3. Items are added to history</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Transfer to New Device</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Export</strong> config, dictionary, and clipboard on old device</li>
+<li class="ml-4 text-gray-300">2. <strong class="text-white">Transfer</strong> the JSON files (USB, email, cloud storage)</li>
+<li class="ml-4 text-gray-300">3. <strong class="text-white">Import</strong> each file on new device</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Data Export for ML</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">CleverKeys also supports exporting swipe training data:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Format</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">JSON</strong></td><td class="px-4 py-2 border-t border-gray-700">Structured swipe data</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">NDJSON</strong></td><td class="px-4 py-2 border-t border-gray-700">Newline-delimited JSON for ML pipelines</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed">Access via <strong class="text-white">Settings > Privacy & Data section > Export JSON/NDJSON</strong>.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Troubleshooting</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Import Fails</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Issue</td><td class="px-4 py-2 border-t border-gray-700">Solution</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">File corrupt</strong></td><td class="px-4 py-2 border-t border-gray-700">Re-export from source device</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Wrong format</strong></td><td class="px-4 py-2 border-t border-gray-700">Ensure file is CleverKeys JSON export</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Permission denied</strong></td><td class="px-4 py-2 border-t border-gray-700">Grant storage permission to CleverKeys</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Settings Not Applied</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Close and reopen the keyboard</li>
+<li class="ml-4 text-gray-300">2. If needed, disable and re-enable CleverKeys in system settings</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">File Locations</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Exported files are saved to the location you choose via Android's file picker (typically Downloads folder).</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Topics</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="../settings/privacy.html" class="text-green-400 hover:underline">Privacy</a> - Data collection settings</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../customization/custom-layouts.html" class="text-green-400 hover:underline">Per-Key Customization</a> - Subkey settings</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="troubleshooting/reset-defaults.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Reset to Defaults</span>
+            </a>
+            <div></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

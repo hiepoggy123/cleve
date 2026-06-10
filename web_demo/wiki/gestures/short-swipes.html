@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Short Swipes - CleverKeys User Guide</title>
+    <meta name="description" content="Quick swipe actions on any key">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Gestures" class="hover:text-ck-green">Gestures</a>
+            <span>/</span>
+            <span class="text-gray-300">Short Swipes</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #8b5cf620; color: #8b5cf6">Gestures</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P0</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Short Swipes</h1>
+        <p class="text-xl text-gray-400">Quick swipe actions on any key</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Short Swipes</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Quick flick gestures to access subkeys</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Gestures</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: intermediate</p>
+<p class="mb-4 text-gray-300 leading-relaxed">featured: true</p>
+<p class="mb-4 text-gray-300 leading-relaxed">related_spec: ../specs/gestures/short-swipes-spec.md</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Short Swipes</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Short swipes let you quickly access additional characters by flicking in 8 directions from any key. This is faster than long-pressing for common characters.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">What</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Description</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Purpose</strong></td><td class="px-4 py-2 border-t border-gray-700">Quick access to subkeys via directional flick</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Gesture</strong></td><td class="px-4 py-2 border-t border-gray-700">Quick flick from key in any of 8 directions</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Directions</strong></td><td class="px-4 py-2 border-t border-gray-700">N, NE, E, SE, S, SW, W, NW</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">How It Works</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Each key has up to 8 subkeys arranged around it:</p>
+
+<pre class="bg-ck-dark p-4 rounded-lg overflow-x-auto mb-4"><code class="language-text">NW   N   NE
+<p class="mb-4 text-gray-300 leading-relaxed">      \  |  /</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   W -- KEY -- E</p>
+<p class="mb-4 text-gray-300 leading-relaxed">      /  |  \</p>
+<p class="mb-4 text-gray-300 leading-relaxed">    SW   S   SE</code></pre></p>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A quick flick in any direction types that subkey character.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">How to Use</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 1: Touch the Key</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Touch the key you want to access subkeys from (don't tap - hold briefly).</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 2: Flick in a Direction</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">While still touching, quickly slide your finger in the direction of the subkey you want.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Step 3: Release</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Lift your finger. The subkey character appears.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Example: Typing Numbers</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">On QWERTY layout, numbers are on the NORTHEAST (up-right) direction:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Key</td><td class="px-4 py-2 border-t border-gray-700">Flick NE</td><td class="px-4 py-2 border-t border-gray-700">Result</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Q</td><td class="px-4 py-2 border-t border-gray-700">↗</td><td class="px-4 py-2 border-t border-gray-700">1</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">W</td><td class="px-4 py-2 border-t border-gray-700">↗</td><td class="px-4 py-2 border-t border-gray-700">2</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">E</td><td class="px-4 py-2 border-t border-gray-700">↗</td><td class="px-4 py-2 border-t border-gray-700">3</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">R</td><td class="px-4 py-2 border-t border-gray-700">↗</td><td class="px-4 py-2 border-t border-gray-700">4</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">...</td><td class="px-4 py-2 border-t border-gray-700">...</td><td class="px-4 py-2 border-t border-gray-700">...</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">Think "start from the SW corner of the key" to access the NE subkey.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Subkey Layouts</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Letters (Top Row)</h3>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Northeast</strong>: Numbers (1-0)</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Northwest</strong>: Symbols (~, @, #, $, etc.)</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Southeast</strong>: Escape (on Q)</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Backspace</h3>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">West</strong>: Delete entire word</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Short swipe + hold</strong>: Selection delete mode</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!NOTE]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">Subkey assignments vary by layout. Check Per-Key Customization to see and modify your layout's subkeys.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Calibrating Short Swipes</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Adjust sensitivity in Settings:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Go to Settings > Activities > <strong class="text-white">Short Swipe Calibration</strong></li>
+<li class="ml-4 text-gray-300">2. Adjust <strong class="text-white">Minimum Distance</strong> (shorter = more sensitive)</li>
+<li class="ml-4 text-gray-300">3. Practice in the test area</li>
+</ul>
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Effect</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Min Distance</strong></td><td class="px-4 py-2 border-t border-gray-700">How far to swipe before triggering</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Max Distance</strong></td><td class="px-4 py-2 border-t border-gray-700">Beyond this becomes a long swipe</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips and Tricks</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Practice direction</strong>: North is straight up, not diagonal</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Speed matters</strong>: Quick flicks work best</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Visual feedback</strong>: The trail shows your swipe direction</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Customize</strong>: Change subkey actions in Settings > Activities > Per-Key Customization</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">If short swipes accidentally trigger, increase the minimum distance setting.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Difference from Long Press</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Action</td><td class="px-4 py-2 border-t border-gray-700">Short Swipe</td><td class="px-4 py-2 border-t border-gray-700">Long Press</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Speed</strong></td><td class="px-4 py-2 border-t border-gray-700">Fast (instant)</td><td class="px-4 py-2 border-t border-gray-700">Slow (wait 600ms)</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Behavior</strong></td><td class="px-4 py-2 border-t border-gray-700">Types subkey character</td><td class="px-4 py-2 border-t border-gray-700">Key repeat</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Access</strong></td><td class="px-4 py-2 border-t border-gray-700">8 directional subkeys</td><td class="px-4 py-2 border-t border-gray-700">Repeats the main key</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Settings</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Location</td><td class="px-4 py-2 border-t border-gray-700">Description</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Min Distance</strong></td><td class="px-4 py-2 border-t border-gray-700">Gesture Tuning</td><td class="px-4 py-2 border-t border-gray-700">Minimum swipe length</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Max Distance</strong></td><td class="px-4 py-2 border-t border-gray-700">Gesture Tuning</td><td class="px-4 py-2 border-t border-gray-700">Maximum swipe length</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Enable Short Swipes</strong></td><td class="px-4 py-2 border-t border-gray-700">Gesture Tuning</td><td class="px-4 py-2 border-t border-gray-700">Toggle feature on/off</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Features</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="cursor-navigation.html" class="text-green-400 hover:underline">Cursor Navigation</a> - Move cursor with gestures</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="selection-delete.html" class="text-green-400 hover:underline">Selection Delete</a> - Select text with backspace</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../customization/per-key-actions.html" class="text-green-400 hover:underline">Per-Key Actions</a> - Customize subkeys</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Technical Details</h2>
+
+<p class="mb-4 text-gray-300 leading-relaxed">See <a href="../specs/gestures/short-swipes-spec.html" class="text-green-400 hover:underline">Short Swipes Technical Specification</a>.</p>
+
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="typing/user-dictionary.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">User Dictionary</span>
+            </a>
+            <a href="gestures/cursor-navigation.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Cursor Navigation</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

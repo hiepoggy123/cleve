@@ -1,0 +1,115 @@
+name: Nightly Build
+
+on:
+  push:
+    branches: [ main ]
+    tags-ignore:
+      - '**'  # Don't run on tag pushes - release.yml handles those
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+
+    - name: Build debug APK
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: Get version info
+      id: version
+      run: |
+        echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        echo "sha_short=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
+    - name: List and rename APKs
+      id: apks
+      run: |
+        cd build/outputs/apk/debug
+        echo "APKs built:"
+        ls -la *.apk
+
+        # Rename all APKs with version info
+        for apk in *.apk; do
+          # Extract ABI from filename (e.g., tribixbite.cleverkeys-arm64-v8a-debug.apk)
+          if [[ "$apk" == *"universal"* ]]; then
+            newname="CleverKeys-${{ steps.version.outputs.sha_short }}-universal.apk"
+          elif [[ "$apk" == *"arm64-v8a"* ]]; then
+            newname="CleverKeys-${{ steps.version.outputs.sha_short }}-arm64.apk"
+          elif [[ "$apk" == *"armeabi-v7a"* ]]; then
+            newname="CleverKeys-${{ steps.version.outputs.sha_short }}-armv7.apk"
+          elif [[ "$apk" == *"x86_64"* ]]; then
+            newname="CleverKeys-${{ steps.version.outputs.sha_short }}-x86_64.apk"
+          else
+            newname="CleverKeys-${{ steps.version.outputs.sha_short }}.apk"
+          fi
+          mv "$apk" "$newname"
+          echo "Renamed: $apk -> $newname"
+        done
+        ls -la *.apk
+
+    - name: Update nightly release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: nightly
+        name: "🌙 Nightly Build"
+        body: |
+          ## Nightly Build - ${{ steps.version.outputs.date }}
+
+          **Commit**: `${{ steps.version.outputs.sha_short }}` (${{ github.sha }})
+
+          ⚠️ **This is an automated development build.** It may contain bugs or incomplete features.
+
+          ### Downloads (per-ABI for smaller size)
+          | ABI | Size | Device |
+          |-----|------|--------|
+          | **arm64** | ~35MB | Most modern phones (2017+) |
+          | **armv7** | ~30MB | Older 32-bit phones |
+          | **x86_64** | ~35MB | Emulators, Chromebooks |
+          | **universal** | ~52MB | All devices (larger) |
+
+          ### For Stable Releases
+          See [Releases](https://github.com/${{ github.repository }}/releases) for stable versions.
+
+          ---
+          🦝✨ *Built automatically from main branch*
+        files: build/outputs/apk/debug/*.apk
+        prerelease: true
+        make_latest: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Nightly summary
+      run: |
+        echo "## 🌙 Nightly Build Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Date**: ${{ steps.version.outputs.date }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ steps.version.outputs.sha_short }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Download**: [CleverKeys-nightly.apk](https://github.com/${{ github.repository }}/releases/tag/nightly)" >> $GITHUB_STEP_SUMMARY

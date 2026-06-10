@@ -1,0 +1,1010 @@
+package tribixbite.cleverkeys
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.text.InputType
+import android.util.Log
+import android.view.KeyCharacterMap
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.ExtractedText
+import android.view.inputmethod.ExtractedTextRequest
+import android.view.inputmethod.InputConnection
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+class KeyEventHandler(
+    private val recv: IReceiver
+) : Config.IKeyEventHandler, ClipboardHistoryService.ClipboardPasteCallback {
+
+    private val autocap: Autocapitalisation = Autocapitalisation(
+        recv.getHandler(),
+        AutocapitalisationCallback()
+    )
+
+    /** State of the system modifiers. It is updated whether a modifier is down
+     * or up and a corresponding key event is sent. */
+    private var mods: Pointers.Modifiers = Pointers.Modifiers.EMPTY
+
+    /** Consistent with [mods]. This is a mutable state rather than computed
+     * from [mods] to ensure that the meta state is correct while up and down
+     * events are sent for the modifier keys. */
+    private var metaState = 0
+
+    /** Whether to force sending arrow keys to move the cursor when
+     * [setSelection] could be used instead. */
+    private var moveCursorForceFallback = false
+
+    /** Track last typed character and timestamp for double-space-to-period feature */
+    private var lastTypedChar: Char = '\u0000'
+    private var lastTypedTimestamp: Long = 0L
+    // Use configurable threshold from settings
+    private val doubleSpaceThresholdMs: Long
+        get() = Config.globalConfig().double_space_threshold
+
+    /** Editing just started. */
+    fun started(info: EditorInfo) {
+        val conn = recv.getCurrentInputConnection()
+        if (conn != null) {
+            autocap.started(info, conn)
+        }
+        moveCursorForceFallback = shouldMoveCursorForceFallback(info)
+    }
+
+    /** Selection has been updated. */
+    fun selection_updated(oldSelStart: Int, newSelStart: Int) {
+        autocap.selection_updated(oldSelStart, newSelStart)
+    }
+
+    /** A key is being pressed. There will not necessarily be a corresponding
+     * [keyUp] event. */
+    override fun key_down(key: KeyValue?, isSwipe: Boolean) {
+        if (key == null) return
+
+        // Stop auto capitalisation when pressing some keys
+        when (key.getKind()) {
+            KeyValue.Kind.Modifier -> {
+                when (key.getModifier()) {
+                    KeyValue.Modifier.CTRL,
+                    KeyValue.Modifier.ALT,
+                    KeyValue.Modifier.META -> autocap.stop()
+                    else -> {}
+                }
+            }
+            KeyValue.Kind.Compose_pending -> autocap.stop()
+            KeyValue.Kind.Slider -> {
+                // Don't wait for the next key_up and move the cursor right away. This
+                // is called after the trigger distance have been travelled.
+                handleSlider(key.getSlider(), key.getSliderRepeat(), true)
+            }
+            else -> {}
+        }
+    }
+
+    /** A key has been released. */
+    override fun key_up(key: KeyValue?, mods: Pointers.Modifiers, isKeyRepeat: Boolean) {
+        if (key == null) return
+
+        val oldMods = this.mods
+        updateMetaState(mods)
+
+        when (key.getKind()) {
+            KeyValue.Kind.Char -> sendText(key.getChar().toString(), isKeyRepeat)
+            KeyValue.Kind.String -> sendText(key.getString(), isKeyRepeat)
+            KeyValue.Kind.Event -> recv.handle_event_key(key.getEvent())
+            KeyValue.Kind.Keyevent -> {
+                // Tag dialog mode — highest priority modal overlay
+                if (key.getKeyevent() == KeyEvent.KEYCODE_DEL && recv.isClipboardTagMode()) {
+                    recv.backspaceClipboardTag()
+                // Bug #1 fix: check edit mode BEFORE search mode for backspace too
+                } else if (key.getKeyevent() == KeyEvent.KEYCODE_DEL && recv.isClipboardEditMode()) {
+                    recv.backspaceClipboardEdit()
+                // Handle backspace in clipboard search mode
+                } else if (key.getKeyevent() == KeyEvent.KEYCODE_DEL && recv.isClipboardSearchMode()) {
+                    recv.backspaceClipboardSearch()
+                // #41 v5: Handle backspace in emoji search
+                } else if (key.getKeyevent() == KeyEvent.KEYCODE_DEL && recv.isEmojiPaneOpen()) {
+                    recv.backspaceEmojiSearch()
+                // Handle backspace in GIF search
+                } else if (key.getKeyevent() == KeyEvent.KEYCODE_DEL && recv.isGifPaneOpen()) {
+                    recv.backspaceGifSearch()
+                // Arrow keys and Enter in clipboard edit mode — dispatch to inline EditText
+                } else if (recv.isClipboardEditMode() && key.getKeyevent() in EDIT_MODE_DISPATCH_KEYS) {
+                    recv.dispatchKeyToClipboardEdit(key.getKeyevent())
+                } else if (key.getKeyevent() == KeyEvent.KEYCODE_DEL && handleBackspaceUndoSwipe()) {
+                    // #110: Backspace after swipe deletes entire swiped word
+                } else if (key.getKeyevent() == KeyEvent.KEYCODE_DEL && handleBackspaceUndoAutocorrect()) {
+                    // #110: Backspace after autocorrect reverts to original word
+                } else {
+                    send_key_down_up(key.getKeyevent())
+                    // Handle backspace for word prediction
+                    if (key.getKeyevent() == KeyEvent.KEYCODE_DEL) {
+                        recv.handle_backspace()
+                    }
+                }
+            }
+            KeyValue.Kind.Modifier -> {}
+            KeyValue.Kind.Editing -> handleEditingKey(key.getEditing())
+            KeyValue.Kind.Compose_pending -> recv.set_compose_pending(true)
+            KeyValue.Kind.Slider -> handleSlider(key.getSlider(), key.getSliderRepeat(), false)
+            KeyValue.Kind.Macro -> evaluateMacro(key.getMacro())
+            KeyValue.Kind.Timestamp -> handleTimestampKey(key.getTimestampFormat())
+            else -> {} // Handle Hangul_initial, Hangul_medial, Placeholder
+        }
+
+        updateMetaState(oldMods)
+    }
+
+    override fun mods_changed(mods: Pointers.Modifiers) {
+        updateMetaState(mods)
+    }
+
+    override fun paste_from_clipboard_pane(content: String) {
+        // Exit clipboard search mode before pasting to target field
+        // Otherwise send_text routes to search box instead of target
+        if (recv.isClipboardSearchMode()) {
+            recv.exitClipboardSearchMode()
+        }
+        // Paste from clipboard pane always targets the app's InputConnection, even
+        // during edit mode. Use sendTextDirect() to bypass edit/search/emoji routing.
+        sendTextDirect(content)
+    }
+
+    /**
+     * Paste media content via InputConnection.commitContent (API 25+).
+     * Uses FileProvider to generate a content:// URI from the internal media file path,
+     * then sends it to the target app via commitContent. Falls back to placing
+     * the media URI on the system clipboard if commitContent fails.
+     */
+    override fun paste_media_from_clipboard_pane(mimeType: String, mediaPath: String): Boolean {
+        if (recv.isClipboardSearchMode()) {
+            recv.exitClipboardSearchMode()
+        }
+        val context = recv.getContext() ?: return false
+        val editorInfo = recv.getCurrentEditorInfo() ?: return false
+        val conn = recv.getCurrentInputConnection() ?: return false
+
+        return try {
+            val mediaManager = ClipboardMediaManager(context)
+            val file = mediaManager.getMediaFile(mediaPath)
+            if (!file.exists()) {
+                Log.w(TAG, "Media file not found for paste: $mediaPath")
+                return false
+            }
+
+            val contentUri = androidx.core.content.FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
+
+            if (Build.VERSION.SDK_INT >= 25) {
+                // commitContent is the standard IME→app media insertion API (API 25+)
+                val description = android.content.ClipDescription(mediaPath, arrayOf(mimeType))
+                val inputContentInfo = androidx.core.view.inputmethod.InputContentInfoCompat(
+                    contentUri, description, null
+                )
+                val flags = androidx.core.view.inputmethod.InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION
+                val committed = androidx.core.view.inputmethod.InputConnectionCompat.commitContent(
+                    conn, editorInfo, inputContentInfo, flags, null
+                )
+                if (committed) {
+                    Log.d(TAG, "commitContent succeeded for $mimeType")
+                    return true
+                }
+                Log.d(TAG, "commitContent returned false, falling back to system clipboard")
+            }
+
+            // Fallback: place media URI on system clipboard with read permission
+            val clip = android.content.ClipData.newUri(
+                context.contentResolver, mediaPath, contentUri
+            )
+            clip.description.extras = android.os.PersistableBundle().apply {
+                putString("android.content.extra.MIME_TYPES", mimeType)
+            }
+            val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            cm.setPrimaryClip(clip)
+            Log.d(TAG, "Media placed on system clipboard as fallback")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to paste media: ${e.message}", e)
+            false
+        }
+    }
+
+    /** Update [mods] to be consistent with the [mods], sending key events if needed. */
+    private fun updateMetaState(mods: Pointers.Modifiers) {
+        // Released modifiers
+        var it = this.mods.diff(mods)
+        while (it.hasNext()) {
+            sendMetaKeyForModifier(it.next(), false)
+        }
+        // Activated modifiers
+        it = mods.diff(this.mods)
+        while (it.hasNext()) {
+            sendMetaKeyForModifier(it.next(), true)
+        }
+        this.mods = mods
+    }
+
+    private fun sendMetaKey(eventCode: Int, metaFlags: Int, down: Boolean) {
+        if (down) {
+            metaState = metaState or metaFlags
+            sendKeyevent(KeyEvent.ACTION_DOWN, eventCode, metaState)
+        } else {
+            sendKeyevent(KeyEvent.ACTION_UP, eventCode, metaState)
+            metaState = metaState and metaFlags.inv()
+        }
+    }
+
+    private fun sendMetaKeyForModifier(kv: KeyValue, down: Boolean) {
+        when (kv.getKind()) {
+            KeyValue.Kind.Modifier -> {
+                when (kv.getModifier()) {
+                    KeyValue.Modifier.CTRL -> sendMetaKey(
+                        KeyEvent.KEYCODE_CTRL_LEFT,
+                        KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON,
+                        down
+                    )
+                    KeyValue.Modifier.ALT -> sendMetaKey(
+                        KeyEvent.KEYCODE_ALT_LEFT,
+                        KeyEvent.META_ALT_LEFT_ON or KeyEvent.META_ALT_ON,
+                        down
+                    )
+                    KeyValue.Modifier.SHIFT -> sendMetaKey(
+                        KeyEvent.KEYCODE_SHIFT_LEFT,
+                        KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
+                        down
+                    )
+                    KeyValue.Modifier.META -> sendMetaKey(
+                        KeyEvent.KEYCODE_META_LEFT,
+                        KeyEvent.META_META_LEFT_ON or KeyEvent.META_META_ON,
+                        down
+                    )
+                    else -> {}
+                }
+            }
+            else -> {}
+        }
+    }
+
+    fun send_key_down_up(keyCode: Int) {
+        send_key_down_up(keyCode, metaState)
+    }
+
+    /** Ignores currently pressed system modifiers. */
+    fun send_key_down_up(keyCode: Int, metaState: Int) {
+        sendKeyevent(KeyEvent.ACTION_DOWN, keyCode, metaState)
+        sendKeyevent(KeyEvent.ACTION_UP, keyCode, metaState)
+    }
+
+    private fun sendKeyevent(eventAction: Int, eventCode: Int, metaState: Int) {
+        val conn = recv.getCurrentInputConnection() ?: return
+        conn.sendKeyEvent(
+            KeyEvent(
+                1, 1, eventAction, eventCode, 0,
+                metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
+                KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE
+            )
+        )
+        if (eventAction == KeyEvent.ACTION_UP) {
+            autocap.event_sent(eventCode, metaState)
+        }
+    }
+
+    private fun sendText(text: CharSequence, isKeyRepeat: Boolean = false) {
+        // Tag dialog mode — highest priority modal overlay
+        if (recv.isClipboardTagMode()) {
+            recv.insertToClipboardTag(text.toString())
+            return
+        }
+
+        // Bug #1 fix: check edit mode BEFORE search mode — edit takes priority.
+        // Primary defense is mutual exclusion (entering edit clears search), but
+        // checking edit first guards against timing races.
+        if (recv.isClipboardEditMode()) {
+            recv.insertToClipboardEdit(text.toString())
+            return
+        }
+
+        // Route to clipboard search box if in search mode
+        if (recv.isClipboardSearchMode()) {
+            recv.appendToClipboardSearch(text.toString())
+            return
+        }
+
+        // #41 v5: Route to emoji search EditText when emoji pane is open
+        if (recv.isEmojiPaneOpen()) {
+            recv.appendToEmojiSearch(text.toString())
+            return
+        }
+
+        // Route to GIF search EditText when GIF pane is open
+        if (recv.isGifPaneOpen()) {
+            recv.appendToGifSearch(text.toString())
+            return
+        }
+
+        val conn = recv.getCurrentInputConnection() ?: return
+
+        // Double-space-to-period: If typing space after space within threshold, replace with ". "
+        // Skip if: feature disabled, key repeat (long press), or previous char wasn't alphanumeric
+        val currentTime = System.currentTimeMillis()
+        var textToCommit = text
+        val config = Config.globalConfig()
+
+        // Vietnamese Telex Processing
+        if (config.enable_vietnamese_telex && text.length == 1 && text[0].isLetter()) {
+            val textBefore = conn.getTextBeforeCursor(20, 0)?.toString() ?: ""
+            val telexResult = VietnameseTelexProcessor.processTelex(textBefore, text[0])
+            if (telexResult != null) {
+                conn.deleteSurroundingText(telexResult.charsToDelete, 0)
+                conn.commitText(telexResult.newWord, 1)
+                lastTypedChar = telexResult.newWord.lastOrNull() ?: '\u0000'
+                lastTypedTimestamp = System.currentTimeMillis()
+                autocap.typed(telexResult.newWord)
+                recv.handle_text_typed(telexResult.newWord)
+                return
+            }
+        }
+
+        if (config.double_space_to_period && !isKeyRepeat &&
+            text.length == 1 && text[0] == ' ' && lastTypedChar == ' ' &&
+            (currentTime - lastTypedTimestamp) < doubleSpaceThresholdMs) {
+            // Only trigger if the character before the first space was alphanumeric
+            // This prevents ". ." or ", ." sequences
+            val textBefore = conn.getTextBeforeCursor(2, 0)
+            val charBeforeSpace = textBefore?.getOrNull(0)
+            if (charBeforeSpace != null && charBeforeSpace.isLetterOrDigit()) {
+                // Delete the previous space and insert ". "
+                conn.deleteSurroundingText(1, 0)
+                textToCommit = ". "
+                // Reset tracking to prevent triple-space weirdness
+                lastTypedChar = '.'
+            }
+        } else if (text.length == 1) {
+            val char = text[0]
+
+            // Smart punctuation: If typing punctuation and previous char is space, delete the space
+            // This attaches punctuation to the end of the previous word (e.g., "word ." -> "word.")
+            // v1.2.7: Only attach if space was auto-inserted (respects manual space+punctuation)
+            val smartPuncEnabled = Config.globalConfig().smart_punctuation
+            val isPunctChar = isSmartPunctuationChar(char)
+            val isQuote = isQuoteChar(char)
+
+            if (smartPuncEnabled && (isPunctChar || isQuote)) {
+                val textBefore = conn.getTextBeforeCursor(500, 0)  // Get enough context for quote counting
+                val lastCharIsSpace = textBefore?.lastOrNull() == ' '
+                val spaceWasAutoInserted = recv.wasLastSpaceAutoInserted()
+
+                if (isPunctChar && lastCharIsSpace && spaceWasAutoInserted) {
+                    // Regular punctuation: attach to previous word only if space was auto-inserted
+                    conn.deleteSurroundingText(1, 0)
+                    // v1.2.8: For sentence-ending punctuation, add space after so autocap triggers
+                    // "hello " + "." → "hello. " (enables getCursorCapsMode to detect sentence end)
+                    if (isSentenceEndingPunctuation(char)) {
+                        textToCommit = "$char "
+                        // Mark this space as auto-inserted for smart punctuation chaining
+                        recv.setLastSpaceAutoInserted(true)
+                    }
+                } else if (isQuote && lastCharIsSpace && spaceWasAutoInserted) {
+                    // Quote handling: only attach if it's a CLOSING quote, not apostrophe
+                    if (!isLikelyApostrophe(char, textBefore?.dropLast(1))) {
+                        // Not an apostrophe - check if closing quote
+                        if (isClosingQuote(char, textBefore)) {
+                            // Closing quote: delete space to attach to word
+                            conn.deleteSurroundingText(1, 0)
+                        }
+                        // Opening quote: keep the space (do nothing)
+                    }
+                    // Apostrophe: just insert normally (handled by contraction logic elsewhere)
+                }
+            }
+
+            // v1.2.7: Clear auto-inserted flag AFTER smart punctuation check
+            // This ensures: swipe→":"→attaches, but swipe→" "→":"→doesn't attach
+            recv.setLastSpaceAutoInserted(false)
+
+            lastTypedChar = char
+        } else {
+            lastTypedChar = '\u0000' // Reset on multi-char input
+        }
+        lastTypedTimestamp = currentTime
+
+        conn.commitText(textToCommit, 1)
+        autocap.typed(textToCommit)
+        recv.handle_text_typed(textToCommit.toString())
+    }
+
+    /** Characters that should attach to the previous word (smart punctuation). */
+    private fun isSmartPunctuationChar(c: Char): Boolean {
+        return when (c) {
+            '.', ',', '!', '?', ';', ':', ')', ']', '}' -> true
+            // Quotes handled separately by isClosingQuote()
+            '\'', '"' -> false
+            else -> false
+        }
+    }
+
+    /** v1.2.8: Sentence-ending punctuation that should trigger autocap for next word. */
+    private fun isSentenceEndingPunctuation(c: Char): Boolean {
+        return when (c) {
+            '.', '!', '?' -> true
+            else -> false
+        }
+    }
+
+    /**
+     * Determines if a quote character is likely an apostrophe (contractions/possessives).
+     * Apostrophes should NOT trigger smart punctuation spacing logic.
+     * Examples: don't, it's, John's, 90's
+     */
+    private fun isLikelyApostrophe(quote: Char, textBefore: CharSequence?): Boolean {
+        if (quote != '\'') return false
+        if (textBefore.isNullOrEmpty()) return false
+        val lastChar = textBefore.last()
+        // Apostrophe if preceded by letter or digit (contractions, possessives, decades)
+        return lastChar.isLetterOrDigit()
+    }
+
+    /**
+     * Determines if a quote should attach to the previous word (closing quote).
+     * Opening quotes should have space before them; closing quotes should not.
+     *
+     * Heuristic: Count quotes of the same type in textBefore. If odd count,
+     * there's an unmatched opening quote, so this is a closing quote.
+     * If even count (or zero), this is an opening quote.
+     *
+     * Example: 'He said "hello ' + '"' → one " found (odd) → closing
+     * Example: 'He said ' + '"' → zero " found (even) → opening
+     */
+    private fun isClosingQuote(quote: Char, textBefore: CharSequence?): Boolean {
+        if (quote != '\'' && quote != '"') return false
+        if (textBefore.isNullOrEmpty()) return false
+
+        // Count occurrences of this quote type in the text before cursor
+        val quoteCount = textBefore.count { it == quote }
+
+        // Odd count means there's an unmatched opening quote → this is closing
+        // Even count (including 0) means no unmatched quote → this is opening
+        return quoteCount % 2 == 1
+    }
+
+    /** Check if quote character needs smart punctuation handling. */
+    private fun isQuoteChar(c: Char): Boolean = c == '\'' || c == '"'
+
+    /**
+     * Send text directly to the app's InputConnection, bypassing all mode routing
+     * (edit, search, emoji, GIF). Used for clipboard pane paste which always targets
+     * the app regardless of current keyboard panel mode.
+     */
+    private fun sendTextDirect(text: CharSequence) {
+        val conn = recv.getCurrentInputConnection() ?: return
+        conn.beginBatchEdit()
+        conn.commitText(text, 1)
+        conn.endBatchEdit()
+    }
+
+    /** See {!InputConnection.performContextMenuAction}. */
+    private fun sendContextMenuAction(id: Int) {
+        val conn = recv.getCurrentInputConnection() ?: return
+        conn.performContextMenuAction(id)
+    }
+
+    /**
+     * #113: Handle paste with terminal app fallback.
+     * performContextMenuAction(paste) doesn't work in terminal emulators (Termux, ConnectBot, etc.)
+     * because they don't implement the Android context menu protocol. Send Ctrl+V key event instead,
+     * which terminal emulators intercept and handle as paste.
+     */
+    /**
+     * #110: If backspace_undo_swipe is enabled and last input was a swipe,
+     * delete the entire swiped word + trailing auto-space in one backspace press.
+     * Returns true if the undo was handled, false to fall through to normal backspace.
+     */
+    private fun handleBackspaceUndoSwipe(): Boolean {
+        val config = Config.globalConfig() ?: return false
+        if (!config.backspace_undo_swipe) return false
+        // #110 fix: Don't check wasLastInputSwipe() — it's cleared by onSuggestionSelected().
+        // Instead, defer to autocorrect handler when autocorrect state is present.
+        if (recv.getLastAutocorrectOriginalWord() != null) return false
+
+        val swipedWord = recv.getLastAutoInsertedWord() ?: return false
+        if (swipedWord.isEmpty()) return false
+
+        val conn = recv.getCurrentInputConnection() ?: return false
+
+        // Read text before cursor to verify the swiped word is still there
+        // and check for trailing auto-space (inserted by auto_space_after_suggestion)
+        val beforeCursor = conn.getTextBeforeCursor(swipedWord.length + 1, 0)?.toString() ?: ""
+        val charsToDelete = when {
+            // Word + trailing auto-space: "hello " → delete 6 chars
+            beforeCursor.length > swipedWord.length &&
+                beforeCursor.endsWith(" ") &&
+                beforeCursor.dropLast(1).endsWith(swipedWord) -> swipedWord.length + 1
+            // Word without trailing space: "hello" → delete 5 chars
+            beforeCursor.endsWith(swipedWord) -> swipedWord.length
+            // Text changed since swipe (cursor moved, user typed) — don't undo
+            else -> return false
+        }
+
+        conn.deleteSurroundingText(charsToDelete, 0)
+
+        // Clear swipe tracking and reset prediction state
+        recv.clearSwipeUndoState()
+        recv.handle_backspace()
+
+        return true
+    }
+
+    /**
+     * #110: If backspace_undo_autocorrect is enabled and an autocorrect just happened,
+     * revert to the original word on immediate backspace (GBoard-style).
+     * Does NOT add the original word to dictionary — that's the suggestion bar undo's role.
+     */
+    private fun handleBackspaceUndoAutocorrect(): Boolean {
+        val config = Config.globalConfig() ?: return false
+        if (!config.backspace_undo_autocorrect) return false
+
+        val originalWord = recv.getLastAutocorrectOriginalWord() ?: return false
+        val correctedWord = recv.getLastAutoInsertedWord() ?: return false
+        if (correctedWord.isEmpty()) return false
+
+        val conn = recv.getCurrentInputConnection() ?: return false
+
+        // Verify the corrected word is still at cursor position (handles cursor-move edge case)
+        val beforeCursor = conn.getTextBeforeCursor(correctedWord.length + 1, 0)?.toString() ?: ""
+        val charsToDelete = when {
+            // Word + trailing auto-space: "the " → delete 4 chars
+            beforeCursor.length > correctedWord.length &&
+                beforeCursor.endsWith(" ") &&
+                beforeCursor.dropLast(1).endsWith(correctedWord) -> correctedWord.length + 1
+            // Word without trailing space: "the" → delete 3 chars
+            beforeCursor.endsWith(correctedWord) -> correctedWord.length
+            // Text changed since autocorrect (cursor moved, user typed more) — don't undo
+            else -> return false
+        }
+
+        // Replace corrected word with original, preserving trailing space if present
+        conn.deleteSurroundingText(charsToDelete, 0)
+        val replacement = if (charsToDelete > correctedWord.length) "$originalWord " else originalWord
+        conn.commitText(replacement, 1)
+
+        // Clear all undo state to prevent double-undo
+        recv.clearAutocorrectUndoState()
+        recv.handle_backspace()
+        return true
+    }
+
+    /**
+     * #113: Terminal-aware paste. Terminal emulators (Termux, ConnectBot, etc.)
+     * don't implement performContextMenuAction, and Ctrl+V via sendKeyEvent()
+     * isn't intercepted by their input layer. Instead, read the system clipboard
+     * directly and commit the text via InputConnection — the same approach the
+     * clipboard popup uses (paste_from_clipboard_pane → sendText → commitText).
+     */
+    private fun handlePaste() {
+        if (TerminalUtils.isTerminalApp(recv.getCurrentEditorInfo())) {
+            pasteFromSystemClipboard()
+        } else {
+            sendContextMenuAction(android.R.id.paste)
+        }
+    }
+
+    /**
+     * Read system clipboard and commit text directly via InputConnection.
+     * Works in terminal emulators where performContextMenuAction and Ctrl+V
+     * key events are not handled.
+     */
+    private fun pasteFromSystemClipboard() {
+        val conn = recv.getCurrentInputConnection() ?: return
+        val ctx = recv.getContext() ?: return
+        try {
+            val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE)
+                as android.content.ClipboardManager
+            val clip = clipboard.primaryClip
+            if (clip != null && clip.itemCount > 0) {
+                val text = clip.getItemAt(0).coerceToText(ctx).toString()
+                if (text.isNotEmpty()) {
+                    conn.commitText(text, 1)
+                } else {
+                    Log.d(TAG, "Clipboard is empty")
+                }
+            } else {
+                Log.d(TAG, "No clipboard data available")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to paste from system clipboard", e)
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    private fun handleEditingKey(ev: KeyValue.Editing) {
+        // Route editing operations to clipboard edit field when in inline edit mode
+        if (recv.isClipboardEditMode()) {
+            when (ev) {
+                KeyValue.Editing.PASTE -> recv.pasteToClipboardEdit()
+                KeyValue.Editing.CUT -> recv.cutFromClipboardEdit()
+                KeyValue.Editing.SELECT_ALL -> recv.selectAllClipboardEdit()
+                KeyValue.Editing.CLEAR -> {
+                    recv.selectAllClipboardEdit()
+                    recv.backspaceClipboardEdit()
+                }
+                else -> {} // Other editing keys (undo, redo, share) — no-op during inline edit
+            }
+            return
+        }
+        when (ev) {
+            KeyValue.Editing.COPY -> if (isSelectionNotEmpty()) sendContextMenuAction(android.R.id.copy)
+            KeyValue.Editing.PASTE -> handlePaste()
+            KeyValue.Editing.CUT -> if (isSelectionNotEmpty()) sendContextMenuAction(android.R.id.cut)
+            KeyValue.Editing.SELECT_ALL -> sendContextMenuAction(android.R.id.selectAll)
+            KeyValue.Editing.SHARE -> sendContextMenuAction(android.R.id.shareText)
+            KeyValue.Editing.PASTE_PLAIN -> sendContextMenuAction(android.R.id.pasteAsPlainText)
+            KeyValue.Editing.UNDO -> sendContextMenuAction(android.R.id.undo)
+            KeyValue.Editing.REDO -> sendContextMenuAction(android.R.id.redo)
+            KeyValue.Editing.REPLACE -> sendContextMenuAction(android.R.id.replaceText)
+            KeyValue.Editing.ASSIST -> sendContextMenuAction(android.R.id.textAssist)
+            KeyValue.Editing.AUTOFILL -> sendContextMenuAction(android.R.id.autofill)
+            KeyValue.Editing.DELETE_WORD -> send_key_down_up(
+                KeyEvent.KEYCODE_DEL,
+                KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
+            )
+            KeyValue.Editing.FORWARD_DELETE_WORD -> send_key_down_up(
+                KeyEvent.KEYCODE_FORWARD_DEL,
+                KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
+            )
+            KeyValue.Editing.SELECTION_CANCEL -> cancelSelection()
+            KeyValue.Editing.DELETE_LAST_WORD -> recv.handle_delete_last_word()
+            KeyValue.Editing.CURSOR_DOC_START -> send_key_down_up(
+                KeyEvent.KEYCODE_MOVE_HOME,
+                KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
+            )
+            KeyValue.Editing.CURSOR_DOC_END -> send_key_down_up(
+                KeyEvent.KEYCODE_MOVE_END,
+                KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
+            )
+            KeyValue.Editing.CLEAR -> {
+                val conn = recv.getCurrentInputConnection() ?: return
+                conn.beginBatchEdit()
+                conn.performContextMenuAction(android.R.id.selectAll)
+                conn.commitText("", 1)
+                conn.endBatchEdit()
+            }
+        }
+    }
+
+    /**
+     * Handle timestamp key: format current date/time and insert as text.
+     * Uses Java DateTimeFormatter patterns (e.g., "yyyy-MM-dd", "HH:mm:ss").
+     * Requires Android API 26+ for java.time APIs.
+     */
+    private fun handleTimestampKey(format: KeyValue.TimestampFormat) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            // Fallback for API < 26: use SimpleDateFormat
+            try {
+                val sdf = java.text.SimpleDateFormat(format.pattern, java.util.Locale.getDefault())
+                val formattedTime = sdf.format(java.util.Date())
+                sendText(formattedTime)
+            } catch (e: Exception) {
+                android.util.Log.w("KeyEventHandler", "Invalid timestamp format: ${format.pattern}", e)
+                sendText(format.pattern) // Fall back to showing the pattern itself
+            }
+            return
+        }
+
+        // API 26+: Use modern java.time API
+        try {
+            val formatter = DateTimeFormatter.ofPattern(format.pattern)
+            val now = LocalDateTime.now()
+            val formattedTime = now.format(formatter)
+            sendText(formattedTime)
+        } catch (e: Exception) {
+            android.util.Log.w("KeyEventHandler", "Invalid timestamp format: ${format.pattern}", e)
+            sendText(format.pattern) // Fall back to showing the pattern itself
+        }
+    }
+
+    /** Query the cursor position. The extracted text is empty. Returns [null] if
+     * the editor doesn't support this operation. */
+    private fun getCursorPos(conn: InputConnection): ExtractedText? {
+        if (moveCursorReq == null) {
+            moveCursorReq = ExtractedTextRequest()
+            moveCursorReq!!.hintMaxChars = 0
+        }
+        return conn.getExtractedText(moveCursorReq, 0)
+    }
+
+    /** [r] might be negative, in which case the direction is reversed. */
+    private fun handleSlider(s: KeyValue.Slider, r: Int, keyDown: Boolean) {
+        // In clipboard edit mode, route cursor movements to the inline EditText
+        if (recv.isClipboardEditMode()) {
+            val keyCode = when (s) {
+                KeyValue.Slider.Cursor_left -> KeyEvent.KEYCODE_DPAD_LEFT
+                KeyValue.Slider.Cursor_right -> KeyEvent.KEYCODE_DPAD_RIGHT
+                KeyValue.Slider.Cursor_up -> KeyEvent.KEYCODE_DPAD_UP
+                KeyValue.Slider.Cursor_down -> KeyEvent.KEYCODE_DPAD_DOWN
+                else -> null
+            }
+            if (keyCode != null) {
+                // Dispatch once per repeat unit so slider distance maps to cursor steps
+                repeat(kotlin.math.abs(r).coerceAtLeast(1)) {
+                    recv.dispatchKeyToClipboardEdit(keyCode)
+                }
+                return
+            }
+        }
+        when (s) {
+            KeyValue.Slider.Cursor_left -> moveCursor(-r)
+            KeyValue.Slider.Cursor_right -> moveCursor(r)
+            KeyValue.Slider.Cursor_up -> moveCursorVertical(-r)
+            KeyValue.Slider.Cursor_down -> moveCursorVertical(r)
+            KeyValue.Slider.Selection_cursor_left -> moveCursorSel(r, true, keyDown)
+            KeyValue.Slider.Selection_cursor_right -> moveCursorSel(r, false, keyDown)
+        }
+    }
+
+    /** Move the cursor right or left, if possible without sending key events.
+     * Unlike arrow keys, the selection is not removed even if shift is not on.
+     * Falls back to sending arrow keys events if the editor do not support
+     * moving the cursor or a modifier other than shift is pressed. */
+    private fun moveCursor(d: Int) {
+        val conn = recv.getCurrentInputConnection() ?: return
+        val et = getCursorPos(conn)
+
+        if (et != null && canSetSelection(conn)) {
+            var selStart = et.selectionStart
+            var selEnd = et.selectionEnd
+
+            // Continue expanding the selection even if shift is not pressed
+            if (selEnd != selStart) {
+                selEnd += d
+                if (selEnd == selStart) { // Avoid making the selection empty
+                    selEnd += d
+                }
+            } else {
+                selEnd += d
+                // Leave 'selStart' where it is if shift is pressed
+                if ((metaState and KeyEvent.META_SHIFT_ON) == 0) {
+                    selStart = selEnd
+                }
+            }
+
+            if (conn.setSelection(selStart, selEnd)) {
+                return // Fallback to sending key events if [setSelection] failed
+            }
+        }
+        moveCursorFallback(d)
+    }
+
+    /** Move one of the two side of a selection. If [selLeft] is true, the left
+     * position is moved, otherwise the right position is moved. */
+    private fun moveCursorSel(d: Int, selLeft: Boolean, keyDown: Boolean) {
+        val conn = recv.getCurrentInputConnection() ?: return
+        val et = getCursorPos(conn)
+
+        if (et != null && canSetSelection(conn)) {
+            var selStart = et.selectionStart
+            var selEnd = et.selectionEnd
+
+            // Reorder the selection when the slider has just been pressed. The
+            // selection might have been reversed if one end crossed the other end
+            // with a previous slider.
+            if (keyDown && selStart > selEnd) {
+                selStart = et.selectionEnd
+                selEnd = et.selectionStart
+            }
+
+            do {
+                if (selLeft) {
+                    selStart += d
+                } else {
+                    selEnd += d
+                }
+                // Move the cursor twice if moving it once would make the selection
+                // empty and stop selection mode.
+            } while (selStart == selEnd)
+
+            if (conn.setSelection(selStart, selEnd)) {
+                return // Fallback to sending key events if [setSelection] failed
+            }
+        }
+        moveCursorFallback(d)
+    }
+
+    /** Returns whether the selection can be set using [conn.setSelection()].
+     * This can happen on Termux or when system modifiers are activated for example. */
+    private fun canSetSelection(conn: InputConnection): Boolean {
+        val systemMods = KeyEvent.META_CTRL_ON or KeyEvent.META_ALT_ON or KeyEvent.META_META_ON
+        return !moveCursorForceFallback && (metaState and systemMods) == 0
+    }
+
+    private fun moveCursorFallback(d: Int) {
+        if (d < 0) {
+            sendKeyDownUpRepeat(KeyEvent.KEYCODE_DPAD_LEFT, -d)
+        } else {
+            sendKeyDownUpRepeat(KeyEvent.KEYCODE_DPAD_RIGHT, d)
+        }
+    }
+
+    /** Move the cursor up and down. This sends UP and DOWN key events that might
+     * make the focus exit the text box. */
+    private fun moveCursorVertical(d: Int) {
+        if (d < 0) {
+            sendKeyDownUpRepeat(KeyEvent.KEYCODE_DPAD_UP, -d)
+        } else {
+            sendKeyDownUpRepeat(KeyEvent.KEYCODE_DPAD_DOWN, d)
+        }
+    }
+
+    private fun evaluateMacro(keys: Array<KeyValue>) {
+        if (keys.isEmpty()) return
+
+        // Ignore modifiers that are activated at the time the macro is evaluated
+        mods_changed(Pointers.Modifiers.EMPTY)
+        evaluateMacroLoop(keys, 0, Pointers.Modifiers.EMPTY, autocap.pause())
+    }
+
+    /** Evaluate the macro asynchronously to make sure events are processed in the right order.
+     * Always applies a delay between keys to avoid race conditions. */
+    private fun evaluateMacroLoop(
+        keys: Array<KeyValue>,
+        i: Int,
+        mods: Pointers.Modifiers,
+        autocapPaused: Boolean
+    ) {
+        var currentI = i
+        var currentMods = mods
+
+        val kv = KeyModifier.modify(keys[currentI], currentMods)
+        if (kv != null) {
+            if (kv.hasFlagsAny(KeyValue.FLAG_LATCH)) {
+                // Non-special latchable keys clear latched modifiers
+                if (!kv.hasFlagsAny(KeyValue.FLAG_SPECIAL)) {
+                    currentMods = Pointers.Modifiers.EMPTY
+                }
+                currentMods = currentMods.with_extra_mod(kv)
+            } else {
+                key_down(kv, false)
+                key_up(kv, currentMods)
+                currentMods = Pointers.Modifiers.EMPTY
+            }
+        }
+
+        currentI++
+        if (currentI >= keys.size) {
+            // Stop looping
+            autocap.unpause(autocapPaused)
+        } else {
+            // Always add a delay before sending the next key to avoid race conditions
+            // causing keys to be handled in the wrong order. KeyEvent handling is
+            // scheduled differently than other edit functions, so consistent delay
+            // ensures proper ordering for all key types.
+            recv.getHandler().postDelayed({
+                evaluateMacroLoop(keys, currentI, currentMods, autocapPaused)
+            }, 1000 / 30)
+        }
+    }
+
+    /** Repeat calls to [send_key_down_up]. */
+    private fun sendKeyDownUpRepeat(eventCode: Int, repeat: Int) {
+        var remaining = repeat
+        while (remaining-- > 0) {
+            send_key_down_up(eventCode)
+        }
+    }
+
+    private fun cancelSelection() {
+        val conn = recv.getCurrentInputConnection() ?: return
+        val et = getCursorPos(conn) ?: return
+        val curs = et.selectionStart
+
+        // Notify the receiver as Android's [onUpdateSelection] is not triggered.
+        if (conn.setSelection(curs, curs)) {
+            recv.selection_state_changed(false)
+        }
+    }
+
+    private fun isSelectionNotEmpty(): Boolean {
+        val conn = recv.getCurrentInputConnection() ?: return false
+        return conn.getSelectedText(0) != null
+    }
+
+    /** Workaround some apps which answers to [getExtractedText] but do not react
+     * to [setSelection] while returning [true]. */
+    private fun shouldMoveCursorForceFallback(info: EditorInfo): Boolean {
+        // This catch Acode: which sets several variations at once.
+        if ((info.inputType and InputType.TYPE_MASK_VARIATION and InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+            return true
+        }
+        // Godot editor: Doesn't handle setSelection() but returns true.
+        return info.packageName.startsWith("org.godotengine.editor")
+    }
+
+    /**
+     * Notify auto-capitalization system that text was typed/inserted.
+     * Call this when inserting text from sources other than sendText() (e.g., swipe predictions).
+     * This ensures auto-cap triggers after period, exclamation, etc.
+     */
+    fun notifyTextTyped(text: CharSequence) {
+        autocap.typed(text)
+    }
+
+    interface IReceiver {
+        fun handle_event_key(ev: KeyValue.Event)
+        fun set_shift_state(state: Boolean, lock: Boolean)
+        fun set_compose_pending(pending: Boolean)
+        fun selection_state_changed(selectionIsOngoing: Boolean)
+        fun getCurrentInputConnection(): InputConnection?
+        fun getCurrentEditorInfo(): EditorInfo? = null // #113: needed for terminal app detection
+        fun getContext(): Context? = null // #113: needed for terminal clipboard paste
+        fun getHandler(): Handler
+        fun handle_text_typed(text: String)
+        fun handle_backspace() {} // Default implementation for backward compatibility
+        fun handle_delete_last_word() {} // Delete last auto-inserted or typed word
+        // Clipboard search mode methods
+        fun isClipboardSearchMode(): Boolean = false // Check if clipboard search mode is active
+        fun appendToClipboardSearch(text: String) {} // Append text to clipboard search box
+        fun backspaceClipboardSearch() {} // Handle backspace in clipboard search
+        fun exitClipboardSearchMode() {} // Exit clipboard search mode (clear search box and mode)
+        // Clipboard tag dialog — modal overlay, checked before edit mode
+        fun isClipboardTagMode(): Boolean = false
+        fun insertToClipboardTag(text: String) {}
+        fun backspaceClipboardTag() {}
+        // Clipboard edit mode — route typing to inline edit field (same pattern as search)
+        fun isClipboardEditMode(): Boolean = false
+        fun insertToClipboardEdit(text: String) {}
+        fun backspaceClipboardEdit() {}
+        fun pasteToClipboardEdit() {}
+        fun cutFromClipboardEdit() {}
+        fun selectAllClipboardEdit() {}
+        fun dispatchKeyToClipboardEdit(keyCode: Int) {} // Arrow keys, Enter, etc.
+        // #41 v5: Emoji search routes typing to visible EditText (IME can't type into own views)
+        fun isEmojiPaneOpen(): Boolean = false // Check if emoji pane is visible
+        fun appendToEmojiSearch(text: String) {} // Append text to emoji search EditText
+        fun backspaceEmojiSearch() {} // Handle backspace in emoji search
+        // GIF search: same pattern — route typing to GIF search EditText
+        fun isGifPaneOpen(): Boolean = false
+        fun appendToGifSearch(text: String) {}
+        fun backspaceGifSearch() {}
+        // v1.2.7: Smart punctuation - track if last space was auto-inserted
+        fun wasLastSpaceAutoInserted(): Boolean = false
+        fun setLastSpaceAutoInserted(value: Boolean) {}
+        // #110: Backspace undo swipe — check if last input was a swipe and get the word
+        fun wasLastInputSwipe(): Boolean = false
+        fun getLastAutoInsertedWord(): String? = null
+        fun clearSwipeUndoState() {} // Reset swipe tracking after undo
+        // #110: Backspace undo autocorrect — expose autocorrect state to KeyEventHandler
+        fun getLastAutocorrectOriginalWord(): String? = null
+        fun clearAutocorrectUndoState() {}
+    }
+
+    private inner class AutocapitalisationCallback : Autocapitalisation.Callback {
+        override fun update_shift_state(shouldEnable: Boolean, shouldDisable: Boolean) {
+            when {
+                shouldEnable -> recv.set_shift_state(true, false)
+                shouldDisable -> recv.set_shift_state(false, false)
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = "KeyEventHandler"
+        private var moveCursorReq: ExtractedTextRequest? = null
+
+        // Key events that should be dispatched to the clipboard edit EditText
+        // instead of the app's InputConnection when in edit mode
+        private val EDIT_MODE_DISPATCH_KEYS = setOf(
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_DPAD_RIGHT,
+            KeyEvent.KEYCODE_DPAD_UP,
+            KeyEvent.KEYCODE_DPAD_DOWN,
+            KeyEvent.KEYCODE_ENTER,
+            KeyEvent.KEYCODE_MOVE_HOME,
+            KeyEvent.KEYCODE_MOVE_END,
+        )
+    }
+}

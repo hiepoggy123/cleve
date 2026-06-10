@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset to Defaults - CleverKeys User Guide</title>
+    <meta name="description" content="Restore default settings">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Troubleshooting" class="hover:text-ck-green">Troubleshooting</a>
+            <span>/</span>
+            <span class="text-gray-300">Reset to Defaults</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #ef444420; color: #ef4444">Troubleshooting</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P2</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Reset to Defaults</h1>
+        <p class="text-xl text-gray-400">Restore default settings</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Reset to Defaults</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Restore keyboard to factory settings</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Troubleshooting</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: beginner</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Reset to Defaults</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Restore CleverKeys settings to their original state when troubleshooting issues or wanting a fresh start.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">Reset Type</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">What's Affected</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Clear Cache</strong></td><td class="px-4 py-2 border-t border-gray-700">Temporary data only</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Settings Reset</strong></td><td class="px-4 py-2 border-t border-gray-700">All preferences</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Clear Dictionary</strong></td><td class="px-4 py-2 border-t border-gray-700">Personal words</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Full Reset</strong></td><td class="px-4 py-2 border-t border-gray-700">Everything (via app data clear)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Reset Options</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Option 1: Clear App Cache</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Clears temporary data without affecting settings:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Go to <strong class="text-white">Android Settings > Apps > CleverKeys > Storage</strong></li>
+<li class="ml-4 text-gray-300">2. Tap <strong class="text-white">Clear Cache</strong></li>
+<li class="ml-4 text-gray-300">3. Keeps all settings and data</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Option 2: Clear Personal Dictionary</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Removes learned words:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open CleverKeys <strong class="text-white">Settings</strong></li>
+<li class="ml-4 text-gray-300">2. Scroll to <strong class="text-white">Privacy</strong> section</li>
+<li class="ml-4 text-gray-300">3. Look for dictionary clear option</li>
+<li class="ml-4 text-gray-300">4. Confirm</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Option 3: Reset Per-Key Customizations</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Restore default short swipe actions:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open <strong class="text-white">Settings</strong></li>
+<li class="ml-4 text-gray-300">2. Tap <strong class="text-white">Per-Key Customization</strong> in Activities section</li>
+<li class="ml-4 text-gray-300">3. Use <strong class="text-white">Reset All</strong> option if available</li>
+<li class="ml-4 text-gray-300">4. Or manually reset each key</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Option 4: Full Reset (Clear App Data)</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Restores everything to factory state:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Affected</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">All settings</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">All customizations</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Personal dictionary</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Clipboard history</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Learned patterns</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">How to:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Go to <strong class="text-white">Android Settings > Apps > CleverKeys > Storage</strong></li>
+<li class="ml-4 text-gray-300">2. Tap <strong class="text-white">Clear Data</strong> (or Clear Storage)</li>
+<li class="ml-4 text-gray-300">3. Confirm</li>
+<li class="ml-4 text-gray-300">4. Keyboard returns to factory state</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!WARNING]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">Clear Data cannot be undone. Use Backup & Restore first if you want to restore later.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Before Resetting</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Backup First</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Before any destructive reset, consider backing up:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open CleverKeys <strong class="text-white">Settings</strong></li>
+<li class="ml-4 text-gray-300">2. Tap <strong class="text-white">Backup & Restore</strong> in Activities section</li>
+<li class="ml-4 text-gray-300">3. Tap <strong class="text-white">Export Config</strong></li>
+<li class="ml-4 text-gray-300">4. Save the backup file</li>
+</ul>
+<p class="mb-4 text-gray-300 leading-relaxed">See <a href="backup-restore.html" class="text-green-400 hover:underline">Backup & Restore</a> for details.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Try Less Drastic Options</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Before full reset:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Clear app cache</strong> first (doesn't delete settings)</li>
+<li class="ml-4 text-gray-300">2. <strong class="text-white">Force stop</strong> the app</li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Android Settings > Apps > CleverKeys > Force Stop</p>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Restart device</strong></li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">After Resetting</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">First-Time Setup</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">After reset, go through setup:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Enable keyboard</strong> in Android system settings</li>
+<li class="ml-4 text-gray-300">2. <strong class="text-white">Set as default</strong> keyboard when prompted</li>
+<li class="ml-4 text-gray-300">3. <strong class="text-white">Configure settings</strong> as desired</li>
+</ul>
+<p class="mb-4 text-gray-300 leading-relaxed">See <a href="../getting-started/first-time-setup.html" class="text-green-400 hover:underline">First-Time Setup</a> for guidance.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Restore from Backup</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">If you exported a backup:</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. Open CleverKeys <strong class="text-white">Settings</strong></li>
+<li class="ml-4 text-gray-300">2. Tap <strong class="text-white">Backup & Restore</strong> in Activities section</li>
+<li class="ml-4 text-gray-300">3. Tap <strong class="text-white">Import Config</strong></li>
+<li class="ml-4 text-gray-300">4. Select your backup file</li>
+<li class="ml-4 text-gray-300">5. Settings are restored</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Reset for Specific Issues</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Issue</td><td class="px-4 py-2 border-t border-gray-700">Recommended Reset</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Wrong predictions</strong></td><td class="px-4 py-2 border-t border-gray-700">Clear Personal Dictionary</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Gesture issues</strong></td><td class="px-4 py-2 border-t border-gray-700">Reset Per-Key Customizations</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Visual glitches</strong></td><td class="px-4 py-2 border-t border-gray-700">Clear Cache, then Clear Data</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Keyboard not appearing</strong></td><td class="px-4 py-2 border-t border-gray-700">Clear Data + re-enable in Android Settings</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">General weirdness</strong></td><td class="px-4 py-2 border-t border-gray-700">Full Reset (Clear Data)</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Will reset delete my downloaded language packs?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Clear Cache doesn't. Clear Data will reset to bundled languages only.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Can I undo a reset?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: No, but you can restore from a Backup & Restore backup file if you made one beforehand.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Will reset fix my keyboard not appearing?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Clear Data might help. After clearing, you'll need to re-enable the keyboard in Android Settings > System > Languages & input > On-screen keyboard.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Does uninstalling and reinstalling do the same thing?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Yes, but reinstalling is slower and requires you to re-enable the keyboard in system settings.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: What's the difference between Clear Cache and Clear Data?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: <strong class="text-white">Clear Cache</strong> removes temporary files only - your settings stay. <strong class="text-white">Clear Data</strong> removes everything including settings, like a fresh install.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Topics</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="backup-restore.html" class="text-green-400 hover:underline">Backup & Restore</a> - Save before reset</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="common-issues.html" class="text-green-400 hover:underline">Common Issues</a> - Try fixes first</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../getting-started/first-time-setup.html" class="text-green-400 hover:underline">First-Time Setup</a> - Setup after reset</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="troubleshooting/performance.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Performance</span>
+            </a>
+            <a href="troubleshooting/backup-restore.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Backup & Restore</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>

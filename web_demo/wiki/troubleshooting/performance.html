@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance - CleverKeys User Guide</title>
+    <meta name="description" content="Speed and battery optimization">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ck-green': '#10b981',
+                        'ck-green-dark': '#059669',
+                        'ck-green-light': '#34d399',
+                        'ck-dark': '#0f0f1a',
+                        'ck-surface': '#1a1a2e',
+                        'ck-card': '#242438',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text-wiki {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-ck-dark text-gray-100 min-h-screen">
+    <!-- Nav -->
+    <nav class="sticky top-0 bg-ck-dark/95 backdrop-blur border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="../" class="flex items-center gap-3">
+                <img src="https://raw.githubusercontent.com/tribixbite/CleverKeys/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="CleverKeys" class="w-8 h-8 rounded-lg">
+                <span class="font-bold">CleverKeys</span>
+            </a>
+            <div class="flex gap-4">
+                <a href="./" class="text-green-400 font-medium">User Guide</a>
+                <a href="../specs/" class="text-gray-400 hover:text-white transition-colors">Tech Specs</a>
+                <a href="../" class="text-gray-400 hover:text-white transition-colors">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="../" class="hover:text-ck-green">Home</a>
+            <span>/</span>
+            <a href="./" class="hover:text-ck-green">User Guide</a>
+            <span>/</span>
+            <a href="./?category=Troubleshooting" class="hover:text-ck-green">Troubleshooting</a>
+            <span>/</span>
+            <span class="text-gray-300">Performance</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 pb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 text-sm rounded-full" style="background: #ef444420; color: #ef4444">Troubleshooting</span>
+            <span class="px-3 py-1 text-sm rounded-full bg-ck-card text-gray-400">P2</span>
+        </div>
+        <h1 class="text-4xl font-bold gradient-text-wiki mb-2">Performance</h1>
+        <p class="text-xl text-gray-400">Speed and battery optimization</p>
+    </header>
+
+    <!-- Content -->
+    <main class="container mx-auto px-6 pb-12">
+        <div class="bg-ck-surface rounded-2xl p-8 max-w-4xl">
+            <hr class="border-gray-700 my-6">
+<p class="mb-4 text-gray-300 leading-relaxed">title: Performance</p>
+<p class="mb-4 text-gray-300 leading-relaxed">description: Optimize keyboard speed and responsiveness</p>
+<p class="mb-4 text-gray-300 leading-relaxed">category: Troubleshooting</p>
+<p class="mb-4 text-gray-300 leading-relaxed">difficulty: intermediate</p>
+<hr class="border-gray-700 my-6">
+
+<h1 class="text-3xl font-bold mb-6 gradient-text-wiki">Performance</h1>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Optimize CleverKeys for better speed, responsiveness, and battery efficiency.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Quick Summary</h2>
+
+<table class="w-full mb-6 border-collapse"><tr><th class="px-4 py-2 text-left font-semibold bg-ck-card">Issue</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Common Cause</th><th class="px-4 py-2 text-left font-semibold bg-ck-card">Solution</th></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Slow typing</strong></td><td class="px-4 py-2 border-t border-gray-700">Neural predictions</td><td class="px-4 py-2 border-t border-gray-700">Reduce beam width</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Lag on open</strong></td><td class="px-4 py-2 border-t border-gray-700">Large clipboard</td><td class="px-4 py-2 border-t border-gray-700">Reduce history limit</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Battery drain</strong></td><td class="px-4 py-2 border-t border-gray-700">Haptics, animations</td><td class="px-4 py-2 border-t border-gray-700">Reduce feedback</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Typing Speed Issues</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Predictions appear slowly</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Causes:</strong></p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Cause</td><td class="px-4 py-2 border-t border-gray-700">Impact</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">High beam width</td><td class="px-4 py-2 border-t border-gray-700">More processing</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">Many languages</td><td class="px-4 py-2 border-t border-gray-700">Multiple dictionaries</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Large vocabulary</td><td class="px-4 py-2 border-t border-gray-700">Longer search</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Reduce beam width</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Neural Prediction section > Beam Width</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Try 3-4 instead of 6+</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Reduce languages</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Keep only languages you actively use</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Each language adds processing overhead</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Key press feels delayed</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Check haptic timing</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Haptic feedback adds slight delay</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Accessibility > Vibration Duration</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Try reducing or disabling</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Reduce visual feedback</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - If your device has slow rendering</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Disable key borders or reduce opacity in Appearance settings</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Startup Performance</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: Keyboard slow to appear</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Solutions:</strong></p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Reduce clipboard history</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Clipboard section > History Limit</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Use smaller limit (e.g., 25 instead of 50)</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Clear unused profiles</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Activities > Backup & Restore</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Delete unused exports</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Reduce installed layouts</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Activities > Layout Manager</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Remove layouts you don't use</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Issue: First swipe word slow</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Explanation:</strong></p>
+
+<p class="mb-4 text-gray-300 leading-relaxed">Neural model loads on first use. This is normal behavior.</p>
+
+<p class="mb-4 text-gray-300 leading-relaxed"><strong class="text-white">Why this happens:</strong></p>
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; The ONNX model is loaded into memory on first swipe</li>
+<li class="ml-4 text-gray-300">&#8226; Subsequent swipes are fast as the model is cached</li>
+<li class="ml-4 text-gray-300">&#8226; This is a one-time delay per keyboard session</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Memory Usage</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Factors Affecting Memory</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Factor</td><td class="px-4 py-2 border-t border-gray-700">Memory Impact</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Language dictionaries</strong></td><td class="px-4 py-2 border-t border-gray-700">5-30 MB each</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Clipboard history</strong></td><td class="px-4 py-2 border-t border-gray-700">Varies with content</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Neural model</strong></td><td class="px-4 py-2 border-t border-gray-700">~10 MB</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Personal dictionary</strong></td><td class="px-4 py-2 border-t border-gray-700">Usually < 1 MB</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Reduce Memory Usage</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Remove unused language packs</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Via Settings > Activities > Layout Manager</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Delete unneeded layouts</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Reduce clipboard history</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Clipboard > History Limit</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Smaller = less memory</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">3. <strong class="text-white">Clear cache periodically</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Android Settings > Apps > CleverKeys > Storage</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Clear Cache</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Battery Optimization</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Battery Impact Factors</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Feature</td><td class="px-4 py-2 border-t border-gray-700">Battery Impact</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Haptics</strong></td><td class="px-4 py-2 border-t border-gray-700">Medium</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Neural predictions</strong></td><td class="px-4 py-2 border-t border-gray-700">Medium</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Clipboard monitoring</strong></td><td class="px-4 py-2 border-t border-gray-700">Low</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Reduce Battery Usage</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">1. <strong class="text-white">Reduce haptics</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Accessibility > Vibration Duration</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Use lower duration or disable</p>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">2. <strong class="text-white">Disable unneeded haptic events</strong></li>
+</ul><p class="mb-4 text-gray-300 leading-relaxed">   - Settings > Accessibility section</p>
+<p class="mb-4 text-gray-300 leading-relaxed">   - Turn off Haptic Key Press, Haptic Suggestion Tap, etc.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Performance Settings</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Quick Performance Profile</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">For maximum speed on older devices:</p>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Setting</td><td class="px-4 py-2 border-t border-gray-700">Value</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Beam Width</td><td class="px-4 py-2 border-t border-gray-700">3-4</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700">Vibration</td><td class="px-4 py-2 border-t border-gray-700">Off or Light</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700">Clipboard Limit</td><td class="px-4 py-2 border-t border-gray-700">25 items</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Quality vs Speed</h3>
+
+<table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700">Priority</td><td class="px-4 py-2 border-t border-gray-700">Settings</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table><table class="w-full mb-6 border-collapse"><tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Speed</strong></td><td class="px-4 py-2 border-t border-gray-700">Lower beam width, fewer haptics</td></tr></p>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Quality</strong></td><td class="px-4 py-2 border-t border-gray-700">Higher beam width (6-10), full haptics</td></tr>
+<tr><td class="px-4 py-2 border-t border-gray-700"><strong class="text-white">Balanced</strong></td><td class="px-4 py-2 border-t border-gray-700">Default settings</td></tr>
+<p class="mb-4 text-gray-300 leading-relaxed"></table></p>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Device-Specific Tips</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Older Devices</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Use lower neural settings (Beam Width 3-4)</li>
+<li class="ml-4 text-gray-300">&#8226; Disable haptics if laggy</li>
+<li class="ml-4 text-gray-300">&#8226; Keep fewer layouts installed</li>
+<li class="ml-4 text-gray-300">&#8226; Reduce clipboard history</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Low-Memory Devices</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Remove unused language packs</li>
+<li class="ml-4 text-gray-300">&#8226; Reduce clipboard history to 10-25 items</li>
+<li class="ml-4 text-gray-300">&#8226; Clear cache weekly</li>
+</ul>
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">High-Performance Devices</h3>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; Can use maximum neural settings (Beam Width 10-12)</li>
+<li class="ml-4 text-gray-300">&#8226; Enable all haptics</li>
+<li class="ml-4 text-gray-300">&#8226; Keep many languages</li>
+</ul>
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Tips for Best Performance</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Regular cleanup</strong>: Clear cache monthly</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Update regularly</strong>: Updates often include performance improvements</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Report issues</strong>: Unexpected slowness may be a bug</li>
+<li class="ml-4 text-gray-300">&#8226; <strong class="text-white">Test changes</strong>: After adjusting, test typing feel</li>
+</ul>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">[!TIP]</blockquote>
+<blockquote class="border-l-4 border-green-500 pl-4 py-2 my-4 bg-ck-card rounded-r text-gray-300">If keyboard suddenly becomes slow, try clearing cache first. Many issues resolve with a cache clear.</blockquote>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Common Questions</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Will disabling predictions make typing faster?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Yes, but you lose a key feature. Try reducing beam width instead of disabling.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Does keyboard size affect performance?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Minimally. Render time is slightly higher for larger keyboards.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Why is swipe typing slower than tap typing?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: Swipe requires neural processing. This is expected behavior.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3 text-green-300">Q: Should I use battery optimization for CleverKeys?</h3>
+
+<p class="mb-4 text-gray-300 leading-relaxed">A: No. Battery optimization may cause keyboard to be killed, making it slow to appear.</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4 text-green-400">Related Topics</h2>
+
+<ul class="mb-4 space-y-2"><li class="ml-4 text-gray-300">&#8226; <a href="../settings/neural-settings.html" class="text-green-400 hover:underline">Neural Settings</a> - Prediction configuration</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="../settings/haptics.html" class="text-green-400 hover:underline">Haptics</a> - Vibration settings</li>
+<li class="ml-4 text-gray-300">&#8226; <a href="common-issues.html" class="text-green-400 hover:underline">Common Issues</a> - General troubleshooting</li>
+</ul>
+        </div>
+        
+        <!-- Prev/Next Navigation -->
+        <div class="max-w-4xl mt-8 flex justify-between">
+            <a href="troubleshooting/common-issues.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span>&larr;</span>
+                <span class="text-sm text-gray-400">Common Issues</span>
+            </a>
+            <a href="troubleshooting/reset-defaults.html" class="flex items-center gap-2 px-4 py-2 bg-ck-card rounded-lg hover:bg-ck-surface transition-colors">
+                <span class="text-sm text-gray-400">Reset to Defaults</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-8 text-center text-gray-500 text-sm border-t border-gray-800">
+        <p>CleverKeys User Guide - Making typing smarter</p>
+    </footer>
+</body>
+</html>
