@@ -1,5 +1,6 @@
 package tribixbite.cleverkeys.customization
 
+import androidx.annotation.Keep
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -14,6 +15,7 @@ import java.util.Locale
  *     [SimpleDateFormat] pattern for [ActionType.TIMESTAMP])
  * @property useKeyFont Whether to render displayText with the special keyboard icon font
  */
+@Keep
 data class ShortSwipeMapping(
     val keyCode: String,
     val direction: SwipeDirection,
@@ -222,6 +224,7 @@ data class ShortSwipeMapping(
  * Storage model for JSON serialization.
  * Groups mappings by key code for efficient storage format.
  */
+@Keep
 data class ShortSwipeCustomizations(
     val version: Int = CURRENT_VERSION,
     val mappings: Map<String, Map<String, DirectionMapping>> = emptyMap()
@@ -277,6 +280,7 @@ data class ShortSwipeCustomizations(
  * @property actionValue The action value (text, command name, keycode, or JSON intent)
  * @property useKeyFont Whether to use the special keyboard icon font for displayText
  */
+@Keep
 data class DirectionMapping(
     val displayText: String,
     val actionType: String,

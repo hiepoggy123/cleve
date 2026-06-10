@@ -1386,8 +1386,8 @@ class Keyboard2View @JvmOverloads constructor(
             y += row.height * tc.row_height
         }
 
-        // Draw swipe trail if swipe typing is enabled and active
-        if (_config.swipe_typing_enabled && _swipeRecognizer != null && _swipeRecognizer!!.isSwipeTyping()) {
+        // Draw swipe trail if swipe typing or short gesture is active and has path
+        if (_swipeRecognizer != null) {
             drawSwipeTrail(canvas)
         }
     }
