@@ -674,6 +674,21 @@ class KeyEventHandler(
                 conn.commitText("", 1)
                 conn.endBatchEdit()
             }
+            KeyValue.Editing.BYPASS_CENSOR -> {
+                val conn = recv.getCurrentInputConnection() ?: return
+                val allText = conn.getTextBeforeCursor(200, 0)?.toString() ?: ""
+                val lastNewline = allText.lastIndexOf('\n')
+                val textToModify = if (lastNewline >= 0) allText.substring(lastNewline + 1) else allText
+                
+                if (textToModify.isNotEmpty()) {
+                    conn.beginBatchEdit()
+                    conn.deleteSurroundingText(textToModify.length, 0)
+                    // Insert zero-width space (U+200B) between characters to bypass censors
+                    val bypassedText = textToModify.toList().joinToString("\u200B")
+                    conn.commitText(bypassedText, 1)
+                    conn.endBatchEdit()
+                }
+            }
         }
     }
 

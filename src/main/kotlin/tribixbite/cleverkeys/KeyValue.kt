@@ -100,6 +100,7 @@ class KeyValue private constructor(
         CURSOR_DOC_START, // Move cursor to start of document (Ctrl+Home)
         CURSOR_DOC_END, // Move cursor to end of document (Ctrl+End)
         CLEAR, // #135: Erase entire field (selectAll + delete in one batched edit)
+        BYPASS_CENSOR, // Insert zero-width spaces between characters
     }
 
     enum class Placeholder {
@@ -724,6 +725,7 @@ class KeyValue private constructor(
             "forward_delete_word" -> editingKey(0xE01C, Editing.FORWARD_DELETE_WORD)
             "clear" -> editingKey("clr", Editing.CLEAR, FLAG_SMALLER_FONT)
             "delete_last_word" -> editingKey("word", Editing.DELETE_LAST_WORD)
+            "bypass_censor" -> editingKey("BPS", Editing.BYPASS_CENSOR, FLAG_SMALLER_FONT)
             "cursor_left" -> sliderKey(Slider.Cursor_left, 1)
             "cursor_right" -> sliderKey(Slider.Cursor_right, 1)
             "cursor_up" -> sliderKey(Slider.Cursor_up, 1)
