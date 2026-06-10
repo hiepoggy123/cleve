@@ -675,12 +675,13 @@ class Pointers(
      */
     private fun getNearestKeyAtDirection(ptr: Pointer, direction: Int): KeyValue? {
         // v1.2.2 FIX: Reduced from +/-3 to +/-1 (was scanning 43%, now 19% = ~67°)
+        // v1.2.2 FIX: Reduced from +/-3 to +/-1 (was scanning 43%, now 19% = ~67°)
         // This prevents horizontal swipes from accidentally triggering diagonal subkeys
         // when the exact direction doesn't have a key defined.
         // With ±2, direction 4 (E) - 2 = direction 2 (NE), causing 'we' swipe to trigger '2'
-        // [i] is [0, -1, +1, -2, +2], scanning ~31% of the circle's area (5 directions = 112.5°)
+        // [i] is [0, -1, +1], scanning ~19% of the circle's area (3 directions = 67.5°)
         var i = 0
-        while (i > -3) {  // Changed back to -3 (±2 range) to make uncapped directional flicks much more forgiving
+        while (i > -2) {  // Reverted from -3 to -2 (±1 range) as per thumb-key stability
             val d = (direction + i + 16) % 16
             // Don't make the difference between a key that doesn't exist and a key
             // that is removed by [_handler]. Triggers side effects.

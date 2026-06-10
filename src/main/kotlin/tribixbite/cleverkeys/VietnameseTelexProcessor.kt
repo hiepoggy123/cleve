@@ -73,22 +73,23 @@ object VietnameseTelexProcessor {
         
         val lastTwo = wordWithNewChar.takeLast(2).lowercase()
         val isUpper = wordWithNewChar[wordWithNewChar.length - 2].isUpperCase()
+        val isLastUpper = wordWithNewChar[wordWithNewChar.length - 1].isUpperCase()
 
         val replacement = when (lastTwo) {
             "aa" -> "â"
-            "âa" -> "a"
+            "âa" -> "aa"
             "aw" -> "ă"
-            "ăw" -> "a"
+            "ăw" -> "aw"
             "ee" -> "ê"
-            "êe" -> "e"
+            "êe" -> "ee"
             "oo" -> "ô"
-            "ôo" -> "o"
+            "ôo" -> "oo"
             "ow" -> "ơ"
-            "ơw" -> "o"
+            "ơw" -> "ow"
             "uw" -> "ư"
-            "ưw" -> "u"
+            "ưw" -> "uw"
             "dd" -> "đ"
-            "đd" -> "d"
+            "đd" -> "dd"
             "w" -> if (wordWithNewChar.length > 1 && isBaseVowel(wordWithNewChar[wordWithNewChar.length - 2])) {
                 // simple 'w' rule for ư/ơ if preceded by u/o
                 val prev = wordWithNewChar[wordWithNewChar.length - 2].lowercaseChar()
@@ -98,7 +99,11 @@ object VietnameseTelexProcessor {
         }
 
         if (replacement != null) {
-            val finalChar = if (isUpper) replacement.uppercase() else replacement
+            val finalChar = if (isUpper) {
+                if (isLastUpper) replacement.uppercase()
+                else if (replacement.length > 1) replacement.replaceFirstChar { it.uppercase() }
+                else replacement.uppercase()
+            } else replacement
             // We replace the last character of the original word + the new character
             // Since new character hasn't been committed yet, we delete 1 character (the last of the original word)
             // and commit the replacement.
