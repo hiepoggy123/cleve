@@ -589,6 +589,11 @@ class CleverKeysService : InputMethodService(),
         _keyboardView.setSwipeTypingComponents(null, this)
 
         setInputView(_keyboardView)
+        
+        // FIX: Update contentPaneContainer for KeyboardReceiver to prevent Emoji pane detachment
+        val contentPaneContainer = _keyboardView.findViewById<android.widget.FrameLayout>(R.id.content_pane_container)
+        _contentPaneContainer = contentPaneContainer
+        _keyeventhandler.recv.setContentPaneContainer(contentPaneContainer)
     }
 
     /**

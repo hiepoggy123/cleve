@@ -676,6 +676,12 @@ class Keyboard2View @JvmOverloads constructor(
                         _config.handler?.key_up(keyValue, Pointers.Modifiers.EMPTY)
                         return@onCustomShortSwipe
                     }
+                    KeyValue.Kind.Compose_pending -> {
+                        Log.d("Keyboard2View", "Executing Compose pending command")
+                        _config.handler?.key_down(keyValue, false)
+                        _config.handler?.key_up(keyValue, Pointers.Modifiers.EMPTY)
+                        return@onCustomShortSwipe
+                    }
                     else -> {
                         Log.w("Keyboard2View", "Unhandled KeyValue kind for custom swipe: ${keyValue.getKind()}")
                     }
@@ -756,6 +762,20 @@ class Keyboard2View @JvmOverloads constructor(
             KeyValue.Editing.REPLACE -> launchReplaceTextActivity(inputConnection)
             KeyValue.Editing.ASSIST -> launchTextAssistActivity(inputConnection)
             KeyValue.Editing.AUTOFILL -> inputConnection.performContextMenuAction(android.R.id.autofill)
+            KeyValue.Editing.CLEAR -> {
+                inputConnection.beginBatchEdit()
+                inputConnection.performContextMenuAction(android.R.id.selectAll)
+                inputConnection.commitText("", 1)
+                inputConnection.endBatchEdit()
+            }
+            KeyValue.Editing.DELETE_WORD,
+            KeyValue.Editing.FORWARD_DELETE_WORD,
+            KeyValue.Editing.BYPASS_CENSOR -> {
+                // Pass these complex editing operations to the main key handler
+                val kv = KeyValue(editing)
+                _config.handler?.key_down(kv, false)
+                _config.handler?.key_up(kv, Pointers.Modifiers.EMPTY)
+            }
             else -> Log.w("Keyboard2View", "Unhandled editing command: $editing")
         }
     }
