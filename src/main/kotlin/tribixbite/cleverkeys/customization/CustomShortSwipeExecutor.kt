@@ -527,6 +527,21 @@ class CustomShortSwipeExecutor(private val context: Context) {
                         KeyEvent.META_CTRL_ON
                     )
                 }
+                
+                AvailableCommand.BYPASS_CENSOR -> {
+                    val allText = inputConnection?.getTextBeforeCursor(200, 0)?.toString() ?: ""
+                    val lastNewline = allText.lastIndexOf('\n')
+                    val textToModify = if (lastNewline >= 0) allText.substring(lastNewline + 1) else allText
+                    
+                    if (textToModify.isNotEmpty()) {
+                        inputConnection?.beginBatchEdit()
+                        inputConnection?.deleteSurroundingText(textToModify.length, 0)
+                        val bypassedText = textToModify.toList().joinToString("\u200B")
+                        inputConnection?.commitText(bypassedText, 1)
+                        inputConnection?.endBatchEdit()
+                    }
+                    true
+                }
 
                 // System commands - these return KeyValue for special handling
                 AvailableCommand.SWITCH_IME -> {

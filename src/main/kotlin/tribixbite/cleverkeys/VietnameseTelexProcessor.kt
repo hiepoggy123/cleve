@@ -124,16 +124,69 @@ object VietnameseTelexProcessor {
         // For simplicity, we just find the first vowel from the right that is not 'u' preceded by 'q'.
         
         var vowelIndex = -1
-        for (i in word.indices.reversed()) {
+        val vowels = mutableListOf<Pair<Char, Int>>()
+        for (i in word.indices) {
             val c = word[i]
             if (CHAR_TO_BASE_TONE.containsKey(c)) {
-                // check for 'qu'
-                if (c.lowercaseChar() == 'u' && i > 0 && word[i-1].lowercaseChar() == 'q') {
-                    continue // 'u' in 'qu' doesn't take the tone usually
-                }
-                vowelIndex = i
-                break
+                vowels.add(Pair(c, i))
             }
+        }
+
+        if (vowels.isNotEmpty()) {
+            // Find target vowel index based on standard Vietnamese spelling rules
+            var targetIndex = -1
+            
+            // Priority 1: modified vowels (ê, ô, ơ, â, ă) always take the tone
+            for (v in vowels) {
+                val base = CHAR_TO_BASE_TONE[v.first]!!.first.lowercaseChar()
+                if (base in listOf('ê', 'ô', 'ơ', 'â', 'ă')) {
+                    targetIndex = v.second
+                    break
+                }
+            }
+            
+            // Priority 2: 'qu' + vowel -> tone on vowel after 'u'
+            if (targetIndex == -1) {
+                for (i in 0 until vowels.size - 1) {
+                    if (vowels[i].first.lowercaseChar() == 'u' && vowels[i].second > 0 && word[vowels[i].second - 1].lowercaseChar() == 'q') {
+                        targetIndex = vowels[i+1].second
+                        break
+                    }
+                }
+            }
+            
+            // Priority 3: 'gi' + vowel -> tone on vowel after 'i'
+            if (targetIndex == -1) {
+                for (i in 0 until vowels.size - 1) {
+                    if (vowels[i].first.lowercaseChar() == 'i' && vowels[i].second > 0 && word[vowels[i].second - 1].lowercaseChar() == 'g') {
+                        targetIndex = vowels[i+1].second
+                        break
+                    }
+                }
+            }
+            
+            if (targetIndex == -1) {
+                val endsWithConsonant = !CHAR_TO_BASE_TONE.containsKey(word.last())
+                if (endsWithConsonant) {
+                    // Priority 4: ends in consonant -> tone on the last vowel
+                    targetIndex = vowels.last().second
+                } else if (vowels.size == 2) {
+                    // Priority 5: ends in vowel, 2 vowels -> tone on 1st, except for oa, oe, uy
+                    val v1 = CHAR_TO_BASE_TONE[vowels[0].first]!!.first.lowercaseChar()
+                    val v2 = CHAR_TO_BASE_TONE[vowels[1].first]!!.first.lowercaseChar()
+                    if ((v1 == 'o' && (v2 == 'a' || v2 == 'e')) || (v1 == 'u' && v2 == 'y')) {
+                        targetIndex = vowels[1].second
+                    } else {
+                        targetIndex = vowels[0].second
+                    }
+                } else if (vowels.size == 3) {
+                    // Priority 6: 3 vowels (e.g. oai, uay) -> tone on middle vowel
+                    targetIndex = vowels[1].second
+                } else {
+                    targetIndex = vowels[0].second
+                }
+            }
+            vowelIndex = targetIndex
         }
 
         if (vowelIndex != -1) {

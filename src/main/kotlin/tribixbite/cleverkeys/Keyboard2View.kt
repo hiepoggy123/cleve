@@ -670,8 +670,11 @@ class Keyboard2View @JvmOverloads constructor(
                         executeEditingCommand(editing, inputConnection)
                     }
                     KeyValue.Kind.String -> {
-                        // String keys that aren't our custom commands - fall through to legacy handling
-                        Log.d("Keyboard2View", "String KeyValue, falling through to legacy handler")
+                        // For Macros (Strings), just pass it to the KeyEventHandler
+                        Log.d("Keyboard2View", "Executing String Macro: ${keyValue.getString()}")
+                        _config.handler?.key_down(keyValue, false)
+                        _config.handler?.key_up(keyValue, Pointers.Modifiers.EMPTY)
+                        return@onCustomShortSwipe
                     }
                     else -> {
                         Log.w("Keyboard2View", "Unhandled KeyValue kind for custom swipe: ${keyValue.getKind()}")
