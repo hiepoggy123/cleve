@@ -63,23 +63,17 @@ jobs:
         ./scripts/generate_icons.sh
 
     - name: Clean Gradle
-      run: ./gradlew clean
-
-    - name: Build debug APK
-      run: ./gradlew assembleDebug > build_log.txt 2>&1 || true
-      env:
-        DEBUG_KEYSTORE: "debug.keystore"
-        DEBUG_KEYSTORE_PASSWORD: debug0
-        DEBUG_KEY_ALIAS: debug
-        DEBUG_KEY_PASSWORD: debug0
-
-    - name: Commit build log
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
-        git add build_log.txt
-        git commit -m "Add build log for debugging" || true
-        git push origin main || true
+        chmod +x gradlew
+        ./gradlew clean
+
+    - name: Build release APK
+      run: ./gradlew assembleRelease
+      env:
+        RELEASE_KEYSTORE: "debug.keystore"
+        RELEASE_KEYSTORE_PASSWORD: debug0
+        RELEASE_KEY_ALIAS: debug
+        RELEASE_KEY_PASSWORD: debug0
 
     - name: Get short SHA
       id: sha
@@ -87,7 +81,7 @@ jobs:
 
     - name: Rename APKs with version
       run: |
-        cd build/outputs/apk/debug
+        cd build/outputs/apk/release
         for apk in *.apk; do
           if [[ "$apk" == *"universal"* ]]; then
             mv "$apk" "CleverKeys-${{ steps.sha.outputs.short }}-universal.apk"
@@ -103,17 +97,17 @@ jobs:
         done
         ls -la *.apk
 
-    - name: Upload debug APKs
+    - name: Upload release APKs
       uses: actions/upload-artifact@v4
       with:
-        name: "cleverkeys-debug-${{ steps.sha.outputs.short }}"
-        path: build/outputs/apk/debug/*.apk
+        name: "cleverkeys-release-${{ steps.sha.outputs.short }}"
+        path: build/outputs/apk/release/*.apk
 
     - name: Upload to releases (on every push to main)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       uses: softprops/action-gh-release@v1
       with:
-        files: build/outputs/apk/debug/*.apk
+        files: build/outputs/apk/release/*.apk
         tag_name: "dev-${{ steps.sha.outputs.short }}"
         name: "CleverKeys Dev Build (${{ steps.sha.outputs.short }})"
         prerelease: true  # Mark as prerelease so Obtainium ignores dev builds
