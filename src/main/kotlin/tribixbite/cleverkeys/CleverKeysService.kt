@@ -588,12 +588,30 @@ class CleverKeysService : InputMethodService(),
         // The service reference enables swipe handling callbacks
         _keyboardView.setSwipeTypingComponents(null, this)
 
-        setInputView(_keyboardView)
-        
-        // FIX: Update contentPaneContainer for KeyboardReceiver to prevent Emoji pane detachment
-        val contentPaneContainer = _keyboardView.findViewById<android.widget.FrameLayout>(R.id.content_pane_container)
-        _contentPaneContainer = contentPaneContainer
-        _keyeventhandler.recv.setContentPaneContainer(contentPaneContainer)
+        val config = Config.globalConfig()
+        if (config.word_prediction_enabled || config.swipe_typing_enabled) {
+            val predictionSetup = PredictionViewSetup.create(
+                this,
+                config,
+                _keyboardView,
+                _predictionCoordinator,
+                _inputCoordinator,
+                _suggestionHandler,
+                _neuralLayoutHelper,
+                _receiver,
+                _emojiPane
+            ).setupPredictionViews(_suggestionBar, _inputViewContainer, _contentPaneContainer, _topPane, _scrollView)
+
+            _suggestionBar = predictionSetup.suggestionBar
+            _inputViewContainer = predictionSetup.inputViewContainer
+            _contentPaneContainer = predictionSetup.contentPaneContainer
+            _topPane = predictionSetup.topPane
+            _scrollView = predictionSetup.scrollView
+
+            setInputView(predictionSetup.inputView)
+        } else {
+            setInputView(_keyboardView)
+        }
     }
 
     /**

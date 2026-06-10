@@ -772,7 +772,7 @@ class Keyboard2View @JvmOverloads constructor(
             KeyValue.Editing.FORWARD_DELETE_WORD,
             KeyValue.Editing.BYPASS_CENSOR -> {
                 // Pass these complex editing operations to the main key handler
-                val kv = KeyValue(editing)
+                val kv = KeyValue("", KeyValue.Kind.Editing, editing.ordinal, 0)
                 _config.handler?.key_down(kv, false)
                 _config.handler?.key_up(kv, Pointers.Modifiers.EMPTY)
             }
