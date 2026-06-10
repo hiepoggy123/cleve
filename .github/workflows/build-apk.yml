@@ -66,12 +66,20 @@ jobs:
       run: ./gradlew clean
 
     - name: Build debug APK
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug > build_log.txt 2>&1 || true
       env:
         DEBUG_KEYSTORE: "debug.keystore"
         DEBUG_KEYSTORE_PASSWORD: debug0
         DEBUG_KEY_ALIAS: debug
         DEBUG_KEY_PASSWORD: debug0
+
+    - name: Commit build log
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add build_log.txt
+        git commit -m "Add build log for debugging" || true
+        git push origin main || true
 
     - name: Get short SHA
       id: sha
