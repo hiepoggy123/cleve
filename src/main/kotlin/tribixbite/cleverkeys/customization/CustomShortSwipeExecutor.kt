@@ -43,7 +43,7 @@ class CustomShortSwipeExecutor(private val context: Context) {
             ActionType.TEXT -> executeTextInput(mapping.actionValue, inputConnection)
             ActionType.COMMAND -> executeCommandByName(mapping.actionValue, inputConnection, editorInfo)
             ActionType.KEY_EVENT -> executeKeyEvent(mapping.getKeyEventCode(), inputConnection)
-            ActionType.INTENT -> executeIntent(mapping.actionValue)
+            ActionType.INTENT -> executeIntent(mapping.actionValue, inputConnection)
             ActionType.TIMESTAMP -> executeTimestamp(mapping.actionValue, inputConnection)
         }
     }
@@ -105,7 +105,7 @@ class CustomShortSwipeExecutor(private val context: Context) {
     /**
      * Execute an intent action.
      */
-    private fun executeIntent(intentJson: String): Boolean {
+    private fun executeIntent(intentJson: String, inputConnection: InputConnection?): Boolean {
         return try {
             val intentDef = IntentDefinition.parseFromGson(intentJson)
             if (intentDef == null) {
@@ -123,18 +123,33 @@ class CustomShortSwipeExecutor(private val context: Context) {
 
             val intent = android.content.Intent()
 
+            // Fetch dynamic text from input connection
+            val selection = inputConnection?.getSelectedText(0)?.toString() ?: ""
+            val encodedSelection = java.net.URLEncoder.encode(selection, "UTF-8")
+
+            // Helper to replace placeholders
+            fun resolvePlaceholders(str: String?, urlEncode: Boolean = false): String? {
+                if (str.isNullOrBlank()) return str
+                val replacement = if (urlEncode) encodedSelection else selection
+                return str.replace("{selection}", replacement)
+            }
+
+            val resolvedAction = resolvePlaceholders(intentDef.action)
+            val resolvedData = resolvePlaceholders(intentDef.data, urlEncode = true)
+            val resolvedType = resolvePlaceholders(intentDef.type)
+
             // Set basic fields - use setDataAndType when both are present to avoid
             // mutual clearing (Intent.setData clears type, Intent.setType clears data)
-            if (!intentDef.action.isNullOrBlank()) intent.action = intentDef.action
-            val hasData = !intentDef.data.isNullOrBlank()
-            val hasType = !intentDef.type.isNullOrBlank()
+            if (!resolvedAction.isNullOrBlank()) intent.action = resolvedAction
+            val hasData = !resolvedData.isNullOrBlank()
+            val hasType = !resolvedType.isNullOrBlank()
             when {
                 hasData && hasType -> intent.setDataAndType(
-                    android.net.Uri.parse(intentDef.data),
-                    intentDef.type
+                    android.net.Uri.parse(resolvedData),
+                    resolvedType
                 )
-                hasData -> intent.data = android.net.Uri.parse(intentDef.data)
-                hasType -> intent.type = intentDef.type
+                hasData -> intent.data = android.net.Uri.parse(resolvedData)
+                hasType -> intent.type = resolvedType
             }
             if (!intentDef.packageName.isNullOrBlank()) intent.`package` = intentDef.packageName
 
@@ -145,7 +160,7 @@ class CustomShortSwipeExecutor(private val context: Context) {
 
             // Set extras
             intentDef.extras?.forEach { (key, value) ->
-                intent.putExtra(key, value)
+                intent.putExtra(key, resolvePlaceholders(value, urlEncode = false))
             }
 
             // Add flags
