@@ -240,6 +240,11 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
         if (uri != null) handleCustomRulesPicked(uri)
     }
 
+    // AI Integration state
+    private var geminiApiKey by mutableStateOf(Defaults.GEMINI_API_KEY)
+    private var geminiModel by mutableStateOf(Defaults.GEMINI_MODEL)
+    private var aiSectionExpanded by mutableStateOf(false)
+
     // Settings state for reactive UI
     private var beamWidth by mutableStateOf(6)
     private var maxLength by mutableStateOf(20)
@@ -470,6 +475,7 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
     private var advancedSectionExpanded by mutableStateOf(false)
     private var infoSectionExpanded by mutableStateOf(false)
     private var helpSectionExpanded by mutableStateOf(false)
+    private var aiIntegrationSectionExpanded by mutableStateOf(false)
 
     // Test keyboard field (#1134: test input without leaving settings)
     private var testKeyboardExpanded by mutableStateOf(false)
@@ -533,6 +539,7 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
         advancedSectionExpanded = false
         infoSectionExpanded = false
         helpSectionExpanded = false
+        aiIntegrationSectionExpanded = false
     }
 
     /**
@@ -590,6 +597,7 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
             "multiLang" -> multiLangSectionExpanded = true
             "privacy" -> privacySectionExpanded = true
             "advanced" -> advancedSectionExpanded = true
+            "ai_integration" -> aiIntegrationSectionExpanded = true
         }
     }
 
@@ -756,6 +764,10 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
 
         // Load current settings
         loadCurrentSettings()
+
+        // AI Integration
+        geminiApiKey = prefs.getSafeString("gemini_api_key", Defaults.GEMINI_API_KEY)
+        geminiModel = prefs.getSafeString("gemini_model", Defaults.GEMINI_MODEL)
 
         // Handle share intent for GIF pack ZIP import
         handleGifPackShareIntent(intent)
@@ -1205,6 +1217,33 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                         }
                     }
                 }
+            }
+
+            // AI Integration Section
+            CollapsibleSettingsSection(
+                title = "✨ AI Integration",
+                expanded = aiIntegrationSectionExpanded,
+                onExpandChange = { aiIntegrationSectionExpanded = it }
+            ) {
+                SettingsTextField(
+                    title = "Gemini API Key",
+                    description = "Enter your Google Gemini API Key for translations.",
+                    value = geminiApiKey,
+                    onValueChange = {
+                        geminiApiKey = it
+                        prefs.edit().putString("gemini_api_key", it).apply()
+                    }
+                )
+
+                SettingsTextField(
+                    title = "Gemini Model",
+                    description = "e.g. gemini-1.5-flash or gemini-2.0-flash",
+                    value = geminiModel,
+                    onValueChange = {
+                        geminiModel = it
+                        prefs.edit().putString("gemini_model", it).apply()
+                    }
+                )
             }
 
             // Test Keyboard Section (#1134: test input without leaving settings)
@@ -4486,6 +4525,62 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                 )
                 content()
             }
+        }
+    }
+
+    @Composable
+    private fun SettingsTextField(
+        title: String,
+        description: String,
+        value: String,
+        onValueChange: (String) -> Unit
+    ) {
+        val regId = settingSlug(title)
+        val isHighlighted = highlightedSettingId == regId
+        val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+        val pulseAlpha by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = if (isHighlighted) 1f else 0f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(400),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "pulseAlpha"
+        )
+        val pulseColor = MaterialTheme.colorScheme.primary.copy(alpha = pulseAlpha * 0.2f)
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(pulseColor)
+                .onGloballyPositioned { coordinates ->
+                    val yPos = coordinates.positionInRoot().y.toInt()
+                    if (yPos > 0) recordSettingPosition(regId, yPos)
+                }
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            if (description.isNotEmpty()) {
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp, bottom = 8.dp)
+                )
+            }
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                )
+            )
         }
     }
 

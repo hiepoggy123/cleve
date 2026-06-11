@@ -45,6 +45,7 @@ class CustomShortSwipeExecutor(private val context: Context) {
             ActionType.KEY_EVENT -> executeKeyEvent(mapping.getKeyEventCode(), inputConnection)
             ActionType.INTENT -> executeIntent(mapping.actionValue, inputConnection)
             ActionType.TIMESTAMP -> executeTimestamp(mapping.actionValue, inputConnection)
+            ActionType.GEMINI_TRANSLATE -> executeGeminiTranslate(inputConnection)
         }
     }
 
@@ -740,6 +741,42 @@ class CustomShortSwipeExecutor(private val context: Context) {
             showToast("Failed to read pinned entry")
             false
         }
+    }
+
+    private fun executeGeminiTranslate(inputConnection: InputConnection?): Boolean {
+        if (inputConnection == null) return false
+
+        val prefs = tribixbite.cleverkeys.DirectBootAwarePreferences.get_shared_preferences(context)
+        val apiKey = prefs.getString("gemini_api_key", tribixbite.cleverkeys.Defaults.GEMINI_API_KEY) ?: tribixbite.cleverkeys.Defaults.GEMINI_API_KEY
+        val model = prefs.getString("gemini_model", tribixbite.cleverkeys.Defaults.GEMINI_MODEL) ?: tribixbite.cleverkeys.Defaults.GEMINI_MODEL
+
+        if (apiKey.isBlank()) {
+            showToast("Vui lòng nhập Gemini API Key trong Cài đặt")
+            return false
+        }
+
+        // Fetch text
+        val beforeCursor = inputConnection.getTextBeforeCursor(10000, 0)?.toString() ?: ""
+        val afterCursor = inputConnection.getTextAfterCursor(10000, 0)?.toString() ?: ""
+        val textToTranslate = beforeCursor + afterCursor
+
+        if (textToTranslate.isBlank()) return false
+
+        showToast("Đang dịch với Gemini...")
+
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
+            val translatedText = tribixbite.cleverkeys.GeminiTranslator.translate(textToTranslate, apiKey, model)
+            if (translatedText != null) {
+                inputConnection.beginBatchEdit()
+                inputConnection.deleteSurroundingText(beforeCursor.length, afterCursor.length)
+                inputConnection.commitText(translatedText, 1)
+                inputConnection.endBatchEdit()
+                showToast("Dịch thành công")
+            } else {
+                showToast("Lỗi dịch vụ Gemini API")
+            }
+        }
+        return true
     }
 
     /** Show a brief toast on the main thread. Safe to call from any thread. */

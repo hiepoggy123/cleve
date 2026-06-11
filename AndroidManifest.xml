@@ -4,7 +4,8 @@
   <!-- Core keyboard permissions -->
   <uses-permission android:name="android.permission.VIBRATE"/>
 
-  <!-- PRIVACY: No INTERNET permission - CleverKeys is fully offline, no data leaves your device -->
+  <!-- CleverKeys has been granted INTERNET access for Gemini API and Online GIFs features -->
+  <uses-permission android:name="android.permission.INTERNET"/>
 
   <!-- Optional: Voice input support (not required for core keyboard functionality) -->
   <!-- Uncomment if you want voice typing: -->

@@ -40,7 +40,6 @@ class GifGridManager(
     private var currentPage: Int = 0
     private var totalItems: Int = 0
 
-    private val assetManager = GifAssetManager.getInstance(context)
     private val database = GifDatabase.getInstance(context)
     private val adapter = GifRecyclerAdapter()
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -210,11 +209,11 @@ class GifGridManager(
         }
 
         fun bind(gif: Gif) {
-            val thumbFile = File(context.filesDir, gif.getThumbnailPath())
+            val giphyUrl = gif.getGiphyUrl()
 
-            if (thumbFile.exists()) {
+            if (giphyUrl != null) {
                 val request = ImageRequest.Builder(context)
-                    .data(thumbFile)
+                    .data(giphyUrl)
                     .target(imageView)
                     .scale(Scale.FILL)
                     .size(THUMB_SIZE_PX)

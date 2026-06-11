@@ -54,6 +54,14 @@ enum class ActionType(
     TIMESTAMP(
         displayName = "Timestamp",
         description = "Insert formatted date/time using SimpleDateFormat pattern"
+    ),
+
+    /**
+     * Auto-translate the current text field content using Gemini API.
+     */
+    GEMINI_TRANSLATE(
+        displayName = "Translate with Gemini",
+        description = "Translate the entire text box to/from English using Gemini AI"
     );
 
     companion object {
