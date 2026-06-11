@@ -230,7 +230,7 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
     private val gifPackImportLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
-        uri?.let { performGifPackImport(it) }
+//         uri?.let { performGifPackImport(it) }
     }
 
     // Custom URL-sanitization rules (Chunk 4). SAF-only, mime-restricted to JSON.
@@ -770,7 +770,7 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
         primaryGifSource = prefs.getSafeString("primary_gif_source", Defaults.PRIMARY_GIF_SOURCE)
 
         // Handle share intent for GIF pack ZIP import
-        handleGifPackShareIntent(intent)
+//         handleGifPackShareIntent(intent)
 
         // `scroll_to` extra: expand a named section + scroll/highlight on launch.
         // Used by [BackupRestoreActivity] when redirected without a known intent
@@ -5288,7 +5288,7 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
         // GIF Panel
         gifEnabled = prefs.getSafeBoolean("gif_enabled", Defaults.GIF_ENABLED)
         gifThumbnailColumns = Config.safeGetInt(prefs, "gif_thumbnail_columns", Defaults.GIF_THUMBNAIL_COLUMNS).coerceIn(2, 5)
-        refreshInstalledGifPacks()
+//         refreshInstalledGifPacks()
 
         autoCapitalizationEnabled = prefs.getSafeBoolean("autocapitalisation", Defaults.AUTOCAPITALISATION)
         capitalizeIWords = prefs.getSafeBoolean("autocapitalize_i_words", Defaults.AUTOCAPITALIZE_I_WORDS)
