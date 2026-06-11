@@ -531,7 +531,7 @@ class KeyboardReceiver(
 
         // Title: display name of the GIF
         val titleView = TextView(context).apply {
-            text = gif.getDisplayName()
+            text = gif.title
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setTextColor(Color.WHITE)
             setTypeface(null, Typeface.BOLD)
@@ -568,49 +568,14 @@ class KeyboardReceiver(
             container.addView(actionView)
         }
 
-        // "Copy URL" — copies the Giphy animated GIF URL
-        val url = gif.getGiphyUrl()
-        if (url != null) {
+        // "Copy URL" - copies the online GIF URL
+        val url = gif.fullUrl
+        if (url.isNotBlank()) {
             addAction("Copy URL") {
                 val clip = android.content.ClipData.newPlainText("GIF URL", url)
                 val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                 cm.setPrimaryClip(clip)
                 Toast.makeText(context, "URL copied", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        // "Copy GIF" — only shown when full animated file exists on device
-        val fullGifFile = java.io.File(context.filesDir, gif.getFullPath())
-        if (fullGifFile.exists()) {
-            addAction("Copy GIF") {
-                try {
-                    val uri = androidx.core.content.FileProvider.getUriForFile(
-                        context,
-                        "${context.packageName}.fileprovider",
-                        fullGifFile
-                    )
-                    val clip = android.content.ClipData.newUri(
-                        context.contentResolver,
-                        gif.getDisplayName(),
-                        uri
-                    )
-                    val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                    cm.setPrimaryClip(clip)
-                    Toast.makeText(context, "GIF copied", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    android.util.Log.w("KeyboardReceiver", "Copy GIF failed: ${e.message}")
-                }
-            }
-        }
-
-        // "Copy keywords"
-        val keywords = gif.getKeywords()
-        if (keywords.isNotEmpty()) {
-            addAction("Copy keywords") {
-                val clip = android.content.ClipData.newPlainText("GIF keywords", keywords.joinToString(", "))
-                val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                cm.setPrimaryClip(clip)
-                Toast.makeText(context, "Keywords copied", Toast.LENGTH_SHORT).show()
             }
         }
 
