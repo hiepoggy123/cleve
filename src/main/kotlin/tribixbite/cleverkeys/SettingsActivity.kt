@@ -3460,9 +3460,6 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                 if (gifEnabled) {
                     Spacer(modifier = Modifier.height(8.dp))
 
-                if (gifEnabled) {
-                    Spacer(modifier = Modifier.height(8.dp))
-
                     // Grid columns slider
                     SettingsSlider(
                         title = "Grid Columns",
@@ -3474,7 +3471,7 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                             gifThumbnailColumns = it.toInt()
                             saveSetting("gif_thumbnail_columns", gifThumbnailColumns)
                         },
-                        displayValue = "$gifThumbnailColumns columns"
+                        displayValue = " columns"
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -3493,42 +3490,6 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                         Text("Clear Recently Used GIFs")
                     }
                 }
-            }
-
-            // GIF pack removal confirmation dialogs
-            if (showGifRemoveAllDialog) {
-                androidx.compose.material3.AlertDialog(
-                    onDismissRequest = { showGifRemoveAllDialog = false },
-                    title = { Text("Remove All GIF Data?") },
-                    text = { Text("This will delete all imported GIF packs, thumbnails, and database. This cannot be undone.") },
-                    confirmButton = {
-                        androidx.compose.material3.TextButton(onClick = {
-                            showGifRemoveAllDialog = false
-                            performGifRemoveAll()
-                        }) { Text("Remove All", color = MaterialTheme.colorScheme.error) }
-                    },
-                    dismissButton = {
-                        androidx.compose.material3.TextButton(onClick = { showGifRemoveAllDialog = false }) { Text("Cancel") }
-                    }
-                )
-            }
-
-            showGifRemovePackDialog?.let { packId ->
-                val packName = installedGifPacks.find { it.packId == packId }?.name ?: packId
-                androidx.compose.material3.AlertDialog(
-                    onDismissRequest = { showGifRemovePackDialog = null },
-                    title = { Text("Remove $packName?") },
-                    text = { Text("This will delete all GIFs from this pack and reclaim storage space.") },
-                    confirmButton = {
-                        androidx.compose.material3.TextButton(onClick = {
-                            showGifRemovePackDialog = null
-                            performGifRemovePack(packId)
-                        }) { Text("Remove", color = MaterialTheme.colorScheme.error) }
-                    },
-                    dismissButton = {
-                        androidx.compose.material3.TextButton(onClick = { showGifRemovePackDialog = null }) { Text("Cancel") }
-                    }
-                )
             }
 
             // Backup & Restore Section (Collapsible)
