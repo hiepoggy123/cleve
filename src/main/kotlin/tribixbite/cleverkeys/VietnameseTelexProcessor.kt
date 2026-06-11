@@ -40,31 +40,7 @@ object VietnameseTelexProcessor {
 
     private val semivowelCodas = setOf('u', 'i', 'y', 'o')
 
-    // ── Telex shortcut maps ───────────────────────────────────────
-
-    private val shortcuts2 = mapOf(
-        "aw" to 'ă',
-        "aa" to 'â',
-        "ee" to 'ê',
-        "oo" to 'ô',
-        "ow" to 'ơ',
-        "uw" to 'ư',
-        "dd" to 'đ',
-    )
-
-    private val shortcuts3 = mapOf(
-        "uow" to "ươ",
-    )
-
-    private val reverseShortcuts = mapOf(
-        'ă' to ('a' to 'w'),
-        'â' to ('a' to 'a'),
-        'ê' to ('e' to 'e'),
-        'ô' to ('o' to 'o'),
-        'ơ' to ('o' to 'w'),
-        'ư' to ('u' to 'w'),
-        'đ' to ('d' to 'd'),
-    )
+    // ── Telex shortcut maps (Removed, using distant modifier algorithm) ───────────
 
     // ── Tone maps ─────────────────────────────────────────────────
 
@@ -218,25 +194,18 @@ object VietnameseTelexProcessor {
             return word.length to (word + ch)
         }
 
-        if (lowerCh == 'w' && word.length == 1 && word.single().lowercaseChar() == 'ư') {
-            return word.length to ch.toString()
-        }
-
-        if (lowerCh == 'w' && word.last().lowercaseChar() == 'ư' && word.length > 1) {
-            return word.length to (word.dropLast(1) + ch)
-        }
-
-        if (isShortcutUndo(word, ch)) {
-            return doShortcutUndo(word, ch)
-        }
-
-        val shortcut = applyShortcut(word, ch)
-        if (shortcut != null) {
-            return word.length to shortcut
+        val modified = applyDistantModifier(word, ch)
+        if (modified != null) {
+            return word.length to modified
         }
 
         if (lowerCh == 'w') {
-            return handleW(word, ch)
+            val last = word.lastOrNull()
+            if (last?.lowercaseChar() == 'w') {
+                return word.length to (word + ch)
+            }
+            val uChar = if (ch.isUpperCase()) 'Ư' else 'ư'
+            return word.length to (word + uChar)
         }
 
         return word.length to (word + ch)
@@ -289,77 +258,158 @@ object VietnameseTelexProcessor {
     }
 
     // ──────────────────────────────────────────────────────────────
-    //  Shortcut handling
+    //  Distant Modifiers (a, e, o, w, d)
     // ──────────────────────────────────────────────────────────────
 
-    private fun isShortcutUndo(word: String, ch: Char): Boolean {
-        if (word.isEmpty()) return false
-        val last = word.last().lowercaseChar()
-        val expected = reverseShortcuts[last]?.second ?: return false
-        return ch.lowercaseChar() == expected
-    }
+    private fun applyDistantModifier(word: String, mod: Char): String? {
+        val lowerMod = mod.lowercaseChar()
+        if (lowerMod !in listOf('a', 'e', 'o', 'w', 'd')) return null
 
-    private fun doShortcutUndo(word: String, ch: Char): Pair<Int, String> {
-        val last = word.last().lowercaseChar()
-        val pair = reverseShortcuts[last] ?: return 0 to (word + ch)
-        val prefix = word.dropLast(1)
-        val first = if (word.last().isUpperCase()) {
-            pair.first.uppercaseChar()
-        } else {
-            pair.first
-        }
-        val second = if (ch.isUpperCase()) pair.second.uppercaseChar() else pair.second
-        return word.length to (prefix + first + second)
-    }
+        val chars = word.toCharArray()
 
-    private fun applyShortcut(word: String, ch: Char): String? {
-        val lowerCh = ch.lowercaseChar()
-
-        if (word.length >= 2) {
-            val tail2 = word.substring(word.length - 2).lowercase()
-            val key3 = tail2 + lowerCh
-            val result3 = shortcuts3[key3]
-            if (result3 != null) {
-                val mode = casingMode(word.substring(word.length - 2))
-                return word.dropLast(2) + applyCasing(result3, mode)
+        // 1. UNDO logic
+        when (lowerMod) {
+            'a' -> if (undoModifier(chars, 'â', 'a')) return String(chars) + mod
+            'e' -> if (undoModifier(chars, 'ê', 'e')) return String(chars) + mod
+            'o' -> if (undoModifier(chars, 'ô', 'o')) return String(chars) + mod
+            'd' -> if (undoModifier(chars, 'đ', 'd')) return String(chars) + mod
+            'w' -> {
+                val u1 = undoModifier(chars, 'ư', 'u')
+                val u2 = undoModifier(chars, 'ơ', 'o')
+                val u3 = undoModifier(chars, 'ă', 'a')
+                if (u1 || u2 || u3) return String(chars) + mod
             }
         }
 
-        val last = word.last().lowercaseChar()
-        val key2 = "$last$lowerCh"
-        val result2 = shortcuts2[key2]
-        if (result2 != null) {
-            val mode = casingMode(word.last().toString())
-            return word.dropLast(1) + applyCasing(result2.toString(), mode)
+        // 2. APPLY logic
+        var applied = false
+        when (lowerMod) {
+            'a' -> applied = applyCircumflex(chars, 'a', 'â')
+            'e' -> applied = applyCircumflex(chars, 'e', 'ê')
+            'o' -> applied = applyCircumflex(chars, 'o', 'ô')
+            'd' -> applied = applyToFirst(chars, 'd', 'đ')
+            'w' -> {
+                var hasU = false
+                var hasO = false
+                for (i in chars.indices) {
+                    val base = toBaseForm(chars[i])
+                    if (base == 'u' && !(i > 0 && chars[i-1].lowercaseChar() == 'q')) hasU = true
+                    if (base == 'o') hasO = true
+                }
+
+                val clean = stripTones(String(chars))
+                if (hasU || hasO) {
+                    if (clean.contains("oa") || clean.contains("oe")) {
+                        // Apply to 'a' or 'e' if valid
+                        for (i in chars.indices.reversed()) {
+                            val base = toBaseForm(chars[i])
+                            if (base == 'a') {
+                                val isLast = (i == chars.size - 1)
+                                val lastChar = chars.last().lowercaseChar()
+                                val hasConsonantCoda = lastChar in listOf('c', 'm', 'n', 'p', 't', 'g', 'h')
+                                if (isLast || hasConsonantCoda) {
+                                    chars[i] = changeBaseChar(chars[i], 'ă')
+                                    applied = true
+                                    break
+                                }
+                            }
+                        }
+                    } else {
+                        // Apply to 'u' and 'o'
+                        for (i in chars.indices) {
+                            val base = toBaseForm(chars[i])
+                            if (base == 'u') {
+                                val isQu = (i > 0 && chars[i-1].lowercaseChar() == 'q')
+                                val isCoda = (i > 0 && toBaseForm(chars[i-1]) in listOf('a', 'â', 'ă', 'e', 'ê', 'i', 'y', 'o', 'ô', 'ơ'))
+                                if (!isQu && !isCoda) {
+                                    chars[i] = changeBaseChar(chars[i], 'ư')
+                                    applied = true
+                                }
+                            }
+                            if (base == 'o') {
+                                val isCoda = (i > 0 && toBaseForm(chars[i-1]) in listOf('a', 'â', 'ă', 'e', 'ê', 'i', 'y'))
+                                if (!isCoda) {
+                                    chars[i] = changeBaseChar(chars[i], 'ơ')
+                                    applied = true
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Apply to 'a'
+                    for (i in chars.indices.reversed()) {
+                        val base = toBaseForm(chars[i])
+                        if (base == 'a') {
+                            val isLast = (i == chars.size - 1)
+                            val lastChar = chars.last().lowercaseChar()
+                            val hasConsonantCoda = lastChar in listOf('c', 'm', 'n', 'p', 't', 'g', 'h')
+                            if (isLast || hasConsonantCoda) {
+                                chars[i] = changeBaseChar(chars[i], 'ă')
+                                applied = true
+                                break
+                            }
+                        }
+                    }
+                }
+            }
         }
 
+        return if (applied) String(chars) else null
+    }
+
+    private fun undoModifier(chars: CharArray, targetBase: Char, revertBase: Char): Boolean {
+        var modified = false
+        for (i in chars.indices) {
+            if (toBaseForm(chars[i]) == targetBase) {
+                chars[i] = changeBaseChar(chars[i], revertBase)
+                modified = true
+            }
+        }
+        return modified
+    }
+
+    private fun applyCircumflex(chars: CharArray, targetBase: Char, newBase: Char): Boolean {
+        for (i in chars.indices.reversed()) {
+            if (toBaseForm(chars[i]) == targetBase) {
+                if (i + 1 < chars.size) {
+                    val nextChar = chars[i+1].lowercaseChar()
+                    if (targetBase == 'a' && (nextChar == 'i' || nextChar == 'o')) continue
+                    if (targetBase == 'e' && nextChar == 'o') continue
+                    if (targetBase == 'o' && nextChar == 'a') continue
+                }
+                chars[i] = changeBaseChar(chars[i], newBase)
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun applyToFirst(chars: CharArray, targetBase: Char, newBase: Char): Boolean {
+        for (i in chars.indices) {
+            if (toBaseForm(chars[i]) == targetBase) {
+                chars[i] = changeBaseChar(chars[i], newBase)
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun getTone(c: Char): Char? {
+        val lower = c.lowercaseChar()
+        for ((tone, map) in toneMaps) {
+            if (map.values.contains(lower)) return tone
+        }
         return null
     }
 
-    // ──────────────────────────────────────────────────────────────
-    //  Standalone w → ư / Ư
-    // ──────────────────────────────────────────────────────────────
-
-    private fun handleW(word: String, ch: Char): Pair<Int, String> {
-        if (ch.isLetter().not()) return word.length to (word + ch)
-        val last = word.lastOrNull()
-
-        if (last?.lowercaseChar() == 'ư' && word.length > 1) {
-            val uChar = if (last.isUpperCase()) 'U' else 'u'
-            return word.length to (word.dropLast(1) + uChar + ch)
-        }
-
-        if (last?.lowercaseChar() == 'w') {
-            return word.length to (word + ch)
-        }
-
-        val lastBase = last?.let { toBaseForm(it.lowercaseChar()) }
-        if (lastBase != null && lastBase in baseVowels) {
-            return word.length to (word + ch)
-        }
-
-        val uChar = if (ch.isUpperCase()) 'Ư' else 'ư'
-        return word.length to (word + uChar)
+    private fun changeBaseChar(c: Char, newBase: Char): Char {
+        val tone = getTone(c)
+        val isUpper = c.isUpperCase()
+        val casedNewBase = if (isUpper) newBase.uppercaseChar() else newBase
+        if (tone == null) return casedNewBase
+        
+        val toned = toneMaps[tone]?.get(newBase.lowercaseChar()) ?: newBase.lowercaseChar()
+        return if (isUpper) toned.uppercaseChar() else toned
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -569,23 +619,4 @@ object VietnameseTelexProcessor {
         }
     }
 
-    private fun casingMode(sample: String): CaseMode {
-        val letters = sample.filter { it.isLetter() }
-        if (letters.isEmpty()) return CaseMode.LOWER
-        if (letters.all { it.isUpperCase() }) return CaseMode.UPPER
-        if (letters.first().isUpperCase() && letters.drop(1).all { it.isLowerCase() }) {
-            return CaseMode.CAPITALIZED
-        }
-        return CaseMode.LOWER
-    }
-
-    private fun applyCasing(text: String, mode: CaseMode): String {
-        return when (mode) {
-            CaseMode.UPPER -> text.uppercase()
-            CaseMode.CAPITALIZED -> text.replaceFirstChar { it.uppercase() }
-            CaseMode.LOWER -> text
-        }
-    }
-
-    private enum class CaseMode { LOWER, CAPITALIZED, UPPER }
 }
