@@ -1,214 +1,591 @@
 package tribixbite.cleverkeys
 
+import java.text.Normalizer
+
 /**
- * Basic Vietnamese Telex processor.
- * Intercepts keystrokes and applies Telex rules to the current word.
+ * Advanced Vietnamese Telex processor ported from ViKey's AlgorithmicTelex.
+ * Provides syllable parsing, tone placement rules, and English fallback.
  */
 object VietnameseTelexProcessor {
 
     data class TelexResult(val newWord: String, val charsToDelete: Int)
 
-    // Tone map: 0=ngang, 1=sắc, 2=huyền, 3=hỏi, 4=ngã, 5=nặng
-    private val VOWEL_TONES = mapOf(
-        'a' to charArrayOf('a', 'á', 'à', 'ả', 'ã', 'ạ'),
-        'ă' to charArrayOf('ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ'),
-        'â' to charArrayOf('â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ'),
-        'e' to charArrayOf('e', 'é', 'è', 'ẻ', 'ẽ', 'ẹ'),
-        'ê' to charArrayOf('ê', 'ế', 'ề', 'ể', 'ễ', 'ệ'),
-        'i' to charArrayOf('i', 'í', 'ì', 'ỉ', 'ĩ', 'ị'),
-        'o' to charArrayOf('o', 'ó', 'ò', 'ỏ', 'õ', 'ọ'),
-        'ô' to charArrayOf('ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ'),
-        'ơ' to charArrayOf('ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ'),
-        'u' to charArrayOf('u', 'ú', 'ù', 'ủ', 'ũ', 'ụ'),
-        'ư' to charArrayOf('ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự'),
-        'y' to charArrayOf('y', 'ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ')
+    // ── Character classification ──────────────────────────────────
+
+    private val toneKeys = setOf('s', 'f', 'r', 'x', 'j')
+
+    private val baseVowels = setOf(
+        'a', 'ă', 'â', 'e', 'ê', 'i',
+        'o', 'ô', 'ơ', 'u', 'ư', 'y',
     )
 
-    private val TONE_CHARS = mapOf('s' to 1, 'f' to 2, 'r' to 3, 'x' to 4, 'j' to 5, 'z' to 0)
+    private val consonantLetters = setOf(
+        'b', 'c', 'd', 'đ', 'g', 'h', 'k', 'l', 'm', 'n',
+        'p', 'q', 'r', 's', 't', 'v', 'x',
+    )
 
-    // Reverse map to find base vowel and current tone
-    private val CHAR_TO_BASE_TONE = mutableMapOf<Char, Pair<Char, Int>>()
+    // ── Vietnamese onset consonants (longest first) ───────────────
 
-    init {
-        VOWEL_TONES.forEach { (base, array) ->
-            array.forEachIndexed { toneIndex, c ->
-                CHAR_TO_BASE_TONE[c] = Pair(base, toneIndex)
-                // Also uppercase
-                CHAR_TO_BASE_TONE[c.uppercaseChar()] = Pair(base.uppercaseChar(), toneIndex)
-            }
-        }
-    }
+    private val knownOnsets = listOf(
+        "ngh", "ng", "ch", "gh", "gi", "kh", "nh", "ph", "th", "tr", "qu",
+        "b", "c", "d", "đ", "g", "h", "k", "l", "m", "n",
+        "p", "r", "s", "t", "v", "x",
+    )
+
+    // ── Vietnamese coda consonants ────────────────────────────────
+
+    private val knownCodas = listOf(
+        "ch", "ng", "nh", "c", "m", "n", "p", "t",
+    )
+
+    private val semivowelCodas = setOf('u', 'i', 'y', 'o')
+
+    // ── Telex shortcut maps ───────────────────────────────────────
+
+    private val shortcuts2 = mapOf(
+        "aw" to 'ă',
+        "aa" to 'â',
+        "ee" to 'ê',
+        "oo" to 'ô',
+        "ow" to 'ơ',
+        "uw" to 'ư',
+        "dd" to 'đ',
+    )
+
+    private val shortcuts3 = mapOf(
+        "uow" to "ươ",
+    )
+
+    private val reverseShortcuts = mapOf(
+        'ă' to ('a' to 'w'),
+        'â' to ('a' to 'a'),
+        'ê' to ('e' to 'e'),
+        'ô' to ('o' to 'o'),
+        'ơ' to ('o' to 'w'),
+        'ư' to ('u' to 'w'),
+        'đ' to ('d' to 'd'),
+    )
+
+    // ── Tone maps ─────────────────────────────────────────────────
+
+    private val toneMaps = mapOf(
+        's' to mapOf(
+            'a' to 'á', 'ă' to 'ắ', 'â' to 'ấ',
+            'e' to 'é', 'ê' to 'ế',
+            'i' to 'í',
+            'o' to 'ó', 'ô' to 'ố', 'ơ' to 'ớ',
+            'u' to 'ú', 'ư' to 'ứ', 'y' to 'ý',
+        ),
+        'f' to mapOf(
+            'a' to 'à', 'ă' to 'ằ', 'â' to 'ầ',
+            'e' to 'è', 'ê' to 'ề',
+            'i' to 'ì',
+            'o' to 'ò', 'ô' to 'ồ', 'ơ' to 'ờ',
+            'u' to 'ù', 'ư' to 'ừ', 'y' to 'ỳ',
+        ),
+        'r' to mapOf(
+            'a' to 'ả', 'ă' to 'ẳ', 'â' to 'ẩ',
+            'e' to 'ẻ', 'ê' to 'ể',
+            'i' to 'ỉ',
+            'o' to 'ỏ', 'ô' to 'ổ', 'ơ' to 'ở',
+            'u' to 'ủ', 'ư' to 'ử', 'y' to 'ỷ',
+        ),
+        'x' to mapOf(
+            'a' to 'ã', 'ă' to 'ẵ', 'â' to 'ẫ',
+            'e' to 'ẽ', 'ê' to 'ễ',
+            'i' to 'ĩ',
+            'o' to 'õ', 'ô' to 'ỗ', 'ơ' to 'ỡ',
+            'u' to 'ũ', 'ư' to 'ữ', 'y' to 'ỹ',
+        ),
+        'j' to mapOf(
+            'a' to 'ạ', 'ă' to 'ặ', 'â' to 'ậ',
+            'e' to 'ẹ', 'ê' to 'ệ',
+            'i' to 'ị',
+            'o' to 'ọ', 'ô' to 'ộ', 'ơ' to 'ợ',
+            'u' to 'ụ', 'ư' to 'ự', 'y' to 'ỵ',
+        ),
+    )
+
+    // ── Vietnamese orthographic tone placement rules ──────────────
+
+    private val toneRules = mapOf(
+        "oa" to 'a', "oe" to 'e', "uy" to 'y',
+        "ưa" to 'ư', "ươ" to 'ơ', "uô" to 'ô',
+        "ua" to 'u', "iê" to 'ê', "yê" to 'ê',
+        "uyê" to 'ê', "uya" to 'y', "uye" to 'y',
+        "uôi" to 'ô', "ươi" to 'ơ', "ươu" to 'ơ',
+        "oai" to 'a', "oay" to 'a', "uay" to 'a',
+        "oeo" to 'e', "oeu" to 'e',
+        "ia" to 'i', "ya" to 'y',
+        "iêu" to 'ê', "yêu" to 'ê',
+        "ai" to 'a', "ay" to 'a', "au" to 'a', "ao" to 'a',
+        "oi" to 'o', "ôi" to 'ô', "ơi" to 'ơ',
+        "ui" to 'u', "ưi" to 'ư',
+        "eo" to 'e', "êu" to 'ê',
+        "iu" to 'i', "ưu" to 'ư',
+        "ây" to 'â',
+    )
+
+    // ── English fallback patterns ─────────────────────────────────
+
+    private val englishPatterns = listOf(
+        "tion", "ness", "ship", "less", "able", "ment",
+        "sch", "ck", "dge", "scr", "str",
+        "ould", "ight", "ough",
+    )
+
+    // ──────────────────────────────────────────────────────────────
+    //  Syllable model
+    // ──────────────────────────────────────────────────────────────
+
+    private data class Syllable(
+        val onset: String = "",
+        val nucleus: String = "",
+        val coda: String = "",
+    )
+
+    // ──────────────────────────────────────────────────────────────
+    //  Public API for CleverKeys
+    // ──────────────────────────────────────────────────────────────
 
     /**
-     * Process the text before the cursor and the newly typed character.
-     * Returns a TelexResult if a rule was applied, otherwise null.
+     * Replaces getActions. Returns TelexResult or null if no Telex rule applied (simple append).
      */
     fun processTelex(textBeforeCursor: String, newChar: Char): TelexResult? {
-        val wordRegex = Regex("([a-zA-ZÀ-ỹ]+)$")
-        val match = wordRegex.find(textBeforeCursor)
+        val normalized = Normalizer.normalize(textBeforeCursor, Normalizer.Form.NFC)
         
-        // If there's no word before cursor, we only handle 'dd' etc if typed directly
-        val word = match?.value ?: ""
+        if (normalized.isEmpty()) {
+            val first = firstChar(newChar)
+            return if (first == newChar.toString()) null else TelexResult(first, 0)
+        }
         
-        if (word.isEmpty()) {
-            return applyBasicCharRule(newChar.toString(), newChar, 0)
+        if (!normalized.last().isLetter()) {
+            return null // Just append normally
         }
 
-        // 1. Try applying tone
-        val lowerNewChar = newChar.lowercaseChar()
-        if (TONE_CHARS.containsKey(lowerNewChar)) {
-            val (toneAppliedWord, canceled) = applyTone(word, TONE_CHARS[lowerNewChar]!!)
-            if (toneAppliedWord != word || canceled) {
-                // If it was canceled (e.g. typing 's' when word already has 's'), we append the new character!
-                val finalWord = if (canceled) toneAppliedWord + newChar else toneAppliedWord
-                return TelexResult(finalWord, word.length)
+        if (newChar.lowercaseChar() == 'z') {
+            return handleCancel(normalized)
+        }
+
+        val word = lastWord(normalized)
+        if (word.isEmpty()) {
+            val first = firstChar(newChar)
+            return if (first == newChar.toString()) null else TelexResult(first, 0)
+        }
+
+        val (charsToDelete, newWord) = processWord(word, newChar)
+        
+        // If the result is just appending the character, return null so CleverKeys handles normally
+        if (charsToDelete == word.length && newWord == word + newChar) {
+            return null
+        }
+        
+        return TelexResult(newWord, charsToDelete)
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  First character in a new word
+    // ──────────────────────────────────────────────────────────────
+
+    private fun firstChar(ch: Char): String {
+        if (ch.lowercaseChar() == 'w') {
+            return if (ch.isUpperCase()) "Ư" else "ư"
+        }
+        return ch.toString()
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Process a keypress on the current word (syllable recomposition)
+    // ──────────────────────────────────────────────────────────────
+
+    private fun processWord(word: String, ch: Char): Pair<Int, String> {
+        val lowerCh = ch.lowercaseChar()
+
+        if (lowerCh in toneKeys) {
+            if (word.isNotEmpty()) {
+                val candidate = "${word.last().lowercaseChar()}$lowerCh"
+                if (knownOnsets.contains(candidate)) {
+                    return word.length to (word + ch)
+                }
+            }
+            if (isEnglishLikely(word)) {
+                return word.length to (word + ch)
+            }
+            return handleTone(word, ch)
+        }
+
+        if (lowerCh == 'w' && word.all { it.lowercaseChar() == 'w' }) {
+            return word.length to (word + ch)
+        }
+
+        if (lowerCh == 'w' && word.length == 1 && word.single().lowercaseChar() == 'ư') {
+            return word.length to ch.toString()
+        }
+
+        if (lowerCh == 'w' && word.last().lowercaseChar() == 'ư' && word.length > 1) {
+            return word.length to (word.dropLast(1) + ch)
+        }
+
+        if (isShortcutUndo(word, ch)) {
+            return doShortcutUndo(word, ch)
+        }
+
+        val shortcut = applyShortcut(word, ch)
+        if (shortcut != null) {
+            return word.length to shortcut
+        }
+
+        if (lowerCh == 'w') {
+            return handleW(word, ch)
+        }
+
+        return word.length to (word + ch)
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Tone handling
+    // ──────────────────────────────────────────────────────────────
+
+    private fun handleTone(word: String, ch: Char): Pair<Int, String> {
+        val toneKey = ch.lowercaseChar()
+        val clean = stripTones(word)
+
+        val syllable = parseSyllable(clean.lowercase())
+        if (syllable == null || syllable.nucleus.isEmpty()) {
+            return word.length to (word + ch)
+        }
+
+        val tonePos = resolveTonePosition(clean, syllable)
+        if (tonePos < 0) {
+            return word.length to (word + ch)
+        }
+
+        val current = word[tonePos]
+        val base = toBaseForm(current)
+        val toned = toneMaps[toneKey]?.get(base) ?: current
+
+        if (current.lowercaseChar() == toned) {
+            val before = word.substring(0, tonePos)
+            val after = word.substring(tonePos + 1)
+            val casedBase = if (current.isUpperCase()) base.uppercaseChar() else base
+            return word.length to (before + casedBase + after + ch)
+        }
+
+        val chars = word.toCharArray()
+        chars[tonePos] = if (current.isUpperCase()) toned.uppercaseChar() else toned
+        return word.length to String(chars)
+    }
+
+    private fun handleCancel(precedingText: String): TelexResult? {
+        val word = lastWord(precedingText)
+        if (word.isEmpty()) return null
+
+        val clean = stripTones(word)
+        if (clean == word) {
+            // Nothing to cancel, act as normal append
+            return null
+        }
+        return TelexResult(clean, word.length)
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Shortcut handling
+    // ──────────────────────────────────────────────────────────────
+
+    private fun isShortcutUndo(word: String, ch: Char): Boolean {
+        if (word.isEmpty()) return false
+        val last = word.last().lowercaseChar()
+        val expected = reverseShortcuts[last]?.second ?: return false
+        return ch.lowercaseChar() == expected
+    }
+
+    private fun doShortcutUndo(word: String, ch: Char): Pair<Int, String> {
+        val last = word.last().lowercaseChar()
+        val pair = reverseShortcuts[last] ?: return 0 to (word + ch)
+        val prefix = word.dropLast(1)
+        val first = if (word.last().isUpperCase()) {
+            pair.first.uppercaseChar()
+        } else {
+            pair.first
+        }
+        val second = if (ch.isUpperCase()) pair.second.uppercaseChar() else pair.second
+        return word.length to (prefix + first + second)
+    }
+
+    private fun applyShortcut(word: String, ch: Char): String? {
+        val lowerCh = ch.lowercaseChar()
+
+        if (word.length >= 2) {
+            val tail2 = word.substring(word.length - 2).lowercase()
+            val key3 = tail2 + lowerCh
+            val result3 = shortcuts3[key3]
+            if (result3 != null) {
+                val mode = casingMode(word.substring(word.length - 2))
+                return word.dropLast(2) + applyCasing(result3, mode)
             }
         }
 
-        // 2. Try applying basic char rules (aa, aw, etc.) at the end of the word
-        return applyBasicCharRule(word + newChar, newChar, word.length)
-    }
-
-    private fun applyBasicCharRule(wordWithNewChar: String, newChar: Char, originalWordLen: Int): TelexResult? {
-        if (wordWithNewChar.length < 2) return null
-        
-        val lastTwo = wordWithNewChar.takeLast(2).lowercase()
-        val isUpper = wordWithNewChar[wordWithNewChar.length - 2].isUpperCase()
-        val isLastUpper = wordWithNewChar[wordWithNewChar.length - 1].isUpperCase()
-
-        val replacement = when (lastTwo) {
-            "aa" -> "â"
-            "âa" -> "aa"
-            "aw" -> "ă"
-            "ăw" -> "aw"
-            "ee" -> "ê"
-            "êe" -> "ee"
-            "oo" -> "ô"
-            "ôo" -> "oo"
-            "ow" -> "ơ"
-            "ơw" -> "ow"
-            "uw" -> "ư"
-            "ưw" -> "uw"
-            "dd" -> "đ"
-            "đd" -> "dd"
-            "w" -> if (wordWithNewChar.length > 1 && isBaseVowel(wordWithNewChar[wordWithNewChar.length - 2])) {
-                // simple 'w' rule for ư/ơ if preceded by u/o
-                val prev = wordWithNewChar[wordWithNewChar.length - 2].lowercaseChar()
-                if (prev == 'u') "ư" else if (prev == 'o') "ơ" else null
-            } else null
-            else -> null
-        }
-
-        if (replacement != null) {
-            val finalChar = if (isUpper) {
-                if (isLastUpper) replacement.uppercase()
-                else if (replacement.length > 1) replacement.replaceFirstChar { it.uppercase() }
-                else replacement.uppercase()
-            } else replacement
-            // We replace the last character of the original word + the new character
-            // Since new character hasn't been committed yet, we delete 1 character (the last of the original word)
-            // and commit the replacement.
-            val newWord = wordWithNewChar.dropLast(2) + finalChar
-            return TelexResult(newWord, originalWordLen)
+        val last = word.last().lowercaseChar()
+        val key2 = "$last$lowerCh"
+        val result2 = shortcuts2[key2]
+        if (result2 != null) {
+            val mode = casingMode(word.last().toString())
+            return word.dropLast(1) + applyCasing(result2.toString(), mode)
         }
 
         return null
     }
 
-    private fun isBaseVowel(c: Char): Boolean = CHAR_TO_BASE_TONE.containsKey(c)
+    // ──────────────────────────────────────────────────────────────
+    //  Standalone w → ư / Ư
+    // ──────────────────────────────────────────────────────────────
 
-    private fun applyTone(word: String, newTone: Int): Pair<String, Boolean> {
-        // Find the main vowel to apply tone
-        // Heuristic: right-most vowel, but if it's "qu" + vowel, apply to vowel.
-        // If there's a vowel cluster (e.g. "oa"), apply to the second one if it ends the word, else the first.
-        // For simplicity, we just find the first vowel from the right that is not 'u' preceded by 'q'.
-        
-        var vowelIndex = -1
-        val vowels = mutableListOf<Pair<Char, Int>>()
-        for (i in word.indices) {
-            val c = word[i]
-            if (CHAR_TO_BASE_TONE.containsKey(c)) {
-                vowels.add(Pair(c, i))
-            }
+    private fun handleW(word: String, ch: Char): Pair<Int, String> {
+        if (ch.isLetter().not()) return word.length to (word + ch)
+        val last = word.lastOrNull()
+
+        if (last?.lowercaseChar() == 'ư' && word.length > 1) {
+            val uChar = if (last.isUpperCase()) 'U' else 'u'
+            return word.length to (word.dropLast(1) + uChar + ch)
         }
 
-        if (vowels.isNotEmpty()) {
-            // Find target vowel index based on standard Vietnamese spelling rules
-            var targetIndex = -1
-            
-            // Priority 1: modified vowels (ê, ô, ơ, â, ă) always take the tone
-            for (v in vowels) {
-                val base = CHAR_TO_BASE_TONE[v.first]!!.first.lowercaseChar()
-                if (base in listOf('ê', 'ô', 'ơ', 'â', 'ă')) {
-                    targetIndex = v.second
+        if (last?.lowercaseChar() == 'w') {
+            return word.length to (word + ch)
+        }
+
+        val lastBase = last?.let { toBaseForm(it.lowercaseChar()) }
+        if (lastBase != null && lastBase in baseVowels) {
+            return word.length to (word + ch)
+        }
+
+        val uChar = if (ch.isUpperCase()) 'Ư' else 'ư'
+        return word.length to (word + uChar)
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Syllable parser
+    // ──────────────────────────────────────────────────────────────
+
+    private fun parseSyllable(clean: String): Syllable? {
+        if (clean.isEmpty()) return null
+
+        var remaining = clean
+        var onset = ""
+
+        for (o in knownOnsets) {
+            if (remaining.startsWith(o)) {
+                val candidate = remaining.removePrefix(o)
+                val hasVowel = candidate.any { toBaseForm(it) in baseVowels }
+                val multiEndsInVowel = o.length > 1 && toBaseForm(o.last()) in baseVowels
+                if (hasVowel || o.length == 1 || !multiEndsInVowel) {
+                    onset = o
+                    remaining = candidate
                     break
                 }
             }
-            
-            // Priority 2: 'qu' + vowel -> tone on vowel after 'u'
-            if (targetIndex == -1) {
-                for (i in 0 until vowels.size - 1) {
-                    if (vowels[i].first.lowercaseChar() == 'u' && vowels[i].second > 0 && word[vowels[i].second - 1].lowercaseChar() == 'q') {
-                        targetIndex = vowels[i+1].second
-                        break
-                    }
-                }
-            }
-            
-            // Priority 3: 'gi' + vowel -> tone on vowel after 'i'
-            if (targetIndex == -1) {
-                for (i in 0 until vowels.size - 1) {
-                    if (vowels[i].first.lowercaseChar() == 'i' && vowels[i].second > 0 && word[vowels[i].second - 1].lowercaseChar() == 'g') {
-                        targetIndex = vowels[i+1].second
-                        break
-                    }
-                }
-            }
-            
-            if (targetIndex == -1) {
-                val endsWithConsonant = !CHAR_TO_BASE_TONE.containsKey(word.last())
-                if (endsWithConsonant) {
-                    // Priority 4: ends in consonant -> tone on the last vowel
-                    targetIndex = vowels.last().second
-                } else if (vowels.size == 2) {
-                    // Priority 5: ends in vowel, 2 vowels -> tone on 1st, except for oa, oe, uy
-                    val v1 = CHAR_TO_BASE_TONE[vowels[0].first]!!.first.lowercaseChar()
-                    val v2 = CHAR_TO_BASE_TONE[vowels[1].first]!!.first.lowercaseChar()
-                    if ((v1 == 'o' && (v2 == 'a' || v2 == 'e')) || (v1 == 'u' && v2 == 'y')) {
-                        targetIndex = vowels[1].second
-                    } else {
-                        targetIndex = vowels[0].second
-                    }
-                } else if (vowels.size == 3) {
-                    // Priority 6: 3 vowels (e.g. oai, uay) -> tone on middle vowel
-                    targetIndex = vowels[1].second
-                } else {
-                    targetIndex = vowels[0].second
-                }
-            }
-            vowelIndex = targetIndex
         }
 
-        if (vowelIndex != -1) {
-            val c = word[vowelIndex]
-            val info = CHAR_TO_BASE_TONE[c]!!
-            val baseVowel = info.first
-            val currentTone = info.second
-            
-            // If the word already has this tone, "z" removes it, other tones override
-            val canceled = (newTone != 0 && currentTone == newTone)
-            val targetTone = if (newTone == 0) 0 else if (canceled) 0 else newTone
-            
-            val newVowel = if (baseVowel.isUpperCase()) {
-                VOWEL_TONES[baseVowel.lowercaseChar()]!![targetTone].uppercaseChar()
-            } else {
-                VOWEL_TONES[baseVowel]!![targetTone]
+        if (remaining.isEmpty()) return Syllable(onset = onset)
+
+        var coda = ""
+
+        for (c in knownCodas) {
+            if (remaining.endsWith(c)) {
+                coda = c
+                remaining = remaining.removeSuffix(c)
+                break
             }
-            
-            val newWord = word.substring(0, vowelIndex) + newVowel + word.substring(vowelIndex + 1)
-            return Pair(newWord, canceled)
         }
-        
-        return Pair(word, false)
+
+        if (coda.isNotEmpty() && remaining.isEmpty()) {
+            return Syllable(onset = onset, nucleus = "", coda = coda)
+        }
+
+        if (remaining.endsWith('u') || remaining.endsWith('i') ||
+            remaining.endsWith('y') || remaining.endsWith('o')
+        ) {
+            val last = remaining.last()
+            if (remaining.length > 1 && last in semivowelCodas) {
+                val before = remaining.dropLast(1)
+                if (before.any { toBaseForm(it) in baseVowels }) {
+                    coda = last.toString()
+                    remaining = before
+                }
+            }
+        }
+
+        if (remaining.isEmpty()) return Syllable(onset = onset, nucleus = "", coda = coda)
+
+        val nucleus = remaining
+        return Syllable(onset = onset, nucleus = nucleus, coda = coda)
     }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Tone position resolver (Vietnamese orthographic rules)
+    // ──────────────────────────────────────────────────────────────
+
+    private fun resolveTonePosition(word: String, syllable: Syllable): Int {
+        val vowelPositions = findVowelPositions(word)
+        if (vowelPositions.isEmpty()) return -1
+        if (vowelPositions.size == 1) return vowelPositions[0]
+
+        val vowelCluster = buildString {
+            for (pos in vowelPositions) {
+                append(toBaseForm(word[pos].lowercaseChar()))
+            }
+        }
+
+        val rule = toneRules[vowelCluster]
+        if (rule != null) {
+            for (pos in vowelPositions) {
+                if (toBaseForm(word[pos].lowercaseChar()) == rule) {
+                    return pos
+                }
+            }
+        }
+
+        for (pos in vowelPositions) {
+            val b = toBaseForm(word[pos].lowercaseChar())
+            if (b == 'ê' || b == 'ơ') return pos
+        }
+
+        for (pos in vowelPositions) {
+            val b = toBaseForm(word[pos].lowercaseChar())
+            if (b == 'â' || b == 'ă' || b == 'ô') return pos
+        }
+
+        return vowelPositions.last()
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Vowel position finder (handles gi/qu exceptions)
+    // ──────────────────────────────────────────────────────────────
+
+    private fun findVowelPositions(word: String): List<Int> {
+        val lower = word.lowercase()
+        val result = mutableListOf<Int>()
+
+        for (i in lower.indices) {
+            val c = lower[i]
+
+            if (toBaseForm(c) !in baseVowels) continue
+
+            if (c == 'i' && i == 1 && lower.startsWith("gi") && lower.length > 2) continue
+
+            if (c == 'u' && i == 1 && lower.startsWith("qu") && lower.length > 2) continue
+
+            result.add(i)
+        }
+
+        return result
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  English fallback detection
+    // ──────────────────────────────────────────────────────────────
+
+    private fun isEnglishLikely(word: String): Boolean {
+        val lower = word.lowercase()
+
+        if (englishPatterns.any { lower.contains(it) }) return true
+
+        if (lower.length <= 4) {
+            val vietDigraphs = listOf("ưa", "ươ", "uô", "iê", "yê", "uya", "uyê", "ươi", "ươu", "uôi", "oai", "oay")
+            val hasVietDigraph = vietDigraphs.any { lower.contains(it) }
+            if (!hasVietDigraph) {
+                val englishClusters = listOf("ck", "sh", "ch", "th", "ph", "nd", "nt", "st")
+                if (englishClusters.any { lower.endsWith(it) }) return true
+            }
+        }
+
+        for (codaLen in minOf(3, lower.length - 1) downTo 1) {
+            val suffix = lower.takeLast(codaLen)
+            if (suffix.all { it in consonantLetters }) {
+                if (isInvalidVietnameseCoda(suffix)) return true
+                break
+            }
+        }
+
+        val cleaned = stripTones(lower)
+        val consonantRun = cleaned.split(Regex("[aeiouyăâêôơ]")).filter { it.isNotEmpty() }
+        if (consonantRun.any { it.length > 3 }) return true
+
+        val vowelCount = lower.count { toBaseForm(it) in baseVowels }
+        if (vowelCount == 0 && lower.any { it in consonantLetters }) return true
+
+        return false
+    }
+
+    private val validSingleCodas = setOf('c', 'm', 'n', 'p', 't')
+
+    private fun isInvalidVietnameseCoda(coda: String): Boolean {
+        if (coda.length == 1) {
+            return coda[0].lowercaseChar() !in validSingleCodas
+        }
+        if (coda.length == 2) {
+            return coda !in listOf("ch", "ng", "nh")
+        }
+        if (coda.length == 3) {
+            return coda != "ngh"
+        }
+        return true
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    //  Helpers
+    // ──────────────────────────────────────────────────────────────
+
+    private fun lastWord(text: String): String {
+        val t = text.trimEnd()
+        val i = t.lastIndexOf(' ')
+        val candidate = if (i < 0) t else t.substring(i + 1)
+        return candidate.takeLastWhile { it.isLetter() }
+    }
+
+    private fun stripTones(text: String): String {
+        return buildString {
+            for (c in text) {
+                append(toBaseForm(c))
+            }
+        }
+    }
+
+    private fun toBaseForm(c: Char): Char {
+        return when (c.lowercaseChar()) {
+            'a', 'á', 'à', 'ả', 'ã', 'ạ' -> 'a'
+            'ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ' -> 'ă'
+            'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ' -> 'â'
+            'e', 'é', 'è', 'ẻ', 'ẽ', 'ẹ' -> 'e'
+            'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ' -> 'ê'
+            'i', 'í', 'ì', 'ỉ', 'ĩ', 'ị' -> 'i'
+            'o', 'ó', 'ò', 'ỏ', 'õ', 'ọ' -> 'o'
+            'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ' -> 'ô'
+            'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ' -> 'ơ'
+            'u', 'ú', 'ù', 'ủ', 'ũ', 'ụ' -> 'u'
+            'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự' -> 'ư'
+            'y', 'ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ' -> 'y'
+            'đ' -> 'd'
+            else -> c
+        }
+    }
+
+    private fun casingMode(sample: String): CaseMode {
+        val letters = sample.filter { it.isLetter() }
+        if (letters.isEmpty()) return CaseMode.LOWER
+        if (letters.all { it.isUpperCase() }) return CaseMode.UPPER
+        if (letters.first().isUpperCase() && letters.drop(1).all { it.isLowerCase() }) {
+            return CaseMode.CAPITALIZED
+        }
+        return CaseMode.LOWER
+    }
+
+    private fun applyCasing(text: String, mode: CaseMode): String {
+        return when (mode) {
+            CaseMode.UPPER -> text.uppercase()
+            CaseMode.CAPITALIZED -> text.replaceFirstChar { it.uppercase() }
+            CaseMode.LOWER -> text
+        }
+    }
+
+    private enum class CaseMode { LOWER, CAPITALIZED, UPPER }
 }
