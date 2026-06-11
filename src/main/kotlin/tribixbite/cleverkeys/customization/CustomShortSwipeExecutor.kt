@@ -153,12 +153,8 @@ class CustomShortSwipeExecutor(private val context: Context) {
 
             when (intentDef.targetType) {
                 IntentTargetType.ACTIVITY -> {
-                    // Check if activity can be resolved before starting
-                    if (intent.resolveActivity(context.packageManager) == null && intentDef.className.isNullOrBlank()) {
-                        Log.w(TAG, "No activity found to handle intent: ${intentDef.name}")
-                        showToast("No app found for: ${intentDef.name}")
-                        return false
-                    }
+                    // Android 11+ Package Visibility makes resolveActivity() unreliable
+                    // for external apps. We rely on ActivityNotFoundException below.
                     context.startActivity(intent)
                 }
                 IntentTargetType.SERVICE -> context.startService(intent)
