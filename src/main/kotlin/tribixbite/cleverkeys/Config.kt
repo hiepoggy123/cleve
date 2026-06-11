@@ -17,7 +17,7 @@ import tribixbite.cleverkeys.prefs.LayoutsPreference
  */
 object Defaults {
     // Appearance
-    const val THEME = "cleverkeysdark"
+    const val THEME = "sunrise"
     // 2026-05-15: lowered from 30% to 27% — feels less cramped on most phones
     // and gives the input field more breathing room above.
     const val KEYBOARD_HEIGHT_PORTRAIT = 27
