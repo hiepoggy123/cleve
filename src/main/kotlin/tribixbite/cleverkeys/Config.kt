@@ -16,9 +16,12 @@ import tribixbite.cleverkeys.prefs.LayoutsPreference
  * Both Config.kt and SettingsActivity.kt should reference these constants.
  */
 object Defaults {
-    // AI Integration
+    // Media & AI Integration
     const val GEMINI_API_KEY = ""
     const val GEMINI_MODEL = "gemini-1.5-flash"
+    const val TENOR_API_KEY = ""
+    const val GIPHY_API_KEY = ""
+    const val PRIMARY_GIF_SOURCE = "tenor"
 
     // Appearance
     const val THEME = "sunrise"

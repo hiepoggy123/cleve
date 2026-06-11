@@ -241,8 +241,12 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
     }
 
     // AI Integration state
+    // AI Integration state
     private var geminiApiKey by mutableStateOf(Defaults.GEMINI_API_KEY)
     private var geminiModel by mutableStateOf(Defaults.GEMINI_MODEL)
+    private var tenorApiKey by mutableStateOf(Defaults.TENOR_API_KEY)
+    private var giphyApiKey by mutableStateOf(Defaults.GIPHY_API_KEY)
+    private var primaryGifSource by mutableStateOf(Defaults.PRIMARY_GIF_SOURCE)
     private var aiSectionExpanded by mutableStateOf(false)
 
     // Settings state for reactive UI
@@ -279,13 +283,6 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
     // GIF Panel (opt-in, off by default)
     private var gifEnabled by mutableStateOf(Defaults.GIF_ENABLED)
     private var gifThumbnailColumns by mutableStateOf(Defaults.GIF_THUMBNAIL_COLUMNS)
-    private var installedGifPacks by mutableStateOf(listOf<tribixbite.cleverkeys.gif.InstalledPackInfo>())
-    private var gifImportInProgress by mutableStateOf(false)
-    private var gifImportStatus by mutableStateOf<String?>(null)
-    private var showGifRemoveAllDialog by mutableStateOf(false)
-    private var showGifRemovePackDialog by mutableStateOf<String?>(null)
-    private var gifStorageUsed by mutableStateOf(0L)
-
     private var autoCapitalizationEnabled by mutableStateOf(true)
     private var capitalizeIWords by mutableStateOf(true)  // #72: Auto-capitalize I, I'm, I'll, etc.
 
@@ -765,9 +762,12 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
         // Load current settings
         loadCurrentSettings()
 
-        // AI Integration
+        // Media & AI Integration
         geminiApiKey = prefs.getSafeString("gemini_api_key", Defaults.GEMINI_API_KEY)
         geminiModel = prefs.getSafeString("gemini_model", Defaults.GEMINI_MODEL)
+        tenorApiKey = prefs.getSafeString("tenor_api_key", Defaults.TENOR_API_KEY)
+        giphyApiKey = prefs.getSafeString("giphy_api_key", Defaults.GIPHY_API_KEY)
+        primaryGifSource = prefs.getSafeString("primary_gif_source", Defaults.PRIMARY_GIF_SOURCE)
 
         // Handle share intent for GIF pack ZIP import
         handleGifPackShareIntent(intent)
@@ -1242,6 +1242,38 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                     onValueChange = {
                         geminiModel = it
                         prefs.edit().putString("gemini_model", it).apply()
+                    }
+                )
+
+                SettingsDropdown(
+                    title = "Primary GIF Source",
+                    description = "Select the online provider for GIFs",
+                    options = listOf("Tenor", "Giphy"),
+                    selectedIndex = if (primaryGifSource.equals("giphy", ignoreCase = true)) 1 else 0,
+                    onSelectionChange = {
+                        val source = if (it == 1) "giphy" else "tenor"
+                        primaryGifSource = source
+                        prefs.edit().putString("primary_gif_source", source).apply()
+                    }
+                )
+
+                SettingsTextField(
+                    title = "Tenor API Key",
+                    description = "Enter your Tenor API Key for GIF search.",
+                    value = tenorApiKey,
+                    onValueChange = {
+                        tenorApiKey = it
+                        prefs.edit().putString("tenor_api_key", it).apply()
+                    }
+                )
+
+                SettingsTextField(
+                    title = "Giphy API Key",
+                    description = "Enter your Giphy API Key for GIF search.",
+                    value = giphyApiKey,
+                    onValueChange = {
+                        giphyApiKey = it
+                        prefs.edit().putString("giphy_api_key", it).apply()
                     }
                 )
             }
@@ -3428,99 +3460,8 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                 if (gifEnabled) {
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // "Get Packs" button — opens browser to GitHub Releases
-                    androidx.compose.material3.OutlinedButton(
-                        onClick = {
-                            try {
-                                startActivity(android.content.Intent(
-                                    android.content.Intent.ACTION_VIEW,
-                                    android.net.Uri.parse(tribixbite.cleverkeys.gif.GifPackManager.GITHUB_RELEASES_URL)
-                                ))
-                            } catch (e: Exception) {
-                                android.widget.Toast.makeText(this@SettingsActivity, "Could not open browser", android.widget.Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Get GIF Packs (opens browser)")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    // "Import Pack" button — opens file picker
-                    androidx.compose.material3.Button(
-                        onClick = {
-                            try {
-                                gifPackImportLauncher.launch(arrayOf("application/zip", "application/x-zip-compressed", "*/*"))
-                            } catch (e: Exception) {
-                                android.widget.Toast.makeText(this@SettingsActivity, "Could not open file picker", android.widget.Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !gifImportInProgress
-                    ) {
-                        if (gifImportInProgress) {
-                            androidx.compose.material3.CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp),
-                                strokeWidth = 2.dp
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Importing...")
-                        } else {
-                            Text("Import Pack from ZIP")
-                        }
-                    }
-
-                    // Import status message
-                    gifImportStatus?.let { status ->
-                        Text(
-                            text = status,
-                            fontSize = 12.sp,
-                            color = if (status.startsWith("Error")) MaterialTheme.colorScheme.error
-                                   else MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
-                    }
-
-                    // Installed packs list
-                    if (installedGifPacks.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = "Installed Packs",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
-
-                        installedGifPacks.forEach { pack ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(pack.name, fontSize = 14.sp)
-                                    Text(
-                                        "${pack.gifCount} GIFs | ${tribixbite.cleverkeys.gif.GifPackManager.formatBytes(pack.sizeBytes)}",
-                                        fontSize = 11.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                androidx.compose.material3.IconButton(
-                                    onClick = { showGifRemovePackDialog = pack.packId }
-                                ) {
-                                    Text("X", color = MaterialTheme.colorScheme.error, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                                }
-                            }
-                        }
-
-                        // Total storage
-                        Text(
-                            text = "Total: ${tribixbite.cleverkeys.gif.GifPackManager.formatBytes(gifStorageUsed)}",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
+                if (gifEnabled) {
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Grid columns slider
                     SettingsSlider(
@@ -3536,18 +3477,20 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
                         displayValue = "$gifThumbnailColumns columns"
                     )
 
-                    // Remove all GIF data (destructive, with confirmation)
-                    if (installedGifPacks.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        androidx.compose.material3.OutlinedButton(
-                            onClick = { showGifRemoveAllDialog = true },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text("Remove All GIF Data")
-                        }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = {
+                            lifecycleScope.launch {
+                                tribixbite.cleverkeys.gif.GifDatabase.getInstance(this@SettingsActivity).clearHistory()
+                                android.widget.Toast.makeText(this@SettingsActivity, "Recently used GIFs cleared", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Clear Recently Used GIFs")
                     }
                 }
             }
@@ -6175,103 +6118,6 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleGifPackShareIntent(intent)
-    }
-
-    private fun handleGifPackShareIntent(intent: Intent?) {
-        if (intent == null) return
-        val uri: Uri? = when (intent.action) {
-            Intent.ACTION_SEND -> intent.getParcelableExtra(Intent.EXTRA_STREAM)
-            Intent.ACTION_VIEW -> intent.data
-            else -> null
-        }
-        if (uri != null) {
-            // Auto-import the shared ZIP file
-            performGifPackImport(uri)
-        }
-    }
-
-    // GIF pack management methods
-
-    private fun performGifPackImport(uri: Uri) {
-        gifImportInProgress = true
-        gifImportStatus = "Importing..."
-        lifecycleScope.launch {
-            try {
-                val manager = tribixbite.cleverkeys.gif.GifPackManager.getInstance(this@SettingsActivity)
-                when (val result = manager.importPackFromUri(uri, replaceExisting = false)) {
-                    is tribixbite.cleverkeys.gif.GifPackImportResult.Success -> {
-                        gifImportStatus = "Imported: ${result.name} (${result.gifCount} GIFs)"
-                        refreshInstalledGifPacks()
-                        Toast.makeText(
-                            this@SettingsActivity,
-                            "GIF pack imported: ${result.name}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    is tribixbite.cleverkeys.gif.GifPackImportResult.AlreadyInstalled -> {
-                        gifImportStatus = "Pack '${result.name}' already installed"
-                        Toast.makeText(
-                            this@SettingsActivity,
-                            "Pack already installed: ${result.name}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    is tribixbite.cleverkeys.gif.GifPackImportResult.Error -> {
-                        gifImportStatus = "Error: ${result.message}"
-                        Toast.makeText(
-                            this@SettingsActivity,
-                            "Import failed: ${result.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            } catch (e: Exception) {
-                gifImportStatus = "Error: ${e.message}"
-                Toast.makeText(this@SettingsActivity, "Import failed: ${e.message}", Toast.LENGTH_SHORT).show()
-            } finally {
-                gifImportInProgress = false
-            }
-        }
-    }
-
-    private fun performGifRemovePack(packId: String) {
-        lifecycleScope.launch {
-            try {
-                val manager = tribixbite.cleverkeys.gif.GifPackManager.getInstance(this@SettingsActivity)
-                manager.removePack(packId)
-                refreshInstalledGifPacks()
-                Toast.makeText(this@SettingsActivity, "GIF pack removed", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(this@SettingsActivity, "Remove failed: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun performGifRemoveAll() {
-        lifecycleScope.launch {
-            try {
-                val manager = tribixbite.cleverkeys.gif.GifPackManager.getInstance(this@SettingsActivity)
-                manager.removeAll()
-                gifEnabled = false
-                prefs.edit().putBoolean("gif_enabled", false).apply()
-                refreshInstalledGifPacks()
-                gifImportStatus = null
-                Toast.makeText(this@SettingsActivity, "All GIF data removed", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(this@SettingsActivity, "Remove failed: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun refreshInstalledGifPacks() {
-        try {
-            val manager = tribixbite.cleverkeys.gif.GifPackManager.getInstance(this)
-            installedGifPacks = manager.getInstalledPacks()
-            gifStorageUsed = manager.getTotalStorageUsed()
-        } catch (e: Exception) {
-            installedGifPacks = emptyList()
-            gifStorageUsed = 0L
         }
     }
 

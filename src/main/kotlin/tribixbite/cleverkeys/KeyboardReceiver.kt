@@ -24,7 +24,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import tribixbite.cleverkeys.gif.Gif
-import tribixbite.cleverkeys.gif.GifAssetManager
 import tribixbite.cleverkeys.gif.GifGridManager
 import tribixbite.cleverkeys.gif.GifGroupButtonsBar
 
@@ -335,16 +334,16 @@ class KeyboardReceiver(
                 val gifColumns = Config.globalConfig().gif_thumbnail_columns
                 val gifGrid = recyclerView?.let { GifGridManager(context, it, gifColumns) }
                 gifGrid?.onGifSelected = { gif ->
-                    // Tap inserts the Giphy URL as text into the input field
-                    val url = gif.getGiphyUrl()
+                    // Tap inserts the GIF URL as text into the input field
+                    val url = gif.fullUrl
                     val ic = keyboard2.currentInputConnection
-                    android.util.Log.d("GifPanel", "onGifSelected: url=$url ic=${ic != null} searchText='${gif.searchText}'")
-                    if (url != null && ic != null) {
+                    android.util.Log.d("GifPanel", "onGifSelected: url=$url ic=${ic != null} title='${gif.title}'")
+                    if (url.isNotBlank() && ic != null) {
                         val ok = ic.commitText(url, 1)
                         android.util.Log.d("GifPanel", "commitText result=$ok")
                     } else {
                         // Fallback: if commitText can't work, copy URL to clipboard
-                        if (url != null) {
+                        if (url.isNotBlank()) {
                             val clip = android.content.ClipData.newPlainText("GIF URL", url)
                             val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                             cm.setPrimaryClip(clip)

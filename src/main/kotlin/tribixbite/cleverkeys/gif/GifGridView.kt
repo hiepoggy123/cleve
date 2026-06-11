@@ -1,7 +1,6 @@
 package tribixbite.cleverkeys.gif
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -12,22 +11,10 @@ import coil.memory.MemoryCache
 import coil.request.ImageRequest
 import coil.size.Scale
 import kotlinx.coroutines.*
-import java.io.File
+import tribixbite.cleverkeys.Defaults
 
 /**
  * Manages a RecyclerView-based GIF grid with Coil image loading and pagination.
- *
- * Replaces the legacy GridView+BaseAdapter approach with RecyclerView+ViewHolder
- * for better view recycling in the memory-constrained IME context.
- *
- * Pagination: 100 items per page (same as clipboard). When total items exceed
- * ITEMS_PER_PAGE, the onPaginationChanged callback fires with page info for
- * the UI to show prev/next controls.
- *
- * Coil handles:
- * - Async thumbnail loading from files
- * - Memory + disk caching with configurable limits
- * - Automatic cancellation on view recycling
  */
 class GifGridManager(
     private val context: Context,
@@ -44,55 +31,48 @@ class GifGridManager(
     private val adapter = GifRecyclerAdapter()
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-    /** Coil image loader with IME-friendly memory limits.
-     * Default Coil cache is 25% of available RAM (~200-300MB on modern phones).
-     * Cap at 32MB — Coil caches uncompressed ARGB_8888 bitmaps (~160KB at 200px),
-     * so 32MB holds ~200 images — enough for two 100-item pages. Prevents IME
-     * from bloating to 500MB+. */
+    private val provider: OnlineGifProvider by lazy {
+        val prefs = context.getSharedPreferences("${context.packageName}_preferences", Context.MODE_PRIVATE)
+        val source = prefs.getString("primary_gif_source", Defaults.PRIMARY_GIF_SOURCE) ?: Defaults.PRIMARY_GIF_SOURCE
+        
+        if (source.equals("giphy", ignoreCase = true)) {
+            val key = prefs.getString("giphy_api_key", Defaults.GIPHY_API_KEY) ?: Defaults.GIPHY_API_KEY
+            GiphyGifProvider(key)
+        } else {
+            val key = prefs.getString("tenor_api_key", Defaults.TENOR_API_KEY) ?: Defaults.TENOR_API_KEY
+            TenorGifProvider(key)
+        }
+    }
+
     private val imageLoader: ImageLoader = ImageLoader.Builder(context)
         .memoryCache {
             MemoryCache.Builder(context)
-                .maxSizeBytes(32 * 1024 * 1024) // 32 MB cap (vs ~250MB default)
+                .maxSizeBytes(32 * 1024 * 1024)
                 .build()
         }
         .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
-        .diskCachePolicy(coil.request.CachePolicy.DISABLED) // Files already on disk
-        .crossfade(false) // Minimize animation overhead in IME
+        .diskCachePolicy(coil.request.CachePolicy.ENABLED)
+        .crossfade(false)
         .build()
 
-    /** Callback for GIF selection (tap). */
     var onGifSelected: ((Gif) -> Unit)? = null
-
-    /** Callback for long-press preview. */
     var onGifLongPress: ((Gif, View) -> Unit)? = null
-
-    /**
-     * Pagination state callback.
-     * @param needsPagination true if total items exceed ITEMS_PER_PAGE
-     * @param currentPage 1-indexed page number
-     * @param totalPages total number of pages
-     */
     var onPaginationChanged: ((needsPagination: Boolean, currentPage: Int, totalPages: Int) -> Unit)? = null
 
     init {
         recyclerView.layoutManager = GridLayoutManager(context, columns)
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
-        recyclerView.itemAnimator = null // No animations for perf
+        recyclerView.itemAnimator = null
 
-        // Load recently used on init, fall back to "All" if empty
         scope.launch {
             loadCategory(GifCategory.RECENTLY_USED)
             if (gifList.isEmpty()) {
-                // No usage history yet — show all available GIFs
                 loadCategory(GifCategory.ALL)
             }
         }
     }
 
-    /**
-     * Load GIFs for a specific category.
-     */
     fun setCategory(category: GifCategory) {
         currentCategory = category
         currentSearchQuery = ""
@@ -100,9 +80,6 @@ class GifGridManager(
         scope.launch { loadCategory(category) }
     }
 
-    /**
-     * Search GIFs by query.
-     */
     fun search(query: String) {
         currentSearchQuery = query
         currentPage = 0
@@ -111,26 +88,25 @@ class GifGridManager(
                 gifList = database.getRecentlyUsedGifs(50)
                 totalItems = gifList.size
             } else {
-                totalItems = database.countSearchResults(query)
-                gifList = database.searchGifs(query, ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+                gifList = provider.search(query, ITEMS_PER_PAGE, 0)
+                totalItems = if (gifList.size == ITEMS_PER_PAGE) ITEMS_PER_PAGE * 10 else gifList.size
             }
-            adapter.notifyDataSetChanged()
-            recyclerView.scrollToPosition(0)
-            notifyPagination()
+            withContext(Dispatchers.Main) {
+                adapter.notifyDataSetChanged()
+                recyclerView.scrollToPosition(0)
+                notifyPagination()
+            }
         }
     }
 
-    /** Current result count on this page. */
     fun getResultCount(): Int = gifList.size
 
-    /** Navigate to next page. */
     fun nextPage() {
         if (!hasNextPage()) return
         currentPage++
         scope.launch { reloadCurrentView() }
     }
 
-    /** Navigate to previous page. */
     fun previousPage() {
         if (currentPage <= 0) return
         currentPage--
@@ -141,8 +117,17 @@ class GifGridManager(
     fun hasPreviousPage(): Boolean = currentPage > 0
 
     private suspend fun loadCategory(category: GifCategory) {
-        totalItems = database.getCategoryCount(category)
-        gifList = database.getGifsByCategory(category, ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+        if (category == GifCategory.RECENTLY_USED) {
+            gifList = database.getRecentlyUsedGifs(50)
+            totalItems = gifList.size
+        } else if (category == GifCategory.ALL) {
+            gifList = provider.getTrending(ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+            totalItems = if (gifList.size == ITEMS_PER_PAGE) (currentPage + 2) * ITEMS_PER_PAGE else (currentPage * ITEMS_PER_PAGE) + gifList.size
+        } else {
+            val query = category.name.lowercase().replace("_", " ")
+            gifList = provider.search(query, ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+            totalItems = if (gifList.size == ITEMS_PER_PAGE) (currentPage + 2) * ITEMS_PER_PAGE else (currentPage * ITEMS_PER_PAGE) + gifList.size
+        }
         withContext(Dispatchers.Main) {
             adapter.notifyDataSetChanged()
             recyclerView.scrollToPosition(0)
@@ -150,43 +135,33 @@ class GifGridManager(
         }
     }
 
-    /** Reload current view (category or search) at current page offset. */
     private suspend fun reloadCurrentView() {
         if (currentSearchQuery.isNotBlank()) {
-            gifList = database.searchGifs(currentSearchQuery, ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+            gifList = provider.search(currentSearchQuery, ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+            totalItems = if (gifList.size == ITEMS_PER_PAGE) (currentPage + 2) * ITEMS_PER_PAGE else (currentPage * ITEMS_PER_PAGE) + gifList.size
+            withContext(Dispatchers.Main) {
+                adapter.notifyDataSetChanged()
+                recyclerView.scrollToPosition(0)
+                notifyPagination()
+            }
         } else {
-            gifList = database.getGifsByCategory(currentCategory, ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
-        }
-        withContext(Dispatchers.Main) {
-            adapter.notifyDataSetChanged()
-            recyclerView.scrollToPosition(0)
-            notifyPagination()
+            loadCategory(currentCategory)
         }
     }
 
     private fun notifyPagination() {
-        val totalPages = getTotalPages()
+        val totalPages = if (totalItems <= 0) 1 else (totalItems + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE
         onPaginationChanged?.invoke(
             totalItems > ITEMS_PER_PAGE,
-            currentPage + 1,  // 1-indexed for display
+            currentPage + 1,
             totalPages
         )
     }
 
-    private fun getTotalPages(): Int {
-        return if (totalItems <= 0) 1
-        else (totalItems + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE
-    }
-
-    /** Clean up resources. */
     fun destroy() {
         scope.cancel()
         imageLoader.shutdown()
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    //  RecyclerView Adapter + ViewHolder
-    // ─────────────────────────────────────────────────────────────────────────
 
     private inner class GifViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView as ImageView
@@ -196,7 +171,7 @@ class GifGridManager(
                 val pos = bindingAdapterPosition
                 if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
                 val gif = gifList.getOrNull(pos) ?: return@setOnClickListener
-                scope.launch { database.recordGifUsage(gif.id) }
+                scope.launch { database.recordGifUsage(gif) }
                 onGifSelected?.invoke(gif)
             }
             itemView.setOnLongClickListener { v ->
@@ -209,11 +184,9 @@ class GifGridManager(
         }
 
         fun bind(gif: Gif) {
-            val giphyUrl = gif.getGiphyUrl()
-
-            if (giphyUrl != null) {
+            if (gif.thumbnailUrl.isNotBlank()) {
                 val request = ImageRequest.Builder(context)
-                    .data(giphyUrl)
+                    .data(gif.thumbnailUrl)
                     .target(imageView)
                     .scale(Scale.FILL)
                     .size(THUMB_SIZE_PX)
@@ -226,7 +199,6 @@ class GifGridManager(
     }
 
     private inner class GifRecyclerAdapter : RecyclerView.Adapter<GifViewHolder>() {
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
             val imageView = ImageView(parent.context).apply {
                 layoutParams = ViewGroup.LayoutParams(
@@ -248,17 +220,12 @@ class GifGridManager(
         override fun getItemCount(): Int = gifList.size
 
         override fun onViewRecycled(holder: GifViewHolder) {
-            // Coil cancels requests automatically on target reuse,
-            // but clear drawable to free memory immediately
             holder.imageView.setImageDrawable(null)
         }
     }
 
     companion object {
-        /** Items per page — matches clipboard pagination (100 items). */
-        const val ITEMS_PER_PAGE = 100
-
-        /** Thumbnail decode target size (px). Keeps Coil memory low. */
+        const val ITEMS_PER_PAGE = 50
         private const val THUMB_SIZE_PX = 200
 
         private fun dpToPx(dp: Int): Int {
