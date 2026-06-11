@@ -192,14 +192,9 @@ class CustomShortSwipeExecutor(private val context: Context) {
             return "Intent must have either an action or a package name"
         }
 
-        // If package specified, check it exists (for all target types)
-        if (!intentDef.packageName.isNullOrBlank()) {
-            try {
-                context.packageManager.getPackageInfo(intentDef.packageName, 0)
-            } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
-                return "Package not installed: ${intentDef.packageName}"
-            }
-        }
+        // Package existence check removed because Android 11+ Package Visibility
+        // restrictions cause false negatives. Missing packages will be caught by
+        // ActivityNotFoundException during executeIntent().
 
         // Validate URI format if data is provided
         // Uri.parse() never throws, so we check scheme presence for non-empty URIs
