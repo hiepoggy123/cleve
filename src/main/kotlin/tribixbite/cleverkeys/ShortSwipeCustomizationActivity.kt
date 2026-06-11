@@ -354,6 +354,7 @@ fun ShortSwipeCustomizationScreenV4(onBack: () -> Unit) {
                                 }
                             }
                             ActionType.TIMESTAMP -> "timestamp: ${selection.actionValue}"
+                            ActionType.GEMINI_TRANSLATE -> "Translate text using Gemini AI"
                         }
                         Toast.makeText(
                             context,
@@ -615,6 +616,7 @@ private fun MappingListItem(
                         }
                     }
                     ActionType.TIMESTAMP -> "Timestamp: ${mapping.actionValue}"
+                    ActionType.GEMINI_TRANSLATE -> "Translate text using Gemini AI"
                 }
                 Text(
                     text = actionDesc,

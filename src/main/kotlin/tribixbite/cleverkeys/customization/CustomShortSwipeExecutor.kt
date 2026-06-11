@@ -11,6 +11,7 @@ import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.launch
 import tribixbite.cleverkeys.ClipboardDatabase
 import tribixbite.cleverkeys.KeyValue
 import tribixbite.cleverkeys.TerminalUtils

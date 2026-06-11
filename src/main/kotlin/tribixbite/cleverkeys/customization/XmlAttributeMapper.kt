@@ -55,6 +55,10 @@ object XmlAttributeMapper {
                 val escapedPattern = mapping.actionValue.replace("'", "\\'")
                 "timestamp:'$escapedPattern'"
             }
+            ActionType.GEMINI_TRANSLATE -> {
+                // Return a default value since XML mapper doesn't support Gemini yet
+                "'${mapping.actionValue.replace("'", "\\'")}'"
+            }
         }
     }
 

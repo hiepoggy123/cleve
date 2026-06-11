@@ -6118,7 +6118,6 @@ class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPreferen
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        }
     }
 
     // SAF callback functions that perform actual export/import.
