@@ -557,7 +557,7 @@ object VietnameseTelexProcessor {
         }
 
         val cleaned = stripTones(lower)
-        val consonantRun = cleaned.split(Regex("[aeiouyăâêôơ]")).filter { it.isNotEmpty() }
+        val consonantRun = cleaned.split(Regex("[aăâeêioôơuưy]")).filter { it.isNotEmpty() }
         if (consonantRun.any { it.length > 3 }) return true
 
         val vowelCount = lower.count { toBaseForm(it) in baseVowels }
@@ -601,7 +601,7 @@ object VietnameseTelexProcessor {
     }
 
     private fun toBaseForm(c: Char): Char {
-        return when (c.lowercaseChar()) {
+        return when (val lower = c.lowercaseChar()) {
             'a', 'á', 'à', 'ả', 'ã', 'ạ' -> 'a'
             'ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ' -> 'ă'
             'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ' -> 'â'
@@ -614,8 +614,7 @@ object VietnameseTelexProcessor {
             'u', 'ú', 'ù', 'ủ', 'ũ', 'ụ' -> 'u'
             'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự' -> 'ư'
             'y', 'ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ' -> 'y'
-            'đ' -> 'd'
-            else -> c
+            else -> lower
         }
     }
 
