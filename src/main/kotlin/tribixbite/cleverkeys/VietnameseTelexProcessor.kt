@@ -543,7 +543,7 @@ object VietnameseTelexProcessor {
             val vietDigraphs = listOf("ưa", "ươ", "uô", "iê", "yê", "uya", "uyê", "ươi", "ươu", "uôi", "oai", "oay")
             val hasVietDigraph = vietDigraphs.any { lower.contains(it) }
             if (!hasVietDigraph) {
-                val englishClusters = listOf("ck", "sh", "ch", "th", "ph", "nd", "nt", "st")
+                val englishClusters = listOf("ck", "sh", "th", "ph", "nd", "nt", "st")
                 if (englishClusters.any { lower.endsWith(it) }) return true
             }
         }
