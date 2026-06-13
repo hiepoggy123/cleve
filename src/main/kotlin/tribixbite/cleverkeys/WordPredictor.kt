@@ -138,6 +138,7 @@ class WordPredictor {
     // Allows O(1) atomic swap instead of O(n) putAll() on main thread during async loading
     private val dictionary: AtomicReference<MutableMap<String, Int>> = AtomicReference(mutableMapOf())
     private val prefixIndex: AtomicReference<MutableMap<String, MutableSet<String>>> = AtomicReference(mutableMapOf())
+    private val shortcuts: AtomicReference<MutableMap<String, String>> = AtomicReference(mutableMapOf())
     private var bigramModel: BigramModel? = BigramModel.getInstance(null)
     private var contextModel: ContextModel? = null // Phase 7.1: Dynamic N-gram model
     private var personalizationEngine: PersonalizationEngine? = null // Phase 7.2: Personalized learning
@@ -724,6 +725,8 @@ class WordPredictor {
         }
 
         asyncLoader.loadDictionaryAsync(context, language, object : AsyncDictionaryLoader.LoadCallback {
+            private var tempShortcuts = mutableMapOf<String, String>()
+
             override fun onLoadStarted(lang: String) {
                 isLoadingState = true
                 Log.d(TAG, "Started async dictionary load: $lang")
@@ -737,7 +740,7 @@ class WordPredictor {
                 // OPTIMIZATION v4 (perftodos4.md): This runs on BACKGROUND THREAD!
                 // Load custom words into the maps before they're swapped on main thread
                 // v1.1.90: Pass language to filter UserDictionary by locale
-                val customWords = loadCustomAndUserWordsIntoMap(ctx, dictionary, language)
+                val customWords = loadCustomAndUserWordsIntoMap(ctx, dictionary, tempShortcuts, language)
                 customAndUserWords = customWords  // Track for disabled-word override check
 
                 // Add custom words to prefix index
@@ -768,6 +771,8 @@ class WordPredictor {
                 this@WordPredictor.dictionary.set(dictionary as MutableMap<String, Int>)
                 @Suppress("UNCHECKED_CAST")
                 this@WordPredictor.prefixIndex.set(prefixIndex as MutableMap<String, MutableSet<String>>)
+                
+                this@WordPredictor.shortcuts.set(tempShortcuts)
 
                 // Set the N-gram model language
                 setLanguage(language)
@@ -1240,7 +1245,7 @@ class WordPredictor {
      * @param language Language code to filter UserDictionary (e.g., "fr", "de")
      * @return Set of all words loaded (for incremental prefix index updates)
      */
-    private fun loadCustomAndUserWordsIntoMap(context: Context, targetMap: MutableMap<String, Int>, language: String = "en"): Set<String> {
+    private fun loadCustomAndUserWordsIntoMap(context: Context, targetMap: MutableMap<String, Int>, targetShortcuts: MutableMap<String, String>, language: String = "en"): Set<String> {
         val loadedWords = mutableSetOf<String>()
 
         try {
@@ -1252,15 +1257,33 @@ class WordPredictor {
             val customWordsJson = prefs.getString(customWordsKey, "{}") ?: "{}"
             if (customWordsJson != "{}") {
                 try {
-                    // Parse JSON map: {"word": frequency, ...}
+                    // Parse JSON map
                     val jsonObj = JSONObject(customWordsJson)
                     val keys = jsonObj.keys()
                     var customCount = 0
                     while (keys.hasNext()) {
                         val originalWord = keys.next()
                         val lowerWord = originalWord.lowercase()
-                        val frequency = jsonObj.optInt(originalWord, 1000)
+                        val value = jsonObj.get(originalWord)
+                        
+                        val frequency: Int
+                        val shortcut: String?
+                        
+                        if (value is Int) {
+                            frequency = value
+                            shortcut = null
+                        } else if (value is JSONObject) {
+                            frequency = value.optInt("f", 1000)
+                            shortcut = value.optString("s", null).takeIf { !it.isNullOrEmpty() }
+                        } else {
+                            frequency = 1000
+                            shortcut = null
+                        }
+
                         targetMap[lowerWord] = frequency  // Write to target map, not dictionary
+                        if (shortcut != null) {
+                            targetShortcuts[shortcut.lowercase()] = originalWord
+                        }
                         loadedWords.add(lowerWord)
                         // v1.2.7: Preserve original case for proper nouns (Issue #72)
                         if (originalWord != lowerWord) {
@@ -1299,7 +1322,8 @@ class WordPredictor {
                     UserDictionary.Words.CONTENT_URI,
                     arrayOf(
                         UserDictionary.Words.WORD,
-                        UserDictionary.Words.FREQUENCY
+                        UserDictionary.Words.FREQUENCY,
+                        UserDictionary.Words.SHORTCUT
                     ),
                     selection,
                     selectionArgs,
@@ -1309,13 +1333,19 @@ class WordPredictor {
                 cursor?.use {
                     val wordIndex = it.getColumnIndex(UserDictionary.Words.WORD)
                     val freqIndex = it.getColumnIndex(UserDictionary.Words.FREQUENCY)
+                    val shortcutIndex = it.getColumnIndex(UserDictionary.Words.SHORTCUT)
                     var userCount = 0
 
                     while (it.moveToNext()) {
                         val originalWord = it.getString(wordIndex)
                         val lowerWord = originalWord.lowercase()
                         val frequency = if (freqIndex >= 0) it.getInt(freqIndex) else 1000
+                        val shortcut = if (shortcutIndex >= 0) it.getString(shortcutIndex) else null
+
                         targetMap[lowerWord] = frequency  // Write to target map, not dictionary
+                        if (!shortcut.isNullOrBlank()) {
+                            targetShortcuts[shortcut.lowercase()] = originalWord
+                        }
                         loadedWords.add(lowerWord)
                         // v1.2.7: Preserve original case for proper nouns (Issue #72)
                         if (originalWord != lowerWord) {
@@ -1552,6 +1582,11 @@ class WordPredictor {
             // Context is applied to ALL candidates BEFORE selecting top N
             val candidates = mutableListOf<WordCandidate>()
             val lowerSequence = keySequence.lowercase()
+
+            val shortcutExpansion = shortcuts.get()[lowerSequence]
+            if (shortcutExpansion != null) {
+                candidates.add(WordCandidate(shortcutExpansion, Int.MAX_VALUE))
+            }
 
             // OPTIMIZATION: Verbose logging disabled in release builds for performance
             // v1.2.0: Always log prediction language for debugging language toggle issues

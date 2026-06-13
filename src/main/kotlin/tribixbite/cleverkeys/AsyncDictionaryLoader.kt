@@ -153,6 +153,9 @@ class AsyncDictionaryLoader {
                 val dictionary = mutableMapOf<String, Int>()
                 val prefixIndex = mutableMapOf<String, MutableSet<String>>()
 
+                // USER REQUEST: "xoá toàn bộ từ điển hiện có để đảm bảo từ điển sau này tôi thêm vào chỉ toàn là các cặp viết tắt"
+                // Bypass main dictionary loading entirely so ONLY custom shortcuts/words are loaded.
+                /*
                 val loadedBinary = BinaryDictionaryLoader.loadDictionaryWithPrefixIndex(
                     context, binaryFilename, dictionary, prefixIndex
                 )
@@ -196,6 +199,7 @@ class AsyncDictionaryLoader {
                         throw RuntimeException("Failed to load dictionary: $language", e)
                     }
                 }
+                */
 
                 val loadTime = System.currentTimeMillis() - startTime
                 Log.i(

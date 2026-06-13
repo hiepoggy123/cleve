@@ -17,9 +17,9 @@ interface DictionaryDataSource {
     suspend fun getAllWords(): List<DictionaryWord>
     suspend fun searchWords(query: String): List<DictionaryWord>
     suspend fun toggleWord(word: String, enabled: Boolean)
-    suspend fun addWord(word: String, frequency: Int = 100)
+    suspend fun addWord(word: String, frequency: Int = 100, shortcut: String? = null)
     suspend fun deleteWord(word: String)
-    suspend fun updateWord(oldWord: String, newWord: String, frequency: Int)
+    suspend fun updateWord(oldWord: String, newWord: String, frequency: Int, shortcut: String? = null)
 
     /**
      * Re-sync cached state from persistent storage.
@@ -261,7 +261,7 @@ class MainDictionarySource(
         }
     }
 
-    override suspend fun addWord(word: String, frequency: Int) {
+    override suspend fun addWord(word: String, frequency: Int, shortcut: String?) {
         // Main dictionary is read-only
         throw UnsupportedOperationException("Cannot add words to main dictionary")
     }
@@ -271,7 +271,7 @@ class MainDictionarySource(
         throw UnsupportedOperationException("Cannot delete words from main dictionary")
     }
 
-    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int) {
+    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int, shortcut: String?) {
         // Main dictionary is read-only
         throw UnsupportedOperationException("Cannot update words in main dictionary")
     }
@@ -438,7 +438,7 @@ class DisabledDictionarySource(
         setWordEnabled(word, enabled)
     }
 
-    override suspend fun addWord(word: String, frequency: Int) {
+    override suspend fun addWord(word: String, frequency: Int, shortcut: String?) {
         // Disabled list doesn't support adding
         throw UnsupportedOperationException("Use toggleWord instead")
     }
@@ -447,7 +447,7 @@ class DisabledDictionarySource(
         setWordEnabled(word, true) // Re-enable word
     }
 
-    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int) {
+    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int, shortcut: String?) {
         // Disabled list doesn't support updating
         throw UnsupportedOperationException("Use toggleWord instead")
     }
@@ -473,7 +473,8 @@ class UserDictionarySource(
                 UserDictionary.Words.CONTENT_URI,
                 arrayOf(
                     UserDictionary.Words.WORD,
-                    UserDictionary.Words.FREQUENCY
+                    UserDictionary.Words.FREQUENCY,
+                    UserDictionary.Words.SHORTCUT
                 ),
                 null,
                 null,
@@ -483,11 +484,13 @@ class UserDictionarySource(
             cursor?.use {
                 val wordIndex = it.getColumnIndex(UserDictionary.Words.WORD)
                 val freqIndex = it.getColumnIndex(UserDictionary.Words.FREQUENCY)
+                val shortcutIndex = it.getColumnIndex(UserDictionary.Words.SHORTCUT)
 
                 while (it.moveToNext()) {
                     val word = it.getString(wordIndex)
                     val freq = if (freqIndex >= 0) it.getInt(freqIndex) else 100
-                    words.add(DictionaryWord(word, freq, WordSource.USER, true))
+                    val shortcut = if (shortcutIndex >= 0) it.getString(shortcutIndex) else null
+                    words.add(DictionaryWord(word, freq, WordSource.USER, true, shortcut))
                 }
             }
 
@@ -509,7 +512,8 @@ class UserDictionarySource(
                 UserDictionary.Words.CONTENT_URI,
                 arrayOf(
                     UserDictionary.Words.WORD,
-                    UserDictionary.Words.FREQUENCY
+                    UserDictionary.Words.FREQUENCY,
+                    UserDictionary.Words.SHORTCUT
                 ),
                 selection,
                 selectionArgs,
@@ -519,11 +523,13 @@ class UserDictionarySource(
             cursor?.use {
                 val wordIndex = it.getColumnIndex(UserDictionary.Words.WORD)
                 val freqIndex = it.getColumnIndex(UserDictionary.Words.FREQUENCY)
+                val shortcutIndex = it.getColumnIndex(UserDictionary.Words.SHORTCUT)
 
                 while (it.moveToNext()) {
                     val word = it.getString(wordIndex)
                     val freq = if (freqIndex >= 0) it.getInt(freqIndex) else 100
-                    words.add(DictionaryWord(word, freq, WordSource.USER, true))
+                    val shortcut = if (shortcutIndex >= 0) it.getString(shortcutIndex) else null
+                    words.add(DictionaryWord(word, freq, WordSource.USER, true, shortcut))
                 }
             }
 
@@ -539,13 +545,13 @@ class UserDictionarySource(
         if (!enabled) deleteWord(word)
     }
 
-    override suspend fun addWord(word: String, frequency: Int) = withContext(Dispatchers.IO) {
+    override suspend fun addWord(word: String, frequency: Int, shortcut: String?) = withContext(Dispatchers.IO) {
         // Use UserDictionary API to add word
         UserDictionary.Words.addWord(
             context,
             word,
             frequency,
-            null,
+            shortcut,
             null
         )
     }
@@ -559,9 +565,9 @@ class UserDictionarySource(
         Unit
     }
 
-    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int) {
+    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int, shortcut: String?) {
         deleteWord(oldWord)
-        addWord(newWord, frequency)
+        addWord(newWord, frequency, shortcut)
     }
 
     companion object {
@@ -593,29 +599,56 @@ class CustomDictionarySource(
         PREF_CUSTOM_WORDS_LEGACY
     }
 
-    private fun getCustomWords(): MutableMap<String, Int> {
-        // Try JSON format first (used by OptimizedVocabulary)
-        val jsonString = prefs.getString(customWordsKey, null)
-        if (jsonString != null) {
-            return try {
-                val type = object : com.google.gson.reflect.TypeToken<MutableMap<String, Int>>() {}.type
-                gson.fromJson(jsonString, type) ?: mutableMapOf()
+    data class CustomWordData(val frequency: Int, val shortcut: String?)
+
+    private fun getCustomWords(): MutableMap<String, CustomWordData> {
+        val jsonString = prefs.getString(customWordsKey, "{}") ?: "{}"
+        val result = mutableMapOf<String, CustomWordData>()
+        if (jsonString != "{}") {
+            try {
+                val jsonObj = org.json.JSONObject(jsonString)
+                val keys = jsonObj.keys()
+                while (keys.hasNext()) {
+                    val key = keys.next()
+                    val value = jsonObj.get(key)
+                    if (value is Int) {
+                        result[key] = CustomWordData(value, null)
+                    } else if (value is org.json.JSONObject) {
+                        val freq = value.optInt("f", 1000)
+                        val shortcut = value.optString("s", null).takeIf { !it.isNullOrEmpty() }
+                        result[key] = CustomWordData(freq, shortcut)
+                    }
+                }
             } catch (e: Exception) {
-                mutableMapOf()
+                // Ignore parse errors
             }
         }
-        return mutableMapOf()
+        return result
     }
 
-    private fun saveCustomWords(words: Map<String, Int>) {
-        prefs.edit().putString(customWordsKey, gson.toJson(words)).apply()
+    private fun saveCustomWords(words: Map<String, CustomWordData>) {
+        try {
+            val jsonObj = org.json.JSONObject()
+            for ((key, data) in words) {
+                if (data.shortcut == null) {
+                    jsonObj.put(key, data.frequency)
+                } else {
+                    val obj = org.json.JSONObject()
+                    obj.put("f", data.frequency)
+                    obj.put("s", data.shortcut)
+                    jsonObj.put(key, obj)
+                }
+            }
+            prefs.edit().putString(customWordsKey, jsonObj.toString()).apply()
+        } catch (e: Exception) {
+            // Ignore serialize errors
+        }
     }
 
     override suspend fun getAllWords(): List<DictionaryWord> = withContext(Dispatchers.IO) {
         getCustomWords()
-            .map { (word, freq) ->
-                // Use stored frequency or default to 100
-                DictionaryWord(word, freq, WordSource.CUSTOM, true)
+            .map { (word, data) ->
+                DictionaryWord(word, data.frequency, WordSource.CUSTOM, true, data.shortcut)
             }
             .sorted()
     }
@@ -630,9 +663,9 @@ class CustomDictionarySource(
         if (!enabled) deleteWord(word)
     }
 
-    override suspend fun addWord(word: String, frequency: Int) {
+    override suspend fun addWord(word: String, frequency: Int, shortcut: String?) {
         val words = getCustomWords()
-        words[word] = frequency
+        words[word] = CustomWordData(frequency, shortcut)
         saveCustomWords(words)
     }
 
@@ -642,10 +675,10 @@ class CustomDictionarySource(
         saveCustomWords(words)
     }
 
-    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int) {
+    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int, shortcut: String?) {
         val words = getCustomWords()
         words.remove(oldWord)
-        words[newWord] = frequency
+        words[newWord] = CustomWordData(frequency, shortcut)
         saveCustomWords(words)
     }
 
