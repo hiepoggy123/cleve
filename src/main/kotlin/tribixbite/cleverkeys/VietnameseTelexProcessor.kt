@@ -164,9 +164,6 @@ object VietnameseTelexProcessor {
     // ──────────────────────────────────────────────────────────────
 
     private fun firstChar(ch: Char): String {
-        if (ch.lowercaseChar() == 'w') {
-            return if (ch.isUpperCase()) "Ư" else "ư"
-        }
         return ch.toString()
     }
 
@@ -197,15 +194,6 @@ object VietnameseTelexProcessor {
         val modified = applyDistantModifier(word, ch)
         if (modified != null) {
             return word.length to modified
-        }
-
-        if (lowerCh == 'w') {
-            val last = word.lastOrNull()
-            if (last?.lowercaseChar() == 'w') {
-                return word.length to (word + ch)
-            }
-            val uChar = if (ch.isUpperCase()) 'Ư' else 'ư'
-            return word.length to (word + uChar)
         }
 
         return word.length to (word + ch)
@@ -320,14 +308,38 @@ object VietnameseTelexProcessor {
                             val base = toBaseForm(chars[i])
                             if (base == 'u') {
                                 val isQu = (i > 0 && chars[i-1].lowercaseChar() == 'q')
-                                val isCoda = (i > 0 && toBaseForm(chars[i-1]) in listOf('a', 'â', 'ă', 'e', 'ê', 'i', 'y', 'o', 'ô', 'ơ'))
+                                var isCoda = false
+                                if (i > 0) {
+                                    val prevBase = toBaseForm(chars[i-1])
+                                    if (prevBase in listOf('a', 'â', 'ă', 'e', 'ê', 'i', 'y', 'o', 'ô', 'ơ')) {
+                                        isCoda = true
+                                        if (prevBase == 'i') {
+                                            val beforeI = if (i > 1) chars[i-2].lowercaseChar() else ' '
+                                            if (beforeI == 'g') {
+                                                isCoda = false
+                                            }
+                                        }
+                                    }
+                                }
                                 if (!isQu && !isCoda) {
                                     chars[i] = changeBaseChar(chars[i], 'ư')
                                     applied = true
                                 }
                             }
                             if (base == 'o') {
-                                val isCoda = (i > 0 && toBaseForm(chars[i-1]) in listOf('a', 'â', 'ă', 'e', 'ê', 'i', 'y'))
+                                var isCoda = false
+                                if (i > 0) {
+                                    val prevBase = toBaseForm(chars[i-1])
+                                    if (prevBase in listOf('a', 'â', 'ă', 'e', 'ê', 'i', 'y')) {
+                                        isCoda = true
+                                        if (prevBase == 'i') {
+                                            val beforeI = if (i > 1) chars[i-2].lowercaseChar() else ' '
+                                            if (beforeI == 'g') {
+                                                isCoda = false
+                                            }
+                                        }
+                                    }
+                                }
                                 if (!isCoda) {
                                     chars[i] = changeBaseChar(chars[i], 'ơ')
                                     applied = true
