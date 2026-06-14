@@ -103,7 +103,7 @@ class WordListFragment : Fragment() {
                 // v1.1.87: Use language-specific custom words storage
                 // This matches OptimizedVocabulary's storage format for swipe prediction
                 val customPrefs = DirectBootAwarePreferences.get_shared_preferences(requireContext())
-                CustomDictionarySource(customPrefs, languageCode ?: "en")
+                CustomDictionarySource(requireContext(), customPrefs, languageCode ?: "en")
             }
         }
     }
