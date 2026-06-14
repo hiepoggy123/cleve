@@ -89,62 +89,9 @@ class MainDictionarySource(
             cachedWords = emptyWords
             prefixIndex = emptyMap()
             synchronized(Companion) {
-                sharedCache[languageCode] = CacheEntry(emptyWords, emptyMap())
+                sharedCache[languageCode] = LanguageCache(emptyWords, emptyMap())
             }
             return@withContext emptyWords
-
-            // Try JSON format first (50k words with frequencies)
-            try {
-                val jsonFilename = "dictionaries/${languageCode}_enhanced.json"
-                val jsonString = context.assets.open(jsonFilename).bufferedReader().use { it.readText() }
-                val jsonDict = org.json.JSONObject(jsonString)
-                val keys = jsonDict.keys()
-
-                while (keys.hasNext()) {
-                    val word = keys.next().lowercase()
-                    if (word.matches(Regex("^[a-z]+$"))) {
-                        val frequency = jsonDict.getInt(word)
-                        // Use raw frequency from JSON (128-255 range)
-                        words.add(
-                            DictionaryWord(
-                                word = word,
-                                frequency = frequency,
-                                source = WordSource.MAIN,
-                                enabled = !disabled.contains(word)
-                            )
-                        )
-                    }
-                }
-                Log.d(TAG, "Loaded ${words.size} words from JSON dictionary")
-            } catch (e: Exception) {
-                Log.w(TAG, "JSON dictionary not found for $languageCode, falling back to text format")
-
-                // Fall back to text format
-                val filename = "dictionaries/${languageCode}_enhanced.txt"
-                context.assets.open(filename).bufferedReader().use { reader ->
-                    reader.lineSequence()
-                        .filter { it.isNotBlank() && !it.startsWith("#") }
-                        .forEach { line ->
-                            val word = line.trim().lowercase()
-                            words.add(
-                                DictionaryWord(
-                                    word = word,
-                                    frequency = 100,
-                                    source = WordSource.MAIN,
-                                    enabled = !disabled.contains(word)
-                                )
-                            )
-                        }
-                }
-                Log.d(TAG, "Loaded ${words.size} words from text dictionary")
-            }
-
-            cachedWords = words.sorted()
-
-            // Build prefix index for fast search
-            buildPrefixIndex(cachedWords!!)
-
-            cachedWords!!
         } catch (e: Exception) {
             Log.e(TAG, "Error loading main dictionary", e)
             emptyList()
