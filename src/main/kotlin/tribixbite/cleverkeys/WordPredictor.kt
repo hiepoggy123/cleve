@@ -1251,52 +1251,28 @@ class WordPredictor {
         try {
             val prefs = DirectBootAwarePreferences.get_shared_preferences(context)
 
-            // 1. Load custom words from SharedPreferences
-            // v1.1.92: Use language-specific key (custom_words_${lang}) instead of legacy global key
-            val customWordsKey = LanguagePreferenceKeys.customWordsKey(language)
-            val customWordsJson = prefs.getString(customWordsKey, "{}") ?: "{}"
-            if (customWordsJson != "{}") {
-                try {
-                    // Parse JSON map
-                    val jsonObj = JSONObject(customWordsJson)
-                    val keys = jsonObj.keys()
-                    var customCount = 0
-                    while (keys.hasNext()) {
-                        val originalWord = keys.next()
-                        val lowerWord = originalWord.lowercase()
-                        val value = jsonObj.get(originalWord)
-                        
-                        val frequency: Int
-                        val shortcut: String?
-                        
-                        if (value is Int) {
-                            frequency = value
-                            shortcut = null
-                        } else if (value is JSONObject) {
-                            frequency = value.optInt("f", 1000)
-                            shortcut = value.optString("s", null).takeIf { !it.isNullOrEmpty() }
-                        } else {
-                            frequency = 1000
-                            shortcut = null
-                        }
-
-                        targetMap[lowerWord] = frequency  // Write to target map, not dictionary
-                        if (shortcut != null) {
-                            targetShortcuts[shortcut.lowercase()] = originalWord
-                        }
-                        loadedWords.add(lowerWord)
-                        // v1.2.7: Preserve original case for proper nouns (Issue #72)
-                        if (originalWord != lowerWord) {
-                            userWordOriginalCase[lowerWord] = originalWord
-                        }
-                        customCount++
-                    }
-                    if (BuildConfig.ENABLE_VERBOSE_LOGGING) {
-                        Log.d(TAG, "Loaded $customCount custom words for '$language' into new map")
-                    }
-                } catch (e: JSONException) {
-                    Log.e(TAG, "Failed to parse custom words JSON", e)
+            // 1. Load custom words from SQLite database (Migrated from JSON)
+            val dbHelper = tribixbite.cleverkeys.db.CustomWordDatabaseHelper(context)
+            val customWordsList = dbHelper.getAllWords(language)
+            
+            var customCount = 0
+            for (data in customWordsList) {
+                val originalWord = data.word
+                val lowerWord = originalWord.lowercase()
+                
+                targetMap[lowerWord] = data.frequency
+                if (!data.shortcut.isNullOrBlank()) {
+                    targetShortcuts[data.shortcut.lowercase()] = originalWord
                 }
+                loadedWords.add(lowerWord)
+                // v1.2.7: Preserve original case for proper nouns (Issue #72)
+                if (originalWord != lowerWord) {
+                    userWordOriginalCase[lowerWord] = originalWord
+                }
+                customCount++
+            }
+            if (BuildConfig.ENABLE_VERBOSE_LOGGING) {
+                Log.d(TAG, "Loaded $customCount custom words for '$language' into new map")
             }
 
             // 2. Load Android user dictionary
@@ -1407,53 +1383,29 @@ class WordPredictor {
         try {
             val prefs = DirectBootAwarePreferences.get_shared_preferences(context)
 
-            // 1. Load custom words from SharedPreferences
-            // v1.1.92: Use language-specific key (custom_words_${lang}) instead of legacy global key
-            val customWordsKey = LanguagePreferenceKeys.customWordsKey(language)
-            val customWordsJson = prefs.getString(customWordsKey, "{}") ?: "{}"
-            if (customWordsJson != "{}") {
-                try {
-                    // Parse JSON map
-                    val jsonObj = JSONObject(customWordsJson)
-                    val keys = jsonObj.keys()
-                    var customCount = 0
-                    while (keys.hasNext()) {
-                        val originalWord = keys.next()
-                        val lowerWord = originalWord.lowercase()
-                        val value = jsonObj.get(originalWord)
-
-                        val frequency: Int
-                        val shortcut: String?
-
-                        if (value is Int) {
-                            frequency = value
-                            shortcut = null
-                        } else if (value is JSONObject) {
-                            frequency = value.optInt("f", 1000)
-                            shortcut = value.optString("s", null).takeIf { !it.isNullOrEmpty() }
-                        } else {
-                            frequency = 1000
-                            shortcut = null
-                        }
-
-                        dictionary.get()[lowerWord] = frequency
-                        if (!shortcut.isNullOrBlank()) {
-                            shortcuts.get()[shortcut.lowercase()] = originalWord
-                        }
-                        loadedWords.add(lowerWord)  // Track loaded word
-                        // Issue #72: Preserve original case for proper nouns
-                        // Only store if word has uppercase (potential proper noun)
-                        if (originalWord != lowerWord) {
-                            userWordOriginalCase[lowerWord] = originalWord
-                        }
-                        customCount++
-                    }
-                    if (BuildConfig.ENABLE_VERBOSE_LOGGING) {
-                        Log.d(TAG, "Loaded $customCount custom words for '$language'")
-                    }
-                } catch (e: JSONException) {
-                    Log.e(TAG, "Failed to parse custom words JSON", e)
+            // 1. Load custom words from SQLite database (Migrated from JSON)
+            val dbHelper = tribixbite.cleverkeys.db.CustomWordDatabaseHelper(context)
+            val customWordsList = dbHelper.getAllWords(language)
+            
+            var customCount = 0
+            for (data in customWordsList) {
+                val originalWord = data.word
+                val lowerWord = originalWord.lowercase()
+                
+                dictionary.get()[lowerWord] = data.frequency
+                if (!data.shortcut.isNullOrBlank()) {
+                    shortcuts.get()[data.shortcut.lowercase()] = originalWord
                 }
+                loadedWords.add(lowerWord)  // Track loaded word
+                // Issue #72: Preserve original case for proper nouns
+                // Only store if word has uppercase (potential proper noun)
+                if (originalWord != lowerWord) {
+                    userWordOriginalCase[lowerWord] = originalWord
+                }
+                customCount++
+            }
+            if (BuildConfig.ENABLE_VERBOSE_LOGGING) {
+                Log.d(TAG, "Loaded $customCount custom words for '$language'")
             }
 
             // 2. Load Android user dictionary

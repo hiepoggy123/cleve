@@ -187,7 +187,7 @@ class DictionaryManagerActivity : AppCompatActivity() {
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
-            title = "Dictionary Manager"
+            title = "Shorthand Manager"
             setDisplayHomeAsUpEnabled(true)
         }
     }
@@ -211,44 +211,12 @@ class DictionaryManagerActivity : AppCompatActivity() {
 
         val primaryLangLabel = LANGUAGE_NAMES[primaryLanguage] ?: primaryLanguage.uppercase()
 
-        // Track which languages already have tabs
-        val languagesWithTabs = mutableSetOf<String>()
-
-        if (secondaryLanguage != null) {
-            // Multilang mode: Show language-specific tabs for each language
-            val secondaryLangLabel = LANGUAGE_NAMES[secondaryLanguage] ?: secondaryLanguage!!.uppercase()
-
-            // Primary language tabs
-            addLanguageTabs(fragmentList, primaryLanguage, primaryLangLabel)
-            languagesWithTabs.add(primaryLanguage)
-
-            // User Dict (global - Android system dictionary is not language-specific)
-            fragmentList.add(WordListFragment.newInstance(WordListFragment.TabType.USER))
-            tabTitles.add("User Dict")
-
-            // Secondary language tabs
-            addLanguageTabs(fragmentList, secondaryLanguage!!, secondaryLangLabel)
-            languagesWithTabs.add(secondaryLanguage!!)
-
-        } else {
-            // Single language mode: Standard tabs with primary language
-            fragmentList.add(WordListFragment.newInstance(WordListFragment.TabType.ACTIVE, primaryLanguage))
-            tabTitles.add(if (primaryLanguage != "en") "Active [$primaryLangLabel]" else "Active")
-
-            fragmentList.add(WordListFragment.newInstance(WordListFragment.TabType.DISABLED, primaryLanguage))
-            tabTitles.add(if (primaryLanguage != "en") "Disabled [$primaryLangLabel]" else "Disabled")
-
-            fragmentList.add(WordListFragment.newInstance(WordListFragment.TabType.USER))
-            tabTitles.add("User Dict")
-
-            fragmentList.add(WordListFragment.newInstance(WordListFragment.TabType.CUSTOM, primaryLanguage))
-            tabTitles.add(if (primaryLanguage != "en") "Custom [$primaryLangLabel]" else "Custom")
-
-            languagesWithTabs.add(primaryLanguage)
-        }
-
-        // Add tabs for user-imported language packs that aren't already shown
-        addImportedLanguagePackTabs(fragmentList, languagesWithTabs)
+        // USER REQUEST: Only show the Custom (Shortcuts) tab
+        fragmentList.add(WordListFragment.newInstance(WordListFragment.TabType.CUSTOM, primaryLanguage))
+        tabTitles.add(if (primaryLanguage != "en") "Shortcuts [$primaryLangLabel]" else "Shortcuts")
+        
+        // Hide the TabLayout if there's only one tab to save screen space
+        tabLayout.visibility = View.GONE
 
         fragments = fragmentList
 
@@ -257,11 +225,6 @@ class DictionaryManagerActivity : AppCompatActivity() {
             override fun getItemCount() = fragments.size
             override fun createFragment(position: Int) = fragments[position]
         }
-
-        // CRITICAL: Set offscreenPageLimit to keep all fragments in memory
-        // Without this, ViewPager2 only loads visible tab + 1 adjacent tab
-        // This causes counts to show 0 for unvisited tabs after rotation
-        viewPager.offscreenPageLimit = fragments.size - 1
 
         // Connect TabLayout with ViewPager2
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->

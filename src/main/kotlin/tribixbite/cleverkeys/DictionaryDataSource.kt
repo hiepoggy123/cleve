@@ -501,11 +501,13 @@ class UserDictionarySource(
  *                     If null, uses legacy global key "custom_words" for backwards compatibility
  */
 class CustomDictionarySource(
+    private val context: Context,
     private val prefs: SharedPreferences,
     private val languageCode: String? = null
 ) : DictionaryDataSource {
 
-    private val gson = Gson()
+    private val dbHelper = tribixbite.cleverkeys.db.CustomWordDatabaseHelper(context)
+    private val lang = languageCode ?: "en"
 
     // Use language-specific key when languageCode is provided
     private val customWordsKey: String = if (languageCode != null) {
@@ -514,63 +516,50 @@ class CustomDictionarySource(
         PREF_CUSTOM_WORDS_LEGACY
     }
 
-    data class CustomWordData(val frequency: Int, val shortcut: String?)
-
-    private fun getCustomWords(): MutableMap<String, CustomWordData> {
-        val jsonString = prefs.getString(customWordsKey, "{}") ?: "{}"
-        val result = mutableMapOf<String, CustomWordData>()
-        if (jsonString != "{}") {
-            try {
-                val jsonObj = org.json.JSONObject(jsonString)
-                val keys = jsonObj.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    val value = jsonObj.get(key)
-                    if (value is Int) {
-                        result[key] = CustomWordData(value, null)
-                    } else if (value is org.json.JSONObject) {
-                        val freq = value.optInt("f", 1000)
-                        val shortcut = value.optString("s", null).takeIf { !it.isNullOrEmpty() }
-                        result[key] = CustomWordData(freq, shortcut)
-                    }
-                }
-            } catch (e: Exception) {
-                // Ignore parse errors
-            }
-        }
-        return result
+    init {
+        migrateIfNeeded()
     }
 
-    private fun saveCustomWords(words: Map<String, CustomWordData>) {
-        try {
-            val jsonObj = org.json.JSONObject()
-            for ((key, data) in words) {
-                if (data.shortcut == null) {
-                    jsonObj.put(key, data.frequency)
-                } else {
-                    val obj = org.json.JSONObject()
-                    obj.put("f", data.frequency)
-                    obj.put("s", data.shortcut)
-                    jsonObj.put(key, obj)
+    private fun migrateIfNeeded() {
+        val migratedKey = "migrated_$customWordsKey"
+        if (!prefs.getBoolean(migratedKey, false)) {
+            val jsonString = prefs.getString(customWordsKey, "{}") ?: "{}"
+            if (jsonString != "{}" && jsonString.isNotBlank()) {
+                try {
+                    val jsonObj = org.json.JSONObject(jsonString)
+                    val keys = jsonObj.keys()
+                    while (keys.hasNext()) {
+                        val key = keys.next()
+                        val value = jsonObj.get(key)
+                        if (value is Int) {
+                            dbHelper.insertOrUpdateWord(key, value, null, lang)
+                        } else if (value is org.json.JSONObject) {
+                            val freq = value.optInt("f", 1000)
+                            val shortcut = value.optString("s", null).takeIf { !it.isNullOrEmpty() }
+                            dbHelper.insertOrUpdateWord(key, freq, shortcut, lang)
+                        }
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("CustomDictionarySource", "Failed to migrate custom words to SQLite", e)
                 }
             }
-            prefs.edit().putString(customWordsKey, jsonObj.toString()).apply()
-        } catch (e: Exception) {
-            // Ignore serialize errors
+            prefs.edit().putBoolean(migratedKey, true).apply()
         }
     }
 
     override suspend fun getAllWords(): List<DictionaryWord> = withContext(Dispatchers.IO) {
-        getCustomWords()
-            .map { (word, data) ->
-                DictionaryWord(word, data.frequency, WordSource.CUSTOM, true, data.shortcut)
+        dbHelper.getAllWords(lang)
+            .map { data ->
+                DictionaryWord(data.word, data.frequency, WordSource.CUSTOM, true, data.shortcut)
             }
-            .sorted()
     }
 
-    override suspend fun searchWords(query: String): List<DictionaryWord> {
-        if (query.isBlank()) return getAllWords()
-        return getAllWords().filter { it.word.contains(query, ignoreCase = true) }
+    override suspend fun searchWords(query: String): List<DictionaryWord> = withContext(Dispatchers.IO) {
+        if (query.isBlank()) return@withContext getAllWords()
+        dbHelper.searchWords(query, lang)
+            .map { data ->
+                DictionaryWord(data.word, data.frequency, WordSource.CUSTOM, true, data.shortcut)
+            }
     }
 
     override suspend fun toggleWord(word: String, enabled: Boolean) {
@@ -578,23 +567,17 @@ class CustomDictionarySource(
         if (!enabled) deleteWord(word)
     }
 
-    override suspend fun addWord(word: String, frequency: Int, shortcut: String?) {
-        val words = getCustomWords()
-        words[word] = CustomWordData(frequency, shortcut)
-        saveCustomWords(words)
+    override suspend fun addWord(word: String, frequency: Int, shortcut: String?) = withContext(Dispatchers.IO) {
+        dbHelper.insertOrUpdateWord(word, frequency, shortcut, lang)
     }
 
-    override suspend fun deleteWord(word: String) {
-        val words = getCustomWords()
-        words.remove(word)
-        saveCustomWords(words)
+    override suspend fun deleteWord(word: String) = withContext(Dispatchers.IO) {
+        dbHelper.deleteWord(word, lang)
     }
 
-    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int, shortcut: String?) {
-        val words = getCustomWords()
-        words.remove(oldWord)
-        words[newWord] = CustomWordData(frequency, shortcut)
-        saveCustomWords(words)
+    override suspend fun updateWord(oldWord: String, newWord: String, frequency: Int, shortcut: String?) = withContext(Dispatchers.IO) {
+        dbHelper.deleteWord(oldWord, lang)
+        dbHelper.insertOrUpdateWord(newWord, frequency, shortcut, lang)
     }
 
     companion object {
