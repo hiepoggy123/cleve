@@ -1413,15 +1413,33 @@ class WordPredictor {
             val customWordsJson = prefs.getString(customWordsKey, "{}") ?: "{}"
             if (customWordsJson != "{}") {
                 try {
-                    // Parse JSON map: {"word": frequency, ...}
+                    // Parse JSON map
                     val jsonObj = JSONObject(customWordsJson)
                     val keys = jsonObj.keys()
                     var customCount = 0
                     while (keys.hasNext()) {
                         val originalWord = keys.next()
                         val lowerWord = originalWord.lowercase()
-                        val frequency = jsonObj.optInt(originalWord, 1000)
+                        val value = jsonObj.get(originalWord)
+
+                        val frequency: Int
+                        val shortcut: String?
+
+                        if (value is Int) {
+                            frequency = value
+                            shortcut = null
+                        } else if (value is JSONObject) {
+                            frequency = value.optInt("f", 1000)
+                            shortcut = value.optString("s", null).takeIf { !it.isNullOrEmpty() }
+                        } else {
+                            frequency = 1000
+                            shortcut = null
+                        }
+
                         dictionary.get()[lowerWord] = frequency
+                        if (!shortcut.isNullOrBlank()) {
+                            shortcuts.get()[shortcut.lowercase()] = originalWord
+                        }
                         loadedWords.add(lowerWord)  // Track loaded word
                         // Issue #72: Preserve original case for proper nouns
                         // Only store if word has uppercase (potential proper noun)
@@ -1471,13 +1489,19 @@ class WordPredictor {
                 cursor?.use {
                     val wordIndex = it.getColumnIndex(UserDictionary.Words.WORD)
                     val freqIndex = it.getColumnIndex(UserDictionary.Words.FREQUENCY)
+                    val shortcutIndex = it.getColumnIndex(UserDictionary.Words.SHORTCUT)
                     var userCount = 0
 
                     while (it.moveToNext()) {
                         val originalWord = it.getString(wordIndex)
                         val lowerWord = originalWord.lowercase()
                         val frequency = if (freqIndex >= 0) it.getInt(freqIndex) else 1000
+                        val shortcut = if (shortcutIndex >= 0) it.getString(shortcutIndex) else null
+
                         dictionary.get()[lowerWord] = frequency
+                        if (!shortcut.isNullOrBlank()) {
+                            shortcuts.get()[shortcut.lowercase()] = originalWord
+                        }
                         loadedWords.add(lowerWord)  // Track loaded word
                         // v1.2.7: Preserve original case for proper nouns (Issue #72)
                         if (originalWord != lowerWord) {

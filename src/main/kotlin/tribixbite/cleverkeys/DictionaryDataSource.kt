@@ -83,47 +83,15 @@ class MainDictionarySource(
         }
 
         try {
-            val disabled = disabledSource.getDisabledWords()
-            val words = mutableListOf<DictionaryWord>()
-
-            // v1.1.89: Try language-specific binary dictionary first
-            // v1.1.96: Also check installed language packs
-            // v1.1.97: Fixed - also load English from V2 binary (was skipping to JSON with 128-255 scale)
-            run {
-                Log.d(TAG, "Trying binary dictionary for language: $languageCode")
-
-                // First try installed language pack
-                try {
-                    val packManager = tribixbite.cleverkeys.langpack.LanguagePackManager.getInstance(context)
-                    val packPath = packManager.getDictionaryPath(languageCode)
-                    if (packPath != null) {
-                        Log.d(TAG, "Found language pack dictionary: ${packPath.absolutePath}")
-                        val loaded = loadBinaryDictionaryFromFile(packPath, words, disabled)
-                        if (loaded) {
-                            Log.d(TAG, "Loaded ${words.size} words from language pack: $languageCode")
-                            cachedWords = words.sorted()
-                            buildPrefixIndex(cachedWords!!)
-                            return@withContext cachedWords!!
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.w(TAG, "Language pack not found for $languageCode, trying bundled assets", e)
-                }
-
-                // Fall back to bundled assets
-                try {
-                    val binFilename = "dictionaries/${languageCode}_enhanced.bin"
-                    val loaded = loadBinaryDictionary(binFilename, words, disabled)
-                    if (loaded) {
-                        Log.d(TAG, "Loaded ${words.size} words from bundled binary dictionary: $binFilename")
-                        cachedWords = words.sorted()
-                        buildPrefixIndex(cachedWords!!)
-                        return@withContext cachedWords!!
-                    }
-                } catch (e: Exception) {
-                    Log.w(TAG, "Binary dictionary not found for $languageCode, trying JSON/TXT fallback")
-                }
+            // USER REQUEST: "Bạn chưa tắt hoặc xoá từ điển mặc định kìa"
+            // Bypass loading the default dictionaries completely so that ONLY custom words and shortcuts are used.
+            val emptyWords = emptyList<DictionaryWord>()
+            cachedWords = emptyWords
+            prefixIndex = emptyMap()
+            synchronized(Companion) {
+                sharedCache[languageCode] = CacheEntry(emptyWords, emptyMap())
             }
+            return@withContext emptyWords
 
             // Try JSON format first (50k words with frequencies)
             try {
