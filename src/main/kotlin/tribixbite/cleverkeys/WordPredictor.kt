@@ -588,89 +588,9 @@ class WordPredictor {
         dictionary.get().clear()
         prefixIndex.get().clear()
 
+        // USER REQUEST: Bypass loading main dictionaries and contractions
+        // to ensure the keyboard strictly acts as a Custom Shorthand tool.
         var loadedBinary = false
-
-        // v1.2.5 FIX: First try loading from installed language packs
-        // This fixes autocorrect for languages only available via language pack (e.g., Dutch)
-        // Without this, WordPredictor's dictionary would be empty and autocorrect would
-        // incorrectly "correct" valid neural predictions (issue #63)
-        try {
-            val packManager = LanguagePackManager.getInstance(context)
-            val dictFile = packManager.getDictionaryPath(language)
-            if (dictFile != null) {
-                loadedBinary = BinaryDictionaryLoader.loadDictionaryWithPrefixIndexFromFile(
-                    dictFile, dictionary.get(), prefixIndex.get()
-                )
-                if (loadedBinary) {
-                    Log.i(TAG, "Loaded dictionary from language pack: $language (${dictionary.get().size} words)")
-                }
-            }
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to load from language pack: $language", e)
-        }
-
-        // Fall back to bundled assets if language pack not available
-        if (!loadedBinary) {
-            // OPTIMIZATION: Try binary format first (5-10x faster than JSON)
-            // Binary format includes pre-built prefix index, eliminating runtime computation
-            val binaryFilename = "dictionaries/${language}_enhanced.bin"
-            loadedBinary = BinaryDictionaryLoader.loadDictionaryWithPrefixIndex(
-                context, binaryFilename, dictionary.get(), prefixIndex.get()
-            )
-
-            if (loadedBinary) {
-                Log.i(TAG, "Loaded binary dictionary from assets with ${dictionary.get().size} words and ${prefixIndex.get().size} prefixes")
-            }
-        }
-
-        if (!loadedBinary) {
-            // Fall back to JSON format if binary not available
-            Log.d(TAG, "Binary dictionary not available, falling back to JSON")
-
-            val jsonFilename = "dictionaries/${language}_enhanced.json"
-            try {
-                val reader = BufferedReader(InputStreamReader(context.assets.open(jsonFilename)))
-                val jsonBuilder = StringBuilder()
-                reader.useLines { lines ->
-                    lines.forEach { jsonBuilder.append(it) }
-                }
-
-                // Parse JSON object
-                val jsonDict = JSONObject(jsonBuilder.toString())
-                val keys = jsonDict.keys()
-                while (keys.hasNext()) {
-                    val word = keys.next().lowercase()
-                    val frequency = jsonDict.getInt(word)
-                    // Frequency is 128-255, scale to 100-10000 range for better scoring
-                    val scaledFreq = 100 + ((frequency - 128) / 127.0 * 9900).toInt()
-                    dictionary.get()[word] = scaledFreq
-                }
-                Log.d(TAG, "Loaded JSON dictionary: $jsonFilename with ${dictionary.get().size} words")
-            } catch (e: Exception) {
-                Log.w(TAG, "JSON dictionary not found, trying text format: ${e.message}")
-
-                // Fall back to text format (word-per-line)
-                val textFilename = "dictionaries/${language}_enhanced.txt"
-                try {
-                    val reader = BufferedReader(InputStreamReader(context.assets.open(textFilename)))
-                    reader.useLines { lines ->
-                        lines.forEach { line ->
-                            val word = line.trim().lowercase()
-                            if (word.isNotEmpty()) {
-                                dictionary.get()[word] = 1000 // Default frequency
-                            }
-                        }
-                    }
-                    Log.d(TAG, "Loaded text dictionary: $textFilename with ${dictionary.get().size} words")
-                } catch (e2: Exception) {
-                    Log.e(TAG, "Failed to load dictionary: ${e2.message}")
-                }
-            }
-
-            // Build prefix index for fast lookup (only needed if JSON/text was loaded)
-            buildPrefixIndex()
-            Log.d(TAG, "Built prefix index: ${prefixIndex.get().size} prefixes for ${dictionary.get().size} words")
-        }
 
         // Load custom words and user dictionary (additive to main dictionary)
         // OPTIMIZATION v2: Use incremental prefix index updates instead of full rebuild
@@ -678,28 +598,12 @@ class WordPredictor {
         val customWords = loadCustomAndUserWords(context, language)
         customAndUserWords = customWords  // Track for disabled-word override check
 
-        // Add custom words to prefix index (incremental update)
+        // Add custom words to prefix index
         if (customWords.isNotEmpty()) {
-            if (loadedBinary) {
-                // Binary format: prefix index is pre-built, just add custom words
-                addToPrefixIndex(customWords)
-                if (BuildConfig.ENABLE_VERBOSE_LOGGING) {
-                    Log.d(TAG, "Added ${customWords.size} custom words to prefix index incrementally")
-                }
-            } else {
-                // JSON/text format: prefix index needs full rebuild anyway (includes custom words)
-                buildPrefixIndex()
-                if (BuildConfig.ENABLE_VERBOSE_LOGGING) {
-                    Log.d(TAG, "Built prefix index with custom words: ${prefixIndex.get().size} prefixes")
-                }
+            buildPrefixIndex()
+            if (BuildConfig.ENABLE_VERBOSE_LOGGING) {
+                Log.d(TAG, "Built prefix index with custom words: ${prefixIndex.get().size} prefixes")
             }
-        }
-
-        // v1.2.7: Load contraction keys (apostrophe-free forms) into primary dictionary
-        // This allows typing "dont" or "cant" to find "don't" or "can't" in predictions
-        val contractionKeysAdded = loadPrimaryContractionKeys(context, language)
-        if (contractionKeysAdded > 0) {
-            Log.i(TAG, "Added $contractionKeysAdded contraction keys to primary prefix index for '$language'")
         }
 
         // Set the N-gram model language to match the dictionary
@@ -1275,10 +1179,10 @@ class WordPredictor {
                 Log.d(TAG, "Loaded $customCount custom words for '$language' into new map")
             }
 
-            // 2. Load Android user dictionary
-            // v1.1.90: Filter by locale to prevent English contamination in non-English modes
-            // v1.1.91: Use LIKE for partial locale match (e.g., "fr" matches "fr", "fr_FR", "fr_CA")
-            // v1.2.0: Only include null-locale words for English (untagged words are typically English)
+            // 2. Load Android user dictionary (BYPASSED)
+            // USER REQUEST: Prevent unwanted words ("asshole", "they're") from Android's system dictionary
+            // from contaminating the strict shorthand keyboard.
+            /*
             try {
                 // Match: exact language code, or locale starting with language code (e.g., fr_FR)
                 // Only include null locale (untagged words) for English to prevent contamination
@@ -1337,6 +1241,7 @@ class WordPredictor {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to load user dictionary", e)
             }
+            */
         } catch (e: Exception) {
             Log.e(TAG, "Error loading custom/user words into new map", e)
         }
