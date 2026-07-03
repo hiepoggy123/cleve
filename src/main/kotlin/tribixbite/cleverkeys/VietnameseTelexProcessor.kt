@@ -510,19 +510,6 @@ object VietnameseTelexProcessor {
             return Syllable(onset = onset, nucleus = "", coda = coda)
         }
 
-        if (remaining.endsWith('u') || remaining.endsWith('i') ||
-            remaining.endsWith('y') || remaining.endsWith('o')
-        ) {
-            val last = remaining.last()
-            if (remaining.length > 1 && last in semivowelCodas) {
-                val before = remaining.dropLast(1)
-                if (before.any { toBaseForm(it) in baseVowels }) {
-                    coda = last.toString()
-                    remaining = before
-                }
-            }
-        }
-
         if (remaining.isEmpty()) return Syllable(onset = onset, nucleus = "", coda = coda)
 
         val nucleus = remaining
