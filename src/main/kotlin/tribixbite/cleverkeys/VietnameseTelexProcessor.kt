@@ -102,12 +102,52 @@ object VietnameseTelexProcessor {
         "ây" to 'â',
     )
 
-    // ── English fallback patterns ─────────────────────────────────
+    // ── IBus-Bamboo Phonetic Matrix (Ma trận âm ngữ) ──────────────
 
-    private val englishPatterns = listOf(
-        "tion", "ness", "ship", "less", "able", "ment",
-        "sch", "ck", "dge", "scr", "str",
-        "ould", "ight", "ough",
+    private val firstConsonantSeqs = listOf(
+        "b d đ g gh m n nh p ph r s t tr v z",
+        "c h k kh qu th",
+        "ch gi l ng ngh x",
+        "đ l",
+        "h",
+    )
+
+    private val vowelSeqs = listOf(
+        "ê i ua uê uy y",
+        "a iê oa uyê yê",
+        "â ă e o oo ô ơ oe u ư uâ uô ươ",
+        "oă",
+        "uơ",
+        "ai ao au âu ay ây eo êu ia iêu iu oai oao oay oeo oi ôi ơi ưa uây ui ưi uôi ươi ươu ưu uya uyu yêu",
+        "ă",
+        "i",
+    )
+
+    private val lastConsonantSeqs = listOf(
+        "ch nh",
+        "c ng",
+        "m n p t",
+        "k",
+        "c",
+    )
+
+    private val cvMatrix = listOf(
+        listOf(0, 1, 2, 5),
+        listOf(0, 1, 2, 3, 4, 5),
+        listOf(0, 1, 2, 3, 5),
+        listOf(6),
+        listOf(7),
+    )
+
+    private val vcMatrix = listOf(
+        listOf(0, 2),
+        listOf(0, 1, 2),
+        listOf(1, 2),
+        listOf(1, 2),
+        emptyList(),
+        emptyList(),
+        listOf(3),
+        listOf(4),
     )
 
     // ──────────────────────────────────────────────────────────────
@@ -181,10 +221,14 @@ object VietnameseTelexProcessor {
                     return word.length to (word + ch)
                 }
             }
-            if (isEnglishLikely(word)) {
-                return word.length to (word + ch)
+            val (charsToDelete, tonedWord) = handleTone(word, ch)
+            if (charsToDelete == word.length && tonedWord != word + ch) {
+                if (!isValidVietnameseWord(tonedWord)) {
+                    return word.length to (word + ch)
+                }
+                return word.length to tonedWord
             }
-            return handleTone(word, ch)
+            return word.length to (word + ch)
         }
 
         if (lowerCh == 'w' && word.all { it.lowercaseChar() == 'w' }) {
@@ -193,6 +237,9 @@ object VietnameseTelexProcessor {
 
         val modified = applyDistantModifier(word, ch)
         if (modified != null) {
+            if (!isValidVietnameseWord(modified)) {
+                return word.length to (word + ch)
+            }
             return word.length to modified
         }
 
@@ -542,55 +589,86 @@ object VietnameseTelexProcessor {
         return result
     }
 
+    // ── Phonetic validation (Ma trận âm ngữ) ──────────────────────
     // ──────────────────────────────────────────────────────────────
-    //  English fallback detection
-    // ──────────────────────────────────────────────────────────────
 
-    private fun isEnglishLikely(word: String): Boolean {
-        val lower = word.lowercase()
-
-        if (englishPatterns.any { lower.contains(it) }) return true
-
-        if (lower.length <= 4) {
-            val vietDigraphs = listOf("ưa", "ươ", "uô", "iê", "yê", "uya", "uyê", "ươi", "ươu", "uôi", "oai", "oay")
-            val hasVietDigraph = vietDigraphs.any { lower.contains(it) }
-            if (!hasVietDigraph) {
-                val englishClusters = listOf("ck", "sh", "th", "ph", "nd", "nt", "st")
-                if (englishClusters.any { lower.endsWith(it) }) return true
+    private fun lookupSeq(seqs: List<String>, input: String, inputIsFull: Boolean): List<Int>? {
+        if (input.isEmpty()) return null
+        val ret = mutableListOf<Int>()
+        for ((index, row) in seqs.withIndex()) {
+            val parts = row.split(" ")
+            for (part in parts) {
+                if (inputIsFull) {
+                    if (part == input) {
+                        ret.add(index)
+                        break
+                    }
+                } else {
+                    if (part.startsWith(input)) {
+                        ret.add(index)
+                        break
+                    }
+                }
             }
         }
-
-        for (codaLen in minOf(3, lower.length - 1) downTo 1) {
-            val suffix = lower.takeLast(codaLen)
-            if (suffix.all { it in consonantLetters }) {
-                if (isInvalidVietnameseCoda(suffix)) return true
-                break
-            }
-        }
-
-        val cleaned = stripTones(lower)
-        val consonantRun = cleaned.split(Regex("[aăâeêioôơuưy]")).filter { it.isNotEmpty() }
-        if (consonantRun.any { it.length > 3 }) return true
-
-        val vowelCount = lower.count { toBaseForm(it) in baseVowels }
-        if (vowelCount == 0 && lower.any { it in consonantLetters }) return true
-
-        return false
+        return if (ret.isEmpty()) null else ret
     }
 
-    private val validSingleCodas = setOf('c', 'm', 'n', 'p', 't')
+    private fun isValidCVC(fc: String, vo: String, lc: String, inputIsFullComplete: Boolean): Boolean {
+        var fcIndexes: List<Int>? = null
+        var voIndexes: List<Int>? = null
+        var lcIndexes: List<Int>? = null
 
-    private fun isInvalidVietnameseCoda(coda: String): Boolean {
-        if (coda.length == 1) {
-            return coda[0].lowercaseChar() !in validSingleCodas
+        if (fc.isNotEmpty()) {
+            fcIndexes = lookupSeq(firstConsonantSeqs, fc, inputIsFullComplete || vo.isNotEmpty())
+            if (fcIndexes == null) return false
         }
-        if (coda.length == 2) {
-            return coda !in listOf("ch", "ng", "nh")
+        if (vo.isNotEmpty()) {
+            voIndexes = lookupSeq(vowelSeqs, vo, inputIsFullComplete || lc.isNotEmpty())
+            if (voIndexes == null) return false
         }
-        if (coda.length == 3) {
-            return coda != "ngh"
+        if (lc.isNotEmpty()) {
+            lcIndexes = lookupSeq(lastConsonantSeqs, lc, inputIsFullComplete)
+            if (lcIndexes == null) return false
+        }
+
+        if (voIndexes == null) {
+            // first consonant only
+            return fcIndexes != null
+        }
+        if (fcIndexes != null) {
+            // first consonant + vowel
+            val isValidCV = fcIndexes.any { f -> cvMatrix[f].any { c -> voIndexes.contains(c) } }
+            if (!isValidCV || lcIndexes == null) {
+                return isValidCV
+            }
+        }
+        if (lcIndexes != null) {
+            // vowel + last consonant
+            return voIndexes.any { v -> vcMatrix[v].any { c -> lcIndexes.contains(c) } }
         }
         return true
+    }
+
+    private fun isValidVietnameseWord(word: String): Boolean {
+        val clean = stripTones(word).lowercase()
+        val syllable = parseSyllable(clean) ?: return false
+        
+        if (isValidCVC(syllable.onset, syllable.nucleus, syllable.coda, false)) {
+            return true
+        }
+
+        // Special fallback for Bamboo matrix quirks:
+        // Bamboo treats "giêng" as g + iê + ng. Our parser gives gi + ê + ng.
+        if (syllable.onset == "gi" && syllable.nucleus.isNotEmpty()) {
+            if (isValidCVC("g", "i" + syllable.nucleus, syllable.coda, false)) return true
+        }
+        // Bamboo treats "qu" + "a" as qu + a
+        if (syllable.onset == "qu" && syllable.nucleus.isNotEmpty()) {
+            if (isValidCVC("q", "u" + syllable.nucleus, syllable.coda, false)) return true
+        }
+
+        return false
     }
 
     // ──────────────────────────────────────────────────────────────
