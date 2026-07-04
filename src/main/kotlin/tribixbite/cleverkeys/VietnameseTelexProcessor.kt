@@ -223,7 +223,8 @@ object VietnameseTelexProcessor {
             }
             val (charsToDelete, tonedWord) = handleTone(word, ch)
             if (charsToDelete == word.length && tonedWord != word + ch) {
-                if (!isValidVietnameseWord(tonedWord)) {
+                val isToneCancellation = tonedWord.endsWith(ch)
+                if (!isToneCancellation && !isValidVietnameseWord(tonedWord)) {
                     return word.length to (word + ch)
                 }
                 return word.length to tonedWord
@@ -237,7 +238,8 @@ object VietnameseTelexProcessor {
 
         val modified = applyDistantModifier(word, ch)
         if (modified != null) {
-            if (!isValidVietnameseWord(modified)) {
+            val isModifierCancellation = modified.endsWith(ch)
+            if (!isModifierCancellation && !isValidVietnameseWord(modified)) {
                 return word.length to (word + ch)
             }
             return word.length to modified
