@@ -111,6 +111,19 @@
         android:contentDescription="Toggle regex search"
         android:visibility="gone"/>
 
+    <!-- Clear all history button -->
+    <ImageButton
+        android:id="@+id/clipboard_clear_all_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="?attr/colorLabel"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Clear all history"
+        android:scaleType="centerInside"
+        android:padding="4dp"
+        android:visibility="visible"/>
+
     <!-- Date filter icon -->
     <ImageButton
         android:id="@+id/clipboard_date_filter"

@@ -75,6 +75,9 @@ class ClipboardManager(
 
     // Filter button (calendar icon — tinted when filters active)
     private var filterButton: ImageView? = null
+    
+    // Clear all history button
+    private var clearAllButton: ImageButton? = null
 
     // Content area views (mutually exclusive: content scroll vs tag panel)
     private var contentScroll: View? = null
@@ -154,6 +157,23 @@ class ClipboardManager(
             filterButton = clipboardPane?.findViewById<ImageView>(R.id.clipboard_date_filter)
             filterButton?.setOnClickListener { v ->
                 if (!isInEditMode()) showFilterDialog(v)
+            }
+
+            // Set up clear all history button
+            clearAllButton = clipboardPane?.findViewById<ImageButton>(R.id.clipboard_clear_all_button)
+            clearAllButton?.setOnClickListener {
+                if (!isInEditMode() && currentTab == ClipboardTab.HISTORY) {
+                    val themedContext = ContextThemeWrapper(context, android.R.style.Theme_DeviceDefault_Dialog)
+                    android.app.AlertDialog.Builder(themedContext)
+                        .setTitle("Clear History")
+                        .setMessage("Are you sure you want to clear all clipboard history?\n(Pinned and To-do items will not be affected)")
+                        .setPositiveButton("Clear") { _, _ ->
+                            ClipboardHistoryService.get_service(context)?.clearHistory()
+                            android.widget.Toast.makeText(context, "Clipboard history cleared", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                }
             }
 
             // Set up close button
@@ -273,6 +293,8 @@ class ClipboardManager(
         tabHistory?.alpha = if (currentTab == ClipboardTab.HISTORY) activeAlpha else inactiveAlpha
         tabPinned?.alpha = if (currentTab == ClipboardTab.PINNED) activeAlpha else inactiveAlpha
         tabTodos?.alpha = if (currentTab == ClipboardTab.TODOS) activeAlpha else inactiveAlpha
+        
+        clearAllButton?.visibility = if (currentTab == ClipboardTab.HISTORY) View.VISIBLE else View.GONE
     }
 
     /**
