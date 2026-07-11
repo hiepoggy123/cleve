@@ -172,7 +172,19 @@ class ClipboardManager(
                             android.widget.Toast.makeText(context, "Clipboard history cleared", android.widget.Toast.LENGTH_SHORT).show()
                         }
                         .setNegativeButton("Cancel", null)
-                        .show()
+                        .create()
+
+                    dialog.show()
+
+                    dialog.window?.let { window ->
+                        val token = clipboardPane?.windowToken
+                        if (token != null) {
+                            val lp = window.attributes
+                            lp.token = token
+                            lp.type = android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG
+                            window.attributes = lp
+                        }
+                    }
                 }
             }
 

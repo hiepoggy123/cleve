@@ -396,8 +396,8 @@ object CommandRegistry {
             keywords = listOf("bypass", "censor", "gap", "space")),
         Command("bypass3", "Bypass 3 (Homoglyph)", "Replace letters with Russian look-alikes", Category.EDITING,
             keywords = listOf("bypass", "censor", "russian", "homoglyph")),
-        Command("bypass4", "Bypass 4 (Diacritics)", "Convert to NFD combining diacritics", Category.EDITING,
-            keywords = listOf("bypass", "censor", "diacritic", "vietnamese")),
+        Command("bypass4", "Bypass 4 (Interpunct)", "Insert middle dots between characters", Category.EDITING,
+            keywords = listOf("bypass", "censor", "interpunct", "dot")),
         Command("bypass5", "Bypass 5 (ZWNJ)", "Insert Zero-Width Non-Joiner between characters", Category.EDITING,
             keywords = listOf("bypass", "censor", "zwnj", "space")),
 

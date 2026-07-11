@@ -572,15 +572,28 @@ class CustomShortSwipeExecutor(private val context: Context) {
                         inputConnection?.beginBatchEdit()
                         inputConnection?.deleteSurroundingText(textToModify.length, 0)
                         
-                        // Replace common Latin letters with identical-looking Cyrillic (Russian) letters
-                        val bypassedText = textToModify
-                            .replace('a', 'а')
-                            .replace('e', 'е')
-                            .replace('o', 'о')
-                            .replace('p', 'р')
-                            .replace('c', 'с')
-                            .replace('x', 'х')
-                            .replace('y', 'у')
+                        // Decompose to NFD to separate diacritics, then replace base letters with Cyrillic homoglyphs
+                        val nfdText = java.text.Normalizer.normalize(textToModify, java.text.Normalizer.Form.NFD)
+                        val bypassedText = nfdText
+                            .replace('a', 'а') // U+0430
+                            .replace('c', 'с') // U+0441
+                            .replace('d', 'ԁ') // U+0501
+                            .replace('e', 'е') // U+0435
+                            .replace('i', 'і') // U+0456
+                            .replace('o', 'о') // U+043E
+                            .replace('p', 'р') // U+0440
+                            .replace('x', 'х') // U+0445
+                            .replace('y', 'у') // U+0443
+                            .replace('A', 'А') // U+0410
+                            .replace('C', 'С') // U+0421
+                            .replace('E', 'Е') // U+0415
+                            .replace('H', 'Н') // U+041D
+                            .replace('I', 'І') // U+0406
+                            .replace('O', 'О') // U+041E
+                            .replace('P', 'Р') // U+0420
+                            .replace('T', 'Т') // U+0422
+                            .replace('X', 'Х') // U+0425
+                            .replace('Y', 'У') // U+0423
                             
                         inputConnection?.commitText(bypassedText, 1)
                         inputConnection?.endBatchEdit()
@@ -597,9 +610,8 @@ class CustomShortSwipeExecutor(private val context: Context) {
                         inputConnection?.beginBatchEdit()
                         inputConnection?.deleteSurroundingText(textToModify.length, 0)
                         
-                        // Convert text to NFD (Normalization Form Decomposition)
-                        // This separates base characters from combining diacritical marks
-                        val bypassedText = java.text.Normalizer.normalize(textToModify, java.text.Normalizer.Form.NFD)
+                        // Insert Interpunct (middle dot) between characters
+                        val bypassedText = textToModify.toList().joinToString("·")
                         
                         inputConnection?.commitText(bypassedText, 1)
                         inputConnection?.endBatchEdit()

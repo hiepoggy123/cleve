@@ -125,7 +125,7 @@ enum class AvailableCommand(
     BYPASS("Bypass Censor", "Insert invisible spaces between all characters", "visibility_off"),
     BYPASS2("Bypass 2 (Mid-Word)", "Insert invisible gaps in the middle of words", "visibility_off"),
     BYPASS3("Bypass 3 (Homoglyph)", "Replace letters with Russian look-alikes", "visibility_off"),
-    BYPASS4("Bypass 4 (Diacritics)", "Convert to NFD combining diacritics", "visibility_off"),
+    BYPASS4("Bypass 4 (Interpunct)", "Insert middle dots between characters", "visibility_off"),
     BYPASS5("Bypass 5 (ZWNJ)", "Insert Zero-Width Non-Joiner between characters", "visibility_off"),
 
     // Language
