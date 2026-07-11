@@ -163,28 +163,8 @@ class ClipboardManager(
             clearAllButton = clipboardPane?.findViewById<ImageButton>(R.id.clipboard_clear_all_button)
             clearAllButton?.setOnClickListener {
                 if (!isInEditMode() && currentTab == ClipboardTab.HISTORY) {
-                    val themedContext = ContextThemeWrapper(context, android.R.style.Theme_DeviceDefault_Dialog)
-                    android.app.AlertDialog.Builder(themedContext)
-                        .setTitle("Clear History")
-                        .setMessage("Are you sure you want to clear all clipboard history?\n(Pinned and To-do items will not be affected)")
-                        .setPositiveButton("Clear") { _, _ ->
-                            ClipboardHistoryService.get_service(context)?.clearHistory()
-                            android.widget.Toast.makeText(context, "Clipboard history cleared", android.widget.Toast.LENGTH_SHORT).show()
-                        }
-                        .setNegativeButton("Cancel", null)
-                        .create()
-
-                    dialog.show()
-
-                    dialog.window?.let { window ->
-                        val token = clipboardPane?.windowToken
-                        if (token != null) {
-                            val lp = window.attributes
-                            lp.token = token
-                            lp.type = android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG
-                            window.attributes = lp
-                        }
-                    }
+                    ClipboardHistoryService.get_service(context)?.clearHistory()
+                    android.widget.Toast.makeText(context, "Clipboard history cleared", android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
 
