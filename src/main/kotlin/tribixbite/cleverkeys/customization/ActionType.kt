@@ -122,8 +122,11 @@ enum class AvailableCommand(
     TEXT_ASSIST("Text Assist", "Trigger assistant for text", "auto_awesome"),
     REPLACE_TEXT("Replace Text", "Trigger text replacement", "find_replace"),
     SHOW_TEXT_MENU("Text Menu", "Show system text selection menu", "menu_open"),
-    BYPASS_CENSOR("Bypass Censor", "Insert invisible spaces", "visibility_off"),
-    BYPASS2("Bypass Spaces", "Replace spaces with invisible gaps", "visibility_off"),
+    BYPASS("Bypass Censor", "Insert invisible spaces between all characters", "visibility_off"),
+    BYPASS2("Bypass 2 (Mid-Word)", "Insert invisible gaps in the middle of words", "visibility_off"),
+    BYPASS3("Bypass 3 (Homoglyph)", "Replace letters with Russian look-alikes", "visibility_off"),
+    BYPASS4("Bypass 4 (Diacritics)", "Convert to NFD combining diacritics", "visibility_off"),
+    BYPASS5("Bypass 5 (ZWNJ)", "Insert Zero-Width Non-Joiner between characters", "visibility_off"),
 
     // Language
     PRIMARY_LANG_TOGGLE("Primary Language", "Toggle primary language", "language"),
@@ -148,7 +151,7 @@ enum class AvailableCommand(
             "Navigation" to listOf(CURSOR_HOME, CURSOR_END, CURSOR_DOC_START, CURSOR_DOC_END),
             "Words" to listOf(WORD_LEFT, WORD_RIGHT, DELETE_WORD),
             "Layout" to listOf(SWITCH_FORWARD, SWITCH_BACKWARD),
-            "Text" to listOf(TEXT_ASSIST, REPLACE_TEXT, SHOW_TEXT_MENU, BYPASS_CENSOR, BYPASS2),
+            "Text" to listOf(TEXT_ASSIST, REPLACE_TEXT, SHOW_TEXT_MENU, BYPASS, BYPASS2, BYPASS3, BYPASS4, BYPASS5),
             "Language" to listOf(PRIMARY_LANG_TOGGLE, SECONDARY_LANG_TOGGLE),
             "System" to listOf(SWITCH_IME, VOICE_INPUT)
         )

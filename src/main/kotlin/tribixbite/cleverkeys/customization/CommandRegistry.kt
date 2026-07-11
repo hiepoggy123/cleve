@@ -390,10 +390,16 @@ object CommandRegistry {
             keywords = listOf("assist", "ai", "help")),
         Command("autofill", "Autofill", "Trigger autofill", Category.EDITING,
             keywords = listOf("autofill", "password", "form")),
-        Command("bypass_censor", "Bypass Censor", "Insert invisible spaces", Category.EDITING,
+        Command("bypass", "Bypass 1 (All Chars)", "Insert invisible spaces between all characters", Category.EDITING,
             keywords = listOf("bypass", "censor", "invisible", "space")),
-        Command("bypass2", "Bypass Spaces", "Replace spaces with invisible gaps", Category.EDITING,
+        Command("bypass2", "Bypass 2 (Mid-Word)", "Insert invisible gaps in the middle of words", Category.EDITING,
             keywords = listOf("bypass", "censor", "gap", "space")),
+        Command("bypass3", "Bypass 3 (Homoglyph)", "Replace letters with Russian look-alikes", Category.EDITING,
+            keywords = listOf("bypass", "censor", "russian", "homoglyph")),
+        Command("bypass4", "Bypass 4 (Diacritics)", "Convert to NFD combining diacritics", Category.EDITING,
+            keywords = listOf("bypass", "censor", "diacritic", "vietnamese")),
+        Command("bypass5", "Bypass 5 (ZWNJ)", "Insert Zero-Width Non-Joiner between characters", Category.EDITING,
+            keywords = listOf("bypass", "censor", "zwnj", "space")),
 
         // ========== MEDIA CONTROLS ==========
         Command("media_play_pause", "Play/Pause", "Toggle media playback", Category.MEDIA,
