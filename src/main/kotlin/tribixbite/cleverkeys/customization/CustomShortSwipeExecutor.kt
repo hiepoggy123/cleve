@@ -534,6 +534,21 @@ class CustomShortSwipeExecutor(private val context: Context) {
                     true
                 }
 
+                AvailableCommand.BYPASS2 -> {
+                    val allText = inputConnection?.getTextBeforeCursor(200, 0)?.toString() ?: ""
+                    val lastNewline = allText.lastIndexOf('\n')
+                    val textToModify = if (lastNewline >= 0) allText.substring(lastNewline + 1) else allText
+                    
+                    if (textToModify.isNotEmpty()) {
+                        inputConnection?.beginBatchEdit()
+                        inputConnection?.deleteSurroundingText(textToModify.length, 0)
+                        val bypassedText = textToModify.replace(" ", "\u2004")
+                        inputConnection?.commitText(bypassedText, 1)
+                        inputConnection?.endBatchEdit()
+                    }
+                    true
+                }
+
                 // System commands - these return KeyValue for special handling
                 AvailableCommand.SWITCH_IME -> {
                     // This needs to be handled at a higher level (KeyEventHandler)

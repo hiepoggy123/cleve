@@ -392,6 +392,8 @@ object CommandRegistry {
             keywords = listOf("autofill", "password", "form")),
         Command("bypass_censor", "Bypass Censor", "Insert invisible spaces", Category.EDITING,
             keywords = listOf("bypass", "censor", "invisible", "space")),
+        Command("bypass2", "Bypass Spaces", "Replace spaces with invisible gaps", Category.EDITING,
+            keywords = listOf("bypass", "censor", "gap", "space")),
 
         // ========== MEDIA CONTROLS ==========
         Command("media_play_pause", "Play/Pause", "Toggle media playback", Category.MEDIA,

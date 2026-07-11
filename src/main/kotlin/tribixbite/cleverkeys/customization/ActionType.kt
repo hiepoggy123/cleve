@@ -123,6 +123,7 @@ enum class AvailableCommand(
     REPLACE_TEXT("Replace Text", "Trigger text replacement", "find_replace"),
     SHOW_TEXT_MENU("Text Menu", "Show system text selection menu", "menu_open"),
     BYPASS_CENSOR("Bypass Censor", "Insert invisible spaces", "visibility_off"),
+    BYPASS2("Bypass Spaces", "Replace spaces with invisible gaps", "visibility_off"),
 
     // Language
     PRIMARY_LANG_TOGGLE("Primary Language", "Toggle primary language", "language"),
@@ -147,7 +148,7 @@ enum class AvailableCommand(
             "Navigation" to listOf(CURSOR_HOME, CURSOR_END, CURSOR_DOC_START, CURSOR_DOC_END),
             "Words" to listOf(WORD_LEFT, WORD_RIGHT, DELETE_WORD),
             "Layout" to listOf(SWITCH_FORWARD, SWITCH_BACKWARD),
-            "Text" to listOf(TEXT_ASSIST, REPLACE_TEXT, SHOW_TEXT_MENU, BYPASS_CENSOR),
+            "Text" to listOf(TEXT_ASSIST, REPLACE_TEXT, SHOW_TEXT_MENU, BYPASS_CENSOR, BYPASS2),
             "Language" to listOf(PRIMARY_LANG_TOGGLE, SECONDARY_LANG_TOGGLE),
             "System" to listOf(SWITCH_IME, VOICE_INPUT)
         )
