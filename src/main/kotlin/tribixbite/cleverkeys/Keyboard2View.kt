@@ -772,9 +772,21 @@ class Keyboard2View @JvmOverloads constructor(
                 inputConnection.commitText("", 1)
                 inputConnection.endBatchEdit()
             }
+            KeyValue.Editing.DELETE_LAST_WORD,
             KeyValue.Editing.DELETE_WORD,
             KeyValue.Editing.FORWARD_DELETE_WORD,
-            KeyValue.Editing.BYPASS_CENSOR -> {
+            KeyValue.Editing.BYPASS_CENSOR,
+            KeyValue.Editing.TELEX_S,
+            KeyValue.Editing.TELEX_F,
+            KeyValue.Editing.TELEX_R,
+            KeyValue.Editing.TELEX_X,
+            KeyValue.Editing.TELEX_J,
+            KeyValue.Editing.TELEX_A,
+            KeyValue.Editing.TELEX_E,
+            KeyValue.Editing.TELEX_O,
+            KeyValue.Editing.TELEX_W,
+            KeyValue.Editing.TELEX_D,
+            KeyValue.Editing.TELEX_Z -> {
                 // Pass these complex editing operations to the main key handler
                 val kv = KeyValue("", KeyValue.Kind.Editing, editing.ordinal, 0)
                 _config.handler?.key_down(kv, false)
