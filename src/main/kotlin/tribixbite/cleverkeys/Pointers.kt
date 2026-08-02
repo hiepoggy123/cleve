@@ -825,10 +825,10 @@ class Pointers(
             if (BuildConfig.ENABLE_VERBOSE_LOGGING) Log.d("Pointers", "onTouchMove: collecting point ($x, $y) for potential swipe")
             _handler.onSwipeMove(x, y, _swipeRecognizer)
 
-            // Check if this has become a confirmed multi-key swipe typing gesture
-            // CRITICAL FIX: Only set FLAG_P_SWIPE_TYPING if swipe typing is actually enabled!
-            // Otherwise it incorrectly cancels short gestures for long directional flicks.
-            if (_config.swipe_typing_enabled && _swipeRecognizer.isSwipeTyping()) {
+            // Check if this has become a confirmed multi-key swipe typing gesture.
+            // Gate the commit on hasLeftStartingKey so it honors the short_gesture_max_distance
+            // boundary before prematurely latching a word mid-gesture (the overshoot bug).
+            if (_config.swipe_typing_enabled && _swipeRecognizer.isSwipeTyping() && ptr.hasLeftStartingKey) {
                 ptr.flags = ptr.flags or FLAG_P_SWIPE_TYPING
                 stopLongPress(ptr)
             }

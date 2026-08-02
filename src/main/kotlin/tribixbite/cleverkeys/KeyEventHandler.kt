@@ -537,6 +537,8 @@ class KeyEventHandler(
         conn.deleteSurroundingText(charsToDelete, 0)
 
         // Clear swipe tracking and reset prediction state
+        // SAS-1: the undone commit's auto-space is gone — invalidate the swallow
+        recv.setLastSpaceAutoInserted(false)
         recv.clearSwipeUndoState()
         recv.handle_backspace()
 
@@ -577,6 +579,8 @@ class KeyEventHandler(
         conn.commitText(replacement, 1)
 
         // Clear all undo state to prevent double-undo
+        // SAS-1: text was rewritten by the undo — invalidate the pending auto-space
+        recv.setLastSpaceAutoInserted(false)
         recv.clearAutocorrectUndoState()
         recv.handle_backspace()
         return true
@@ -838,6 +842,9 @@ class KeyEventHandler(
     /** Move one of the two side of a selection. If [selLeft] is true, the left
      * position is moved, otherwise the right position is moved. */
     private fun moveCursorSel(d: Int, selLeft: Boolean, keyDown: Boolean) {
+        // d==0 is degenerate: the do/while below only mutates by d, so an empty
+        // selection would never satisfy (selStart != selEnd) and loop forever.
+        if (d == 0) return
         val conn = recv.getCurrentInputConnection() ?: return
         val et = getCursorPos(conn)
 
