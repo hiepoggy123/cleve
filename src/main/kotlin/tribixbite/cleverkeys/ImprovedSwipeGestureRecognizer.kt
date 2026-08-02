@@ -451,6 +451,16 @@ open class ImprovedSwipeGestureRecognizer {
     }
 
     /**
+     * Promote gesture to word candidacy if conditions met
+     */
+    fun promoteWordCandidacy(): Boolean {
+        if (!_isSwipeTyping && _touchedKeys.size >= 2 && _totalDistance > MIN_SWIPE_DISTANCE) {
+            _isSwipeTyping = shouldConsiderSwipeTyping()
+        }
+        return _isSwipeTyping
+    }
+
+    /**
      * v1.2.8: Check if shift was active at swipe START
      * Used for autocap after period - capitalize first letter of swiped word
      */

@@ -201,7 +201,8 @@ class Pointers(
 
             // If barely moved (tap), output the primary key
             // If moved significantly, fall through to gesture classification for short swipe
-            if (movementDist < _config.short_gesture_min_distance) {
+            // (short_gesture_min_distance is % of key diagonal — convert, don't compare raw)
+            if (movementDist < shortGestureMinDistancePx(ptr.key)) {
                 if (BuildConfig.ENABLE_VERBOSE_LOGGING) Log.d("Pointers", "Path: Deferred nav-subkey key TAP, outputting primary key")
                 if (ptr.value != null) {
                     _handler.onPointerDown(ptr.value, false)
@@ -244,7 +245,8 @@ class Pointers(
 
             // If barely moved (tap), output the backspace key
             // If moved significantly, fall through to gesture classification for short swipe (e.g., delete_last_word)
-            if (movementDist < _config.short_gesture_min_distance) {
+            // (short_gesture_min_distance is % of key diagonal — convert, don't compare raw)
+            if (movementDist < shortGestureMinDistancePx(ptr.key)) {
                 if (BuildConfig.ENABLE_VERBOSE_LOGGING) Log.d("Pointers", "Path: Deferred backspace TAP, outputting backspace")
                 _handler.onPointerDown(ptr.value, false)
                 ptr.flags = ptr.flags and FLAG_P_DEFERRED_DOWN.inv()
@@ -317,10 +319,14 @@ class Pointers(
 
             val gestureType = _gestureClassifier.classify(gestureData)
 
-            // CRITICAL FIX: Only Char keys can trigger Neural Swipe Typing
-            // For non-Char keys (like Backspace), even if the gesture is long (classified as SWIPE),
-            // we must treat it as a TAP/Short Gesture to allow directional actions (e.g. Delete Word)
-            val effectiveGestureType = if (!isCharKey && gestureType == GestureClassifier.GestureType.SWIPE) {
+            // Only swipe-typing-eligible gestures may route to the neural predictor:
+            // - non-Char keys (like Backspace): a long gesture must still be treated as a
+            //   TAP/Short Gesture to allow directional actions (e.g. Delete Word)
+            // - swipe typing disabled: SWIPE must degrade to TAP so the gesture commits the
+            //   starting key instead of hitting onSwipeEnd (a no-op without word candidacy)
+            //   and silently dropping the letter.
+            // canSwipeType = swipe_typing_enabled && isCharKey covers both.
+            val effectiveGestureType = if (!canSwipeType && gestureType == GestureClassifier.GestureType.SWIPE) {
                 GestureClassifier.GestureType.TAP
             } else {
                 gestureType
@@ -352,18 +358,11 @@ class Pointers(
 
                 // CRITICAL FIX v1.32.923: Changed from swipePath.size > 1 to >= 1
                 // Some gestures only collect 1 point (downX,downY) before UP fires
-                // We can still calculate direction from ptr.downX/downY to the last point
-                //
-                // v1.32.927: Short gestures now work with shift active
-                // - Sublabels trigger regardless of shift state
-                // - If sublabel is a word (letters/apostrophe only), capitalize first char when shift active
-                // - Non-word sublabels (punctuation, symbols) output as-is
-
+                // Check if this finger has left the starting key bounds
                 // CRITICAL FIX: Allow leaving the key bounds for non-Char keys (like Backspace)
                 // This allows "Short Swipe over Backspace" (which often leaves the key) to trigger delete_last_word
-                // Also allow leaving key bounds if swipe typing is disabled (uncapped directional swipe)
-                val allowLeftKey = !isCharKey || !_config.swipe_typing_enabled
-
+                val allowLeftKey = !isCharKey
+                
                 // Use tracked last position instead of relying on swipePath (which might be filtered/smoothed)
                 val dx = ptr.lastX - ptr.downX
                 val dy = ptr.lastY - ptr.downY
@@ -376,33 +375,18 @@ class Pointers(
                     distance > 0 // Basic check that we moved
                 ) {
                     
-                    // CRITICAL FIX: Calculate keyHypotenuse since it's needed for threshold calculation
                     val keyHypotenuse = _handler.getKeyHypotenuse(ptr.key)
 
-                    // Calculate MIN threshold: Use MIN of percentage-based and absolute threshold
-                    // This ensures wide keys (like Backspace) don't require huge swipes,
-                    // while small keys still respect the percentage to avoid accidental triggers.
-                    val percentMinThreshold = keyHypotenuse * (_config.short_gesture_min_distance / 100.0f)
-                    val absoluteThreshold = _config.swipe_dist_px.toFloat()
-
-                    // RELAXED THRESHOLD: Use 0.8 factor to approximate Manhattan->Euclidean conversion
-                    // (Manhattan distance is ~1.4x Euclidean for diagonals).
-                    // Also removed the 1.5f multiplier which made triggering too hard.
-                    val effectiveAbsolute = if (absoluteThreshold > 0) absoluteThreshold * 0.8f else Float.MAX_VALUE
-
-                    // Use the easier (smaller) of the two thresholds for minimum
-                    val minDistance = min(percentMinThreshold, effectiveAbsolute)
+                    // MIN threshold: percent-of-diagonal with the wide-key absolute cap —
+                    // single source of truth shared with the deferred nav/backspace and
+                    // selection-delete pre-checks.
+                    val minDistance = shortGestureMinDistancePx(ptr.key)
 
                     // v1.2.3 FIX: Restore max distance check that was removed in 7c2131f7
                     // The hasLeftStartingKey flag alone creates a gap where medium swipes (e.g., 140px)
                     // that don't exceed max_distance still trigger short gestures instead of neural swipe.
                     // By checking max explicitly here, swipes exceeding max fall through to neural prediction.
-                    // If swipe typing is disabled, allow infinite max distance (user can swipe off the key entirely)
-                    val maxDistance = if (_config.swipe_typing_enabled) {
-                        keyHypotenuse * (_config.short_gesture_max_distance / 100.0f)
-                    } else {
-                        Float.MAX_VALUE
-                    }
+                    val maxDistance = keyHypotenuse * (_config.short_gesture_max_distance / 100.0f)
 
                     Log.d(
                         "Pointers", "Short gesture check: distance=$distance " +
@@ -448,13 +432,30 @@ class Pointers(
                             return
                         }
 
-                        // Use getNearestKeyAtDirection to search nearby if exact direction not defined
-                        var gestureValue = getNearestKeyAtDirection(ptr, direction)
+                        // WORD-CANDIDATE vs FUZZ RESOLUTION: getNearestKeyAtDirection scans
+                        // +/-1 of 16 directions so deliberate short swipes are forgiving of
+                        // angle. But default layouts populate CORNERS densely (ne=digits,
+                        // nw=symbols), so for a word-shaped gesture the fuzz almost always
+                        // finds *something*: a "we" swipe tilted <22.5 degrees up reached
+                        // ne="2", and a "the"-shaped gesture (end vector W) reached nw="%".
+                        // Resolution: a word candidate (recognizer saw >=2 keys + min path)
+                        // only accepts the EXACT-direction subkey (i=0). A deliberate corner
+                        // flick computes the corner's own direction and still hits exactly;
+                        // fuzz-only matches lose to the word fallback below. Non-candidates
+                        // (single-key flicks, non-char keys e.g. backspace nw=delete_last_word)
+                        // keep the full +/-1 forgiveness.
+                        val isWordCandidate = isCharKey && _config.swipe_typing_enabled &&
+                            _swipeRecognizer.promoteWordCandidacy()
+                        var gestureValue = if (isWordCandidate) {
+                            _handler.modifyKey(getKeyAtDirection(ptr.key, direction), ptr.modifiers)
+                        } else {
+                            getNearestKeyAtDirection(ptr, direction)
+                        }
 
                         Log.d(
                             "Pointers", String.format(
-                                "SHORT_SWIPE_RESULT: dir=%d found=%s",
-                                direction, gestureValue?.toString() ?: "null"
+                                "SHORT_SWIPE_RESULT: dir=%d found=%s wordCandidate=%b",
+                                direction, gestureValue?.toString() ?: "null", isWordCandidate
                             )
                         )
 
@@ -510,6 +511,25 @@ class Pointers(
                             removePtr(ptr)
                             return
                         } else {
+                            // No subkey accepted for the swipe direction (none assigned, or only a
+                            // +/-1-fuzzed corner match which word candidates reject above). Fall
+                            // back to a neural word swipe instead of dropping to a first-letter
+                            // tap. This rescues compact words (e.g. "we", tilted "we", "the"-shaped
+                            // gestures) swiped where no exact-direction sublabel exists. It cannot
+                            // reintroduce the overshoot bug: an overshoot toward an exactly-aimed
+                            // subkey takes the gestureValue != null branch above and emits the
+                            // subkey. The fallback is bounded to the sub-boundary short zone
+                            // because it lives inside distance <= maxDistance, and maxDistance is
+                            // computed from the same short_gesture_max_distance that gates
+                            // hasLeftStartingKey.
+                            if (isWordCandidate) {
+                                if (BuildConfig.ENABLE_VERBOSE_LOGGING) Log.d("Pointers", "SHORT_GESTURE->WORD: no subkey in direction $direction, committing word swipe")
+                                _handler.onSwipeEnd(_swipeRecognizer)
+                                clearLatched()
+                                _swipeRecognizer.reset()
+                                removePtr(ptr)
+                                return
+                            }
                             if (BuildConfig.ENABLE_VERBOSE_LOGGING) Log.d("Pointers", "SHORT_GESTURE FAILED: getNearestKeyAtDirection returned null for direction $direction")
                         }
                     } else {
@@ -521,7 +541,27 @@ class Pointers(
                         "distance=$distance")
                 }
 
-                // Regular TAP - output the key character only if it was deferred
+                    // RETURN-TRIP WORD RESCUE: a word whose path returns near its start ("pop",
+                    // "lol") ends with displacement below the short-swipe minimum, so it reaches
+                    // this plain-tap fallthrough even though the recognizer saw a full word path.
+                    // Rescue it as a word when the gesture is a word candidate, lasted longer
+                    // than a tap, and the end displacement is small relative to the traced path.
+                    // Straight gestures (taps, overshoots, flicks) have displacement ~= path and
+                    // can never satisfy the ratio; fast grazes fail the duration check. This
+                    // restores the pre-boundary-gate behavior for exactly this gesture class.
+                    if (isCharKey && _config.swipe_typing_enabled && _swipeRecognizer.promoteWordCandidacy() &&
+                        timeElapsed > _config.tap_duration_threshold &&
+                        distance < totalDistance / 2
+                    ) {
+                        if (BuildConfig.ENABLE_VERBOSE_LOGGING) Log.d("Pointers", "RETURN_TRIP_WORD: disp=$distance path=$totalDistance time=${timeElapsed}ms -> word")
+                        _handler.onSwipeEnd(_swipeRecognizer)
+                        clearLatched()
+                        _swipeRecognizer.reset()
+                        removePtr(ptr)
+                        return
+                    }
+
+                    // Regular TAP - output the key character only if it was deferred
                 if (BuildConfig.ENABLE_VERBOSE_LOGGING) Log.d("Pointers", "TAP path: deferred=${ptr.hasFlagsAny(FLAG_P_DEFERRED_DOWN)}")
                 if (ptr.hasFlagsAny(FLAG_P_DEFERRED_DOWN)) {
                     _handler.onPointerDown(ptr_value, false)
@@ -659,6 +699,21 @@ class Pointers(
     }
 
     /**
+     * Minimum displacement (px) for a short swipe on [key]: the user's
+     * short_gesture_min_distance (PERCENT of the key diagonal) converted through the
+     * key's actual diagonal, capped by the absolute swipe_dist_px * 0.8 so wide keys
+     * (backspace/shift/space) don't demand uncomfortably long swipes. Single source
+     * of truth for every "did the finger move enough for a short swipe" pre-check —
+     * three call sites previously compared px displacement against the raw percent
+     * value (28 treated as 28px, ~half the intended threshold).
+     */
+    private fun shortGestureMinDistancePx(key: KeyboardData.Key): Float {
+        val percentMin = _handler.getKeyHypotenuse(key) * (_config.short_gesture_min_distance / 100.0f)
+        val cap = if (_config.swipe_dist_px > 0) _config.swipe_dist_px * 0.8f else Float.MAX_VALUE
+        return min(percentMin, cap)
+    }
+
+    /**
      * [direction] is an int between [0] and [15] that represent 16 sections of a
      * circle, clockwise, starting at the top.
      */
@@ -681,7 +736,7 @@ class Pointers(
         // With ±2, direction 4 (E) - 2 = direction 2 (NE), causing 'we' swipe to trigger '2'
         // [i] is [0, -1, +1], scanning ~19% of the circle's area (3 directions = 67.5°)
         var i = 0
-        while (i > -2) {  // Reverted from -3 to -2 (±1 range) as per thumb-key stability
+        while (i > -2) {  // Changed from -3 to -2 (±1 range)
             val d = (direction + i + 16) % 16
             // Don't make the difference between a key that doesn't exist and a key
             // that is removed by [_handler]. Triggers side effects.
@@ -737,6 +792,7 @@ class Pointers(
 
         // Track if pointer has left the starting key (for short gesture detection on UP)
         // Use short_gesture_max_distance to define the boundary (as % of key diagonal)
+        // Calculate movement distance
         // Higher values = more lenient, allows swipes further from key center
         if (ptr.key != null && !ptr.hasLeftStartingKey) {
             val keyHypotenuse = _handler.getKeyHypotenuse(ptr.key)
@@ -1207,7 +1263,8 @@ class Pointers(
             // No movement + hold → normal key repeat
             val isBackspace = isBackspaceKey(ptr.value)
             if (_config.keyrepeat_enabled && isBackspace) {
-                if (movementDist >= _config.short_gesture_min_distance) {
+                // (short_gesture_min_distance is % of key diagonal — convert, don't compare raw)
+                if (movementDist >= shortGestureMinDistancePx(ptr.key)) {
                     // User did a short swipe then held - enter selection-delete mode
                     // Determine direction based on horizontal movement (left/right selection)
                     val direction = if (dx > 0) 1 else -1  // 1 = right, -1 = left
