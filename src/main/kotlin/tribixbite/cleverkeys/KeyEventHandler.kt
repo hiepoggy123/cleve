@@ -341,8 +341,11 @@ class KeyEventHandler(
             val textBefore = conn.getTextBeforeCursor(20, 0)?.toString() ?: ""
             val telexResult = VietnameseTelexProcessor.processTelex(textBefore, text[0])
             if (telexResult != null) {
+                conn.beginBatchEdit()
                 conn.deleteSurroundingText(telexResult.charsToDelete, 0)
                 conn.commitText(telexResult.newWord, 1)
+                conn.endBatchEdit()
+                
                 lastTypedChar = telexResult.newWord.lastOrNull() ?: '\u0000'
                 lastTypedTimestamp = System.currentTimeMillis()
                 autocap.typed(telexResult.newWord)
@@ -714,8 +717,11 @@ class KeyEventHandler(
         val telexResult = VietnameseTelexProcessor.processTelex(textBefore, c)
         
         if (telexResult != null) {
+            conn.beginBatchEdit()
             conn.deleteSurroundingText(telexResult.charsToDelete, 0)
             conn.commitText(telexResult.newWord, 1)
+            conn.endBatchEdit()
+            
             lastTypedChar = telexResult.newWord.lastOrNull() ?: '\u0000'
             lastTypedTimestamp = System.currentTimeMillis()
             autocap.typed(telexResult.newWord)
