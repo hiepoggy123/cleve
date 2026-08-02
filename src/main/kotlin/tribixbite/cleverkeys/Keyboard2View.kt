@@ -648,6 +648,18 @@ class Keyboard2View @JvmOverloads constructor(
                 "textAssist" -> { launchTextAssistActivity(inputConnection); true }
                 "replaceText" -> { launchReplaceTextActivity(inputConnection); true }
                 "showTextMenu" -> { showTextContextMenu(inputConnection); true }
+                // Vietnamese Telex Commands - directly pass virtual key presses to KeyEventHandler
+                "telex_s" -> { sendTelexKey('s'); true }
+                "telex_f" -> { sendTelexKey('f'); true }
+                "telex_r" -> { sendTelexKey('r'); true }
+                "telex_x" -> { sendTelexKey('x'); true }
+                "telex_j" -> { sendTelexKey('j'); true }
+                "telex_a" -> { sendTelexKey('a'); true }
+                "telex_e" -> { sendTelexKey('e'); true }
+                "telex_o" -> { sendTelexKey('o'); true }
+                "telex_w" -> { sendTelexKey('w'); true }
+                "telex_d" -> { sendTelexKey('d'); true }
+                "telex_z" -> { sendTelexKey('z'); true }
                 else -> false
             }
 
@@ -738,6 +750,16 @@ class Keyboard2View @JvmOverloads constructor(
 
         // Provide haptic feedback for successful gesture
         performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
+    }
+
+    /**
+     * Send a raw character to KeyEventHandler as if it was typed, 
+     * but without needing a layout key. Crucial for Telex gestures.
+     */
+    private fun sendTelexKey(c: Char) {
+        val kv = KeyValue.makeCharKey(c)
+        _config.handler?.key_down(kv, false)
+        _config.handler?.key_up(kv, Pointers.Modifiers.EMPTY)
     }
 
     /**

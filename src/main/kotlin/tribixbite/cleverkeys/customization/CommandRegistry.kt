@@ -56,13 +56,14 @@ object CommandRegistry {
         SYSTEM("System & Apps", 11),
         SPACES("Spaces & Formatting", 12),
         DIACRITICS("Diacritics", 13),
-        DIACRITICS_SLAVONIC("Slavonic Diacritics", 14),
-        DIACRITICS_ARABIC("Arabic Diacritics", 15),
-        HEBREW("Hebrew Marks", 16),
-        TEXT("Text Input", 17),
-        LANGUAGE("Language", 18),
-        TEXT_ACTIONS("Text Actions", 19),
-        TIMESTAMP("Timestamps", 20)
+        VIETNAMESE_TELEX("Vietnamese Telex", 14),
+        DIACRITICS_SLAVONIC("Slavonic Diacritics", 15),
+        DIACRITICS_ARABIC("Arabic Diacritics", 16),
+        HEBREW("Hebrew Marks", 17),
+        TEXT("Text Input", 18),
+        LANGUAGE("Language", 19),
+        TEXT_ACTIONS("Text Actions", 20),
+        TIMESTAMP("Timestamps", 21)
     }
 
     /**
@@ -326,8 +327,34 @@ object CommandRegistry {
             keywords = listOf("combining", "tilde")),
         Command("combining_trema", "Combining Umlaut", "Add umlaut to previous char", Category.DIACRITICS,
             keywords = listOf("combining", "umlaut", "trema", "diaeresis")),
-        Command("combining_cedille", "Combining Cedilla", "Add cedilla to previous char", Category.DIACRITICS,
-            keywords = listOf("combining", "cedilla")),
+        Command("combining_cedille", "Cedilla", "Add cedilla below (◌̧)", Category.DIACRITICS,
+            keywords = listOf("combining", "cedilla", "cedille")),
+
+        // ========== VIETNAMESE TELEX ==========
+        Command("telex_s", "Telex S (Sắc)", "Add sắc tone to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "s", "tone", "sắc", "vietnamese")),
+        Command("telex_f", "Telex F (Huyền)", "Add huyền tone to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "f", "tone", "huyền", "vietnamese")),
+        Command("telex_r", "Telex R (Hỏi)", "Add hỏi tone to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "r", "tone", "hỏi", "vietnamese")),
+        Command("telex_x", "Telex X (Ngã)", "Add ngã tone to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "x", "tone", "ngã", "vietnamese")),
+        Command("telex_j", "Telex J (Nặng)", "Add nặng tone to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "j", "tone", "nặng", "vietnamese")),
+        Command("telex_a", "Telex A (ă/â)", "Add ă/â modifier to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "a", "modifier", "ă", "â", "vietnamese")),
+        Command("telex_e", "Telex E (ê)", "Add ê modifier to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "e", "modifier", "ê", "vietnamese")),
+        Command("telex_o", "Telex O (ô)", "Add ô modifier to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "o", "modifier", "ô", "vietnamese")),
+        Command("telex_w", "Telex W (ư/ơ)", "Add ư/ơ modifier to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "w", "modifier", "ư", "ơ", "vietnamese")),
+        Command("telex_d", "Telex D (đ)", "Add đ modifier to word", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "d", "modifier", "đ", "vietnamese")),
+        Command("telex_z", "Telex Z (Cancel)", "Cancel last telex action", Category.VIETNAMESE_TELEX,
+            keywords = listOf("telex", "z", "cancel", "undo", "vietnamese")),
+
+        // ========== SLAVONIC DIACRITICS ==========
         Command("combining_caron", "Combining Caron", "Add caron to previous char", Category.DIACRITICS,
             keywords = listOf("combining", "caron", "hacek")),
         Command("combining_macron", "Combining Macron", "Add macron to previous char", Category.DIACRITICS,

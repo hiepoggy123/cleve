@@ -354,7 +354,10 @@ class CustomShortSwipeExecutor(private val context: Context) {
                 // Timestamp commands
                 "timestamp_date", "timestamp_time", "timestamp_datetime",
                 "timestamp_time_seconds", "timestamp_date_short", "timestamp_date_long",
-                "timestamp_time_12h", "timestamp_iso" -> {
+                "timestamp_time_12h", "timestamp_iso",
+                // Vietnamese Telex commands
+                "telex_s", "telex_f", "telex_r", "telex_x", "telex_j",
+                "telex_a", "telex_e", "telex_o", "telex_w", "telex_d", "telex_z" -> {
                     // These commands need KeyValue-based handling through the keyboard service
                     // Return the KeyValue result which will be processed by Keyboard2View
                     val keyValue = KeyValue.getKeyByName(command.name)

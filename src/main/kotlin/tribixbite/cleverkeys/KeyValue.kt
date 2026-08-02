@@ -101,6 +101,17 @@ class KeyValue private constructor(
         CURSOR_DOC_END, // Move cursor to end of document (Ctrl+End)
         CLEAR, // #135: Erase entire field (selectAll + delete in one batched edit)
         BYPASS_CENSOR, // Insert zero-width spaces between characters
+        TELEX_S,
+        TELEX_F,
+        TELEX_R,
+        TELEX_X,
+        TELEX_J,
+        TELEX_A,
+        TELEX_E,
+        TELEX_O,
+        TELEX_W,
+        TELEX_D,
+        TELEX_Z
     }
 
     enum class Placeholder {
@@ -726,6 +737,17 @@ class KeyValue private constructor(
             "clear" -> editingKey("clr", Editing.CLEAR, FLAG_SMALLER_FONT)
             "delete_last_word" -> editingKey("word", Editing.DELETE_LAST_WORD)
             "bypass_censor" -> editingKey("BPS", Editing.BYPASS_CENSOR, FLAG_SMALLER_FONT)
+            "telex_s" -> editingKey("Sắc", Editing.TELEX_S, FLAG_SMALLER_FONT)
+            "telex_f" -> editingKey("Huyền", Editing.TELEX_F, FLAG_SMALLER_FONT)
+            "telex_r" -> editingKey("Hỏi", Editing.TELEX_R, FLAG_SMALLER_FONT)
+            "telex_x" -> editingKey("Ngã", Editing.TELEX_X, FLAG_SMALLER_FONT)
+            "telex_j" -> editingKey("Nặng", Editing.TELEX_J, FLAG_SMALLER_FONT)
+            "telex_a" -> editingKey("ă/â", Editing.TELEX_A, FLAG_SMALLER_FONT)
+            "telex_e" -> editingKey("ê", Editing.TELEX_E, FLAG_SMALLER_FONT)
+            "telex_o" -> editingKey("ô", Editing.TELEX_O, FLAG_SMALLER_FONT)
+            "telex_w" -> editingKey("ư/ơ", Editing.TELEX_W, FLAG_SMALLER_FONT)
+            "telex_d" -> editingKey("đ", Editing.TELEX_D, FLAG_SMALLER_FONT)
+            "telex_z" -> editingKey("Huỷ", Editing.TELEX_Z, FLAG_SMALLER_FONT)
             "cursor_left" -> sliderKey(Slider.Cursor_left, 1)
             "cursor_right" -> sliderKey(Slider.Cursor_right, 1)
             "cursor_up" -> sliderKey(Slider.Cursor_up, 1)

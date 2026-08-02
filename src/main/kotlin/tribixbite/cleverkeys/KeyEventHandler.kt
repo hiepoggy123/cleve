@@ -689,6 +689,40 @@ class KeyEventHandler(
                     conn.endBatchEdit()
                 }
             }
+            KeyValue.Editing.TELEX_S -> applyTelexForced('s')
+            KeyValue.Editing.TELEX_F -> applyTelexForced('f')
+            KeyValue.Editing.TELEX_R -> applyTelexForced('r')
+            KeyValue.Editing.TELEX_X -> applyTelexForced('x')
+            KeyValue.Editing.TELEX_J -> applyTelexForced('j')
+            KeyValue.Editing.TELEX_A -> applyTelexForced('a')
+            KeyValue.Editing.TELEX_E -> applyTelexForced('e')
+            KeyValue.Editing.TELEX_O -> applyTelexForced('o')
+            KeyValue.Editing.TELEX_W -> applyTelexForced('w')
+            KeyValue.Editing.TELEX_D -> applyTelexForced('d')
+            KeyValue.Editing.TELEX_Z -> applyTelexForced('z')
+        }
+    }
+
+    /**
+     * Unconditionally apply Vietnamese Telex rules using the given character,
+     * ignoring the `enable_vietnamese_telex` toggle.
+     * This is used when a custom action explicitly requests a diacritic.
+     */
+    private fun applyTelexForced(c: Char) {
+        val conn = recv.getCurrentInputConnection() ?: return
+        val textBefore = conn.getTextBeforeCursor(20, 0)?.toString() ?: ""
+        val telexResult = VietnameseTelexProcessor.processTelex(textBefore, c)
+        
+        if (telexResult != null) {
+            conn.deleteSurroundingText(telexResult.charsToDelete, 0)
+            conn.commitText(telexResult.newWord, 1)
+            lastTypedChar = telexResult.newWord.lastOrNull() ?: '\u0000'
+            lastTypedTimestamp = System.currentTimeMillis()
+            autocap.typed(telexResult.newWord)
+            recv.handle_text_typed(telexResult.newWord)
+        } else {
+            // If telex rules didn't match anything, we just emit the character itself as a fallback
+            sendText(c.toString())
         }
     }
 
